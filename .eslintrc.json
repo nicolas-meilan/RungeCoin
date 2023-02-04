@@ -76,6 +76,14 @@
           {
             "pattern": "@hooks/**",
             "group": "internal"
+          },
+          {
+            "pattern": "@navigation/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@system/**",
+            "group": "internal"
           }
         ],
         "pathGroupsExcludedImportTypes": [],

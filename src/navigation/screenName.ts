@@ -1,8 +1,8 @@
-enum Screens {
+enum ScreenName {
   requestSecretphrase = 'requestSecretphrase',
   createSecretPhrase = 'createSecretPhrase',
 
   home = 'home',
 }
 
-export default Screens;
+export default ScreenName;

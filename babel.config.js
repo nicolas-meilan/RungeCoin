@@ -11,6 +11,8 @@ module.exports = function (api) {
             '@components': './src/components',
             '@containers': './src/containers',
             '@hooks': './src/hooks',
+            '@navigation': './src/navigation',
+            '@system': './src/system',
           },
           extensions: [
             '.ios.ts',

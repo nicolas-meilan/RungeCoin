@@ -17,7 +17,7 @@ type StackProps = {
 };
 
 const StackGenerator = ({ screens }: StackProps) => (
-  <StackNavigator.Navigator>
+  <StackNavigator.Navigator initialRouteName={screens[0].name || ''}>
     {screens.map((screen: ScreenProps) => <StackNavigator.Screen key={screen.name} {...screen} />)}
   </StackNavigator.Navigator>
 );

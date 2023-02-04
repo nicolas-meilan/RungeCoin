@@ -38,6 +38,18 @@
       "@hooks/*": [
         "./src/hooks/*"
       ],
+      "@navigation": [
+        "./src/navigation"
+      ],
+      "@navigation/*": [
+        "./src/navigation/*"
+      ],
+      "@system": [
+        "./src/system"
+      ],
+      "@system/*": [
+        "./src/system/*"
+      ],
     },
     "moduleResolution": "node",
     "noEmit": true,

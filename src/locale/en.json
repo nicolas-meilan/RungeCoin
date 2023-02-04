@@ -1,0 +1,6 @@
+{
+  "common": {
+    "test": "test str",
+    "test2": "test str 2"
+  }
+}
