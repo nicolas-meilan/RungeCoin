@@ -1,3 +1,52 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json"
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-native",
+    "lib": [
+      "dom",
+      "es6",
+      "es2016.array.include",
+      "es2017.object",
+      "es2019",
+      "ES2021.String",
+    ],
+    "paths": {
+      "@screens": [
+        "./src/screens"
+      ],
+      "@screens/*": [
+        "./src/screens*"
+      ],
+      "@components": [
+        "./src/components"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@containers": [
+        "./src/containers"
+      ],
+      "@containers/*": [
+        "./src/containers/*"
+      ],
+      "@hooks": [
+        "./src/hooks"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+    },
+    "moduleResolution": "node",
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "src/@types"
+    ],
+  },
 }
