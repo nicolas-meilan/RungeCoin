@@ -62,11 +62,15 @@
             "group": "builtin"
           },
           {
-            "pattern": "@atoms/**",
+            "pattern": "@screens/**",
             "group": "internal"
           },
           {
             "pattern": "@components/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@containers/**",
             "group": "internal"
           },
           {
