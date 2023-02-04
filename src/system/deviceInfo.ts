@@ -1,9 +1,13 @@
-import { NativeModules, Platform } from 'react-native';
+import {
+  Appearance,
+  NativeModules,
+  Platform,
+} from 'react-native';
 
-const getDeviceLocale = (): string => (
+export const getDeviceLocale = (): string => (
   Platform.OS === 'ios'
     ? NativeModules.SettingsManager.settings.AppleLocale || NativeModules.SettingsManager.settings.AppleLanguages[0] // iOS 13
     : NativeModules.I18nManager.localeIdentifier
 );
 
-export { getDeviceLocale };
+export const isDarkThemeEnabled = (): boolean => Appearance.getColorScheme() === 'dark';
