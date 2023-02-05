@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
 type ScreenLayoutProps = {
-  children: JSX.Element;
+  children: JSX.Element | JSX.Element[];
 };
 
 const ScreenWrapper = styled.View`

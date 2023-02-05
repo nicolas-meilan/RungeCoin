@@ -1,32 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import initializeI18nConfig from './src/locale/i18nConfig';
+import Root from './src/Root';
 import ThemeProvider from './src/theme/ThemeProvider';
-import Navigator from '@navigation/Navigator';
 
 initializeI18nConfig();
+const queryClient = new QueryClient();
 
-const App = () => {
-  const [appReady, setAppReady] = useState(false);
-
-  useEffect(() => {
-    initializeI18nConfig().then(() => setAppReady(true));
-  }, []);
-
-  if (!appReady) return <></>; // TODO
-
-  return (
+const App = () => (
+  <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <Navigator />
-        </NavigationContainer>
+        <Root />
       </SafeAreaProvider>
     </ThemeProvider>
-  );
-};
+  </QueryClientProvider>
+);
 
 export default App;

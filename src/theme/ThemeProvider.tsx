@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { ThemeProvider as ThemeProviderST } from 'styled-components/native';
+import { ThemeProvider as ThemeProviderSC } from 'styled-components/native';
 
 import themes, { AvailableThemes } from './themes';
+import useTheme from '@hooks/useTheme';
 import { isDarkThemeEnabled } from '@system/deviceInfo';
 
 type ThemeProviderProps = {
@@ -10,14 +11,18 @@ type ThemeProviderProps = {
 };
 
 const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const deviceUseDarkTheme = isDarkThemeEnabled();
+  const { themeMode } = useTheme();
 
-  const themeMode = deviceUseDarkTheme ? AvailableThemes.DARK : AvailableThemes.LIGHT;
+  const deviceThemeMode = isDarkThemeEnabled() ? AvailableThemes.DARK : AvailableThemes.LIGHT;
+
+  const themeModeToRender = !themeMode || themeMode === AvailableThemes.FROM_DEVICE
+    ? deviceThemeMode
+    : themeMode;
 
   return (
-    <ThemeProviderST theme={themes[themeMode]}>
+    <ThemeProviderSC theme={themes[themeModeToRender]}>
       {children}
-    </ThemeProviderST>
+    </ThemeProviderSC>
   );
 };
 

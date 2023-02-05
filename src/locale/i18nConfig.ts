@@ -10,9 +10,13 @@ import { getDeviceLocale } from '@system/deviceInfo';
 export enum LanguageLocale {
   ES = 'es',
   EN = 'en',
+  FROM_DEVICE = 'fromDevice',
 }
 
-const defaultLocale = LanguageLocale.EN;
+export const defaultLocale = LanguageLocale.EN;
+
+export type LanguageLocaleType = Exclude<LanguageLocale, LanguageLocale.FROM_DEVICE>;
+
 
 const initializeI18nConfig = async () => {
   const deviceLocale = getDeviceLocale().split('_')[0];

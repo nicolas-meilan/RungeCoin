@@ -17,7 +17,10 @@ const theme = {
 export enum AvailableThemes {
   DARK = 'dark',
   LIGHT = 'light',
+  FROM_DEVICE = 'fromDevice',
 }
+
+export type AvailableThemesType = Exclude<AvailableThemes, AvailableThemes.FROM_DEVICE>;
 
 export type Theme = {
   spacing: (n?: number) => string;
@@ -26,7 +29,7 @@ export type Theme = {
 };
 
 const themes: {
-  [availableTheme in AvailableThemes]: Theme;
+  [availableTheme in AvailableThemesType]: Theme;
 } = {
   [AvailableThemes.LIGHT]: {
     ...theme,
