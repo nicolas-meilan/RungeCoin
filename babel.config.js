@@ -13,6 +13,9 @@ module.exports = function (api) {
             '@hooks': './src/hooks',
             '@navigation': './src/navigation',
             '@system': './src/system',
+            '@web3': './src/web3',
+            '@utils': './src/utils',
+            '@http': './src/http',
           },
           extensions: [
             '.ios.ts',
@@ -31,6 +34,14 @@ module.exports = function (api) {
         '@babel/plugin-transform-flow-strip-types',
         {
           allowDeclareFields: true,
+        },
+      ],
+      [
+        'module:react-native-dotenv',
+        {
+          'envName': 'APP_ENV',
+          'moduleName': '@env',
+          'path': '.env',
         },
       ],
       'react-native-reanimated/plugin',

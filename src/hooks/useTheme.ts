@@ -30,7 +30,6 @@ const useTheme = (): UseThemeReturn => {
   const { data: themeMode, isLoading: themeLoading } = useQuery({
     queryKey: [THEME_QUERY_KEY],
     queryFn: getCurrentTheme,
-    cacheTime: Infinity,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

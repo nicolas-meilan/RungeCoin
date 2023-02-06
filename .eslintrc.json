@@ -84,6 +84,18 @@
           {
             "pattern": "@system/**",
             "group": "internal"
+          },
+          {
+            "pattern": "@http/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@utils/**",
+            "group": "internal"
+          },
+          {
+            "pattern": "@web3/**",
+            "group": "internal"
           }
         ],
         "pathGroupsExcludedImportTypes": [],
