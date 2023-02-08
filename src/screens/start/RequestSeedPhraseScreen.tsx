@@ -7,22 +7,27 @@ import ScreenLayout from '@components/ScreenLayout';
 import TextInput from '@components/TextInput';
 import ScreenName from '@navigation/screenName';
 import { PASSWORD_REGEX } from '@utils/text';
+import { SEED_PHRASE_VALID_LENGTH, isValidSeedPhrase, formatSeedPhrase } from '@web3/wallet';
 
-const Password = styled(TextInput)`
+const PasswordInput = styled(TextInput)`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
 const Form = styled.View`
-  height: 300px;
+  height: 350px;
 `;
 
 const BASE_PASS_ERR = 'access.requestSeedPhrase.inputs.passwordError';
+const BASE_SEED_ERR = 'access.requestSeedPhrase.inputs.seedPhraseError';
 
 const RequestSeedPhraseScreen = ({ navigation }: any) => {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState(false);
+  const [seedPhraseError, setSeedPhraseError] = useState(false);
+  const [seedPhraseHidden, setSeedPhraseHidden] = useState(true);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState(BASE_PASS_ERR);
+  const [seedPhraseErrorMessage, setSeedPhraseErrorMessage] = useState(BASE_SEED_ERR);
 
   const onSeedChange = (newValue: string) => setSeedPhrase(newValue);
   const onPasswordChange = (newValue: string) => setPassword(newValue);
@@ -32,24 +37,44 @@ const RequestSeedPhraseScreen = ({ navigation }: any) => {
     setPasswordError(hasError);
     if (hasError) setPasswordErrorMessage(BASE_PASS_ERR);
   };
-  const onPasswordFocus = () => setPasswordError(false);
-  const onPressContinue = () => {
-    if (passwordError) return;
 
-    if (!password) {
-      setPasswordErrorMessage('access.requestSeedPhrase.inputs.passwordVoid');
-      setPasswordError(true);
-      return;
+  const onSeedPhraseFocus = () => setSeedPhraseError(false);
+  const onPasswordFocus = () => setPasswordError(false);
+
+  const onPressToggleVisibilitySeedPhrase = () => setSeedPhraseHidden(!seedPhraseHidden);
+
+  const onPressContinue = () => {
+    if (passwordError || seedPhraseError) return;
+
+    const seedArray = formatSeedPhrase(seedPhrase).split(' ').map((word) => word.trim());
+    const formattedSeedPhrase = seedArray.join(' ');
+
+    const invalidSeedLength = !SEED_PHRASE_VALID_LENGTH.includes(seedArray.length);
+    
+    let someError = false;
+    if (invalidSeedLength) {
+      setSeedPhraseErrorMessage('access.requestSeedPhrase.inputs.seedPhraseErrorLength');
+      setSeedPhraseError(true);
+      someError = true;
+    }
+  
+    if (!invalidSeedLength && !isValidSeedPhrase(formattedSeedPhrase)) {
+      setSeedPhraseErrorMessage(BASE_SEED_ERR);
+      setSeedPhraseError(true);
+      someError = true;
     }
 
     if (!PASSWORD_REGEX.test(password)) {
       setPasswordErrorMessage(BASE_PASS_ERR);
       setPasswordError(true);
-      return;
+      someError = true;
     }
 
+    if (someError) return;
     navigation.navigate(ScreenName.createSeedPhrase);
   };
+
+  const disableButton = passwordError || seedPhraseError || !seedPhrase || !password;
 
   return (
     <ScreenLayout
@@ -64,10 +89,15 @@ const RequestSeedPhraseScreen = ({ navigation }: any) => {
           label="access.requestSeedPhrase.inputs.seedPhrase"
           placeholder="access.requestSeedPhrase.inputs.seedPhrasePH"
           type="password"
+          multiline={!seedPhraseHidden}
           value={seedPhrase}
           onChangeText={onSeedChange}
+          onFocus={onSeedPhraseFocus}
+          onPressIcon={onPressToggleVisibilitySeedPhrase}
+          error={seedPhraseError}
+          errorMessage={seedPhraseErrorMessage}
         />
-        <Password
+        <PasswordInput
           label="access.requestSeedPhrase.inputs.password"
           placeholder="access.requestSeedPhrase.inputs.passwordPH"
           type="password"
@@ -81,7 +111,7 @@ const RequestSeedPhraseScreen = ({ navigation }: any) => {
       </Form>
       <Button
         text="access.requestSeedPhrase.continueButton"
-        disabled={passwordError}
+        disabled={disableButton}
         onPress={onPressContinue}
       />
     </ScreenLayout>

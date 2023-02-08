@@ -23,7 +23,7 @@ const ButtonWrapper = styled.TouchableOpacity<{ color: string }>`
   padding: ${({ theme }) => theme.spacing(2)};
   align-items: center;
   justify-content: center;
-  height: 50px;
+  height: ${({ theme }) => theme.inputsHeight.small};
 `;
 
 const ButtonText = styled(Text)`

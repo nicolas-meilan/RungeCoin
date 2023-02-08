@@ -14,6 +14,10 @@ const spacingNative = (n?: number) => (!n ? DEFAULT_SPACE : (DEFAULT_SPACE * n))
 const theme = {
   spacing,
   spacingNative,
+  inputsHeight: {
+    small: '50px',
+    big: '100px',
+  },
   fonts,
   borderRadius: `${DEFAULT_BORDER_RADIUS}px`,
 };
@@ -29,6 +33,10 @@ export type AvailableThemesType = Exclude<AvailableThemes, AvailableThemes.FROM_
 export type Theme = {
   spacing: (n?: number) => string;
   spacingNative: (n?: number) => number;
+  inputsHeight: {
+    small: string;
+    big: string;
+  };
   borderRadius: string;
   fonts: Fonts;
   colors: Colors;

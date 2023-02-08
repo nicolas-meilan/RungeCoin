@@ -12,7 +12,8 @@
         "password": "Ingresa una contraseña",
         "passwordPH": "Nueva contraseña",
         "passwordError": "La contraseña debe tener 8 caracteres.\nAl menos 1 mayúscula.\nAl menos 1 número.\nNo se admiten caracteres especiales.",
-        "passwordVoid": "Debe ingresar una contraseña para poder continuar"
+        "seedPhraseError": "Las palabras secretas son incorrectas.",
+        "seedPhraseErrorLength": "La cantidad de palabras secretas es incorrecta."
       }
     }
   }

@@ -28,12 +28,15 @@ type TextInputProps = TextInputPropsRN & {
 
 const Wrapper = styled.View``;
 
-const InputWrapper = styled.View<{ color: string }>`
+const InputWrapper = styled.View<{ color: string; multiline?: boolean }>`
   flex-direction: row;
   width: 100%;
   border: 1px solid ${({ color }) => color};
   border-radius: ${({ theme }) => theme.borderRadius};
-  padding: 0 ${({ theme }) => theme.spacing(2)};
+  padding: ${({ multiline, theme }) => (multiline
+    ? theme.spacing(2)
+    : `0 ${theme.spacing(2)}`)};
+  height: ${({ theme, multiline }) => multiline ? theme.inputsHeight.big : theme.inputsHeight.small}
 `;
 
 const Label = styled(Text)`
@@ -44,14 +47,14 @@ const StyledIcon = styled(Icon)`
   font-size: ${({ theme }) => theme.fonts.size[24]};
 `;
 
-const IconWrapper = styled.View`
+const IconWrapper = styled.View<{ multiline?: boolean }>`
   flex: 0.1;
   align-items: center;
-  justify-content: center;
-  align-items: flex-end;
+  justify-content: ${({ multiline }) => (multiline ? 'flex-end' : 'center')};
 `;
 
 const StyledTextInput = styled.TextInput<{ hasIcon?: boolean }>`
+  vertical-align: ${({ multiline }) => (multiline ? 'top' : 'middle')};
   font-size: ${({ theme }) => theme.fonts.size[16]};
   flex: 1;
 `;
@@ -71,6 +74,7 @@ const TextInput = ({
   onPressIcon,
   style,
   errorMessage,
+  multiline,
   type = TextInputType.TEXT,
   error = false,
   ...props
@@ -100,6 +104,7 @@ const TextInput = ({
   };
 
   const toggleShowText = () => {
+    onPressIcon?.();
     setShowText(!showText);
   };
 
@@ -107,7 +112,7 @@ const TextInput = ({
   return (
     <Wrapper style={style}>
       {!!label && <Label text={label} />}
-      <InputWrapper color={borderColor}>
+      <InputWrapper color={borderColor} multiline={multiline}>
         <StyledTextInput
           cursorColor={theme.colors.primary}
           placeholderTextColor={theme.colors.text.tertiary}
@@ -117,8 +122,9 @@ const TextInput = ({
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
           secureTextEntry={!showText}
+          multiline={multiline}
         />
-        <IconWrapper>
+        <IconWrapper multiline={multiline}>
           {isPassword && <StyledIcon name={passwordIconName} onPress={toggleShowText} />}
           {icon && !isPassword && <StyledIcon name={icon} onPress={onPressIcon} />}
         </IconWrapper>
