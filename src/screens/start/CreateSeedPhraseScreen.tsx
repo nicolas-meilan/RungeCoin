@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 
-import { runOnUI } from 'react-native-reanimated';
-
 import {
   createSeedPhrase,
   createWalletFromSeedPhrase,
@@ -12,9 +10,6 @@ const CreateSeedPhraseScreen = () => {
 
 
   const test = async (aa: string) => {
-    'worklet';
-  
-
     console.log({ aa });
 
     const wallet = await createWalletFromSeedPhrase(aa);
@@ -38,8 +33,6 @@ const CreateSeedPhraseScreen = () => {
   };
   useEffect(() => {
     const seedPhrase = createSeedPhrase(true);
-
-    runOnUI(test)(seedPhrase);
   }, []);
 
   return (

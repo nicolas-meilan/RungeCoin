@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
 import ScreenLayout from '@components/ScreenLayout';
 import TextInput from '@components/TextInput';
-import ScreenName from '@navigation/screenName';
+import { ScreenName } from '@navigation/constants';
+import { StartNavigatorType } from '@navigation/StartNavigator';
 import { PASSWORD_REGEX } from '@utils/text';
 import { SEED_PHRASE_VALID_LENGTH, isValidSeedPhrase, formatSeedPhrase } from '@web3/wallet';
 
@@ -20,7 +22,9 @@ const Form = styled.View`
 const BASE_PASS_ERR = 'access.requestSeedPhrase.inputs.passwordError';
 const BASE_SEED_ERR = 'access.requestSeedPhrase.inputs.seedPhraseError';
 
-const RequestSeedPhraseScreen = ({ navigation }: any) => {
+type RequestSeedPhraseScreenProps = NativeStackScreenProps<StartNavigatorType, ScreenName.requestSeedPhrase>;
+
+const RequestSeedPhraseScreen = ({ navigation }: RequestSeedPhraseScreenProps) => {
   const [seedPhrase, setSeedPhrase] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState(false);
@@ -32,20 +36,8 @@ const RequestSeedPhraseScreen = ({ navigation }: any) => {
   const onSeedChange = (newValue: string) => setSeedPhrase(newValue);
   const onPasswordChange = (newValue: string) => setPassword(newValue);
 
-  const onPasswordBlur = () => {
-    const hasError = !!password && !PASSWORD_REGEX.test(password);
-    setPasswordError(hasError);
-    if (hasError) setPasswordErrorMessage(BASE_PASS_ERR);
-  };
-
-  const onSeedPhraseFocus = () => setSeedPhraseError(false);
-  const onPasswordFocus = () => setPasswordError(false);
-
-  const onPressToggleVisibilitySeedPhrase = () => setSeedPhraseHidden(!seedPhraseHidden);
-
-  const onPressContinue = () => {
-    if (passwordError || seedPhraseError) return;
-
+  const checkSeedPhrase = () => {
+    if (!seedPhrase) return false;
     const seedArray = formatSeedPhrase(seedPhrase).split(' ').map((word) => word.trim());
     const formattedSeedPhrase = seedArray.join(' ');
 
@@ -64,13 +56,32 @@ const RequestSeedPhraseScreen = ({ navigation }: any) => {
       someError = true;
     }
 
+    return someError;
+  };
+
+  const checkPassword = () => {
+    if (!password) return false;
+
     if (!PASSWORD_REGEX.test(password)) {
       setPasswordErrorMessage(BASE_PASS_ERR);
       setPasswordError(true);
-      someError = true;
+      return true;
     }
 
-    if (someError) return;
+    return false;
+  };
+
+  const onSeedPhraseFocus = () => setSeedPhraseError(false);
+  const onPasswordFocus = () => setPasswordError(false);
+
+  const onPressToggleVisibilitySeedPhrase = () => setSeedPhraseHidden(!seedPhraseHidden);
+
+  const onPressContinue = () => {
+    if (passwordError || seedPhraseError) return;
+
+    const inputErrors = [checkSeedPhrase(), checkPassword()];
+    if (inputErrors.some((err) => err)) return;
+
     navigation.navigate(ScreenName.createSeedPhrase);
   };
 
@@ -93,6 +104,7 @@ const RequestSeedPhraseScreen = ({ navigation }: any) => {
           value={seedPhrase}
           onChangeText={onSeedChange}
           onFocus={onSeedPhraseFocus}
+          onBlur={checkSeedPhrase}
           onPressIcon={onPressToggleVisibilitySeedPhrase}
           error={seedPhraseError}
           errorMessage={seedPhraseErrorMessage}
@@ -104,7 +116,7 @@ const RequestSeedPhraseScreen = ({ navigation }: any) => {
           value={password}
           onChangeText={onPasswordChange}
           onFocus={onPasswordFocus}
-          onBlur={onPasswordBlur}
+          onBlur={checkPassword}
           error={passwordError}
           errorMessage={passwordErrorMessage}
         />
