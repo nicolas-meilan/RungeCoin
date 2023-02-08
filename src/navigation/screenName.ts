@@ -1,6 +1,6 @@
 enum ScreenName {
-  requestSecretphrase = 'requestSecretphrase',
-  createSecretPhrase = 'createSecretPhrase',
+  requestSeedPhrase = 'requestSeedPhrase',
+  createSeedPhrase = 'createSeedPhrase',
 
   home = 'home',
 }

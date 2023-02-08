@@ -2,15 +2,15 @@ import React from 'react';
 
 import ScreenName from './screenName';
 import StackGenerator from './StackGenerator';
-import CreateSecretPhraseScreen from '@screens/start/CreateSecretPhraseScreen';
-import RequestSecretPhraseScreen from '@screens/start/RequestSecretPhraseScreen';
+import CreateSeedPhraseScreen from '@screens/start/CreateSeedPhraseScreen';
+import RequestSeedPhraseScreen from '@screens/start/RequestSeedPhraseScreen';
 
 const screens = [{
-  name: ScreenName.requestSecretphrase,
-  component: RequestSecretPhraseScreen,
+  name: ScreenName.requestSeedPhrase,
+  component: RequestSeedPhraseScreen,
 }, {
-  name: ScreenName.createSecretPhrase,
-  component: CreateSecretPhraseScreen,
+  name: ScreenName.createSeedPhrase,
+  component: CreateSeedPhraseScreen,
 }];
 
 export default () => <StackGenerator screens={screens} />;

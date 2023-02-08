@@ -5,6 +5,8 @@ export type Colors = {
   warning: string;
   error: string;
   info: string;
+  disabled: string;
+  border: string;
   background: {
     primary: string;
     secondary: string;
@@ -28,6 +30,8 @@ export const light: Colors = {
   warning: '#FF8307',
   error: '#FF0004',
   info: '#05A7FF',
+  disabled: '#8a8a8a',
+  border: '#C5CAE0',
   background: {
     primary: '#FFFFFF',
     secondary: '#F7F8FC',
@@ -35,7 +39,7 @@ export const light: Colors = {
   text: {
     primary: '#101426',
     secondary: '#646D84',
-    tertiary: '#9BA0B8',
+    tertiary: '#C5CAE0',
     inverted: '#FFFFFF',
   },
   transparent: 'transparent',
@@ -45,12 +49,14 @@ export const light: Colors = {
 };
 
 export const dark: Colors = {
-  primary: '#00317A',
+  primary: '#39FF14',
   secondary: '#05A7FF',
   success:'#51C11D',
   warning: '#FF8307',
   error: '#FF0004',
   info: '#05A7FF',
+  disabled: '#8a8a8a',
+  border: '#C5CAE0',
   background: {
     primary: '#000000',
     secondary: '#323235',

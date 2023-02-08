@@ -1,6 +1,19 @@
 {
   "common": {
-    "test": "test str",
-    "test2": "test str 2"
+    "appName": "RungeCoin"
+  },
+  "access": {
+    "requestSeedPhrase": {
+      "title": "Enter your secret recovery words",
+      "continueButton": "Access the wallet",
+      "inputs": {
+        "seedPhrase": "Secret recovery words",
+        "seedPhrasePH": "Enter your secret recovery words",
+        "password": "Enter a password",
+        "passwordPH": "New password",
+        "passwordError": "Password must has 8 characters long.\nAt least 1 upper case.\nAt least 1 number.\nSpecial character are not allowed",
+        "passwordVoid": "You must enter a password to continue"
+      }
+    }
   }
 }
