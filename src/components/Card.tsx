@@ -64,7 +64,7 @@ const Card = ({
     );
 
   const contentConditionalScroll = scroll ? (
-    <ScrollView contentContainerStyle={contentContainerStyle}>
+    <ScrollView contentContainerStyle={contentContainerStyle} nestedScrollEnabled>
       {content}
     </ScrollView>
   ) : content;

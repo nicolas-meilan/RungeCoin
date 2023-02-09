@@ -98,7 +98,7 @@ const ScreenLayout = ({
 
 
   const contentScrollCondition = scroll
-    ? <ScrollViewWrapper>{children}</ScrollViewWrapper>
+    ? <ScrollViewWrapper showsVerticalScrollIndicator={false}>{children}</ScrollViewWrapper>
     : <BaseWrapper>{children}</BaseWrapper>;
 
   const content = keyboardAvoidingView ? (

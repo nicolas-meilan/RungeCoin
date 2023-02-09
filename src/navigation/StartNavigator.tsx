@@ -21,7 +21,7 @@ type ScreenProps = {
 
 const screens: ScreenProps[] = [{
   name: ScreenName.requestSeedPhrase,
-  component: RequestSeedPhraseScreen,
+  component: CreateSeedPhraseScreen,
 }, {
   name: ScreenName.createSeedPhrase,
   component: CreateSeedPhraseScreen,
