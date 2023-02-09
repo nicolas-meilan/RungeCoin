@@ -2,7 +2,10 @@ import React from 'react';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { ScreenName } from './constants';
+import {
+  ScreenName,
+  screenOptions,
+} from './constants';
 import HomeScreen from '@screens/main/HomeScreen';
 
 export type MainNavigatorType = {
@@ -22,7 +25,7 @@ const screens: ScreenProps[] = [{
 const StackNavigator = createNativeStackNavigator<MainNavigatorType>();
 
 const MainNavigator = () => (
-  <StackNavigator.Navigator>
+  <StackNavigator.Navigator screenOptions={screenOptions}>
     {screens.map((screen: ScreenProps) => (
       <StackNavigator.Screen
         key={screen.name}

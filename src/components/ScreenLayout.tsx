@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Keyboard } from 'react-native';
+import { Keyboard } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -46,11 +46,6 @@ const Footer = styled(StaticLayout)`
   justify-content: center;
 `;
 
-const ChildrenWrapper = styled.View`
-  flex: 1;
-  margin-top: ${({ theme }) => theme.spacing(4)};
-`;
-
 const HeaderTitle = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[18]};
 `;
@@ -59,9 +54,14 @@ const FooterText = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
 `;
 
-const mainComponentStyle = {
-  flex: 1,
-};
+const BaseWrapper = styled.View`
+  flex: 1;
+  margin-top: ${({ theme }) => theme.spacing(4)};
+`;
+
+const ScrollViewWrapper = styled.ScrollView`
+  margin-top: ${({ theme }) => theme.spacing(4)};
+`;
 
 const ScreenLayout = ({
   children,
@@ -96,18 +96,10 @@ const ScreenLayout = ({
 
   const backAction = goBack ? goBack : () => navigation.goBack();
 
-  const wrappedChildren = (
-    <>
-      {hasBigTitle && <Title title={title} />}
-      <ChildrenWrapper>
-        {children}
-      </ChildrenWrapper>
-    </>
-  );
 
   const contentScrollCondition = scroll
-    ? <ScrollView>{wrappedChildren}</ScrollView>
-    : <View style={mainComponentStyle}>{wrappedChildren}</View>;
+    ? <ScrollViewWrapper>{children}</ScrollViewWrapper>
+    : <BaseWrapper>{children}</BaseWrapper>;
 
   const content = keyboardAvoidingView ? (
     <KeyboardAvoidingView>
@@ -124,6 +116,7 @@ const ScreenLayout = ({
             {hasHeaderTitle && <HeaderTitle text={title} />}
           </Header>
         )}
+        {hasBigTitle && <Title title={title} />}
         {content}
         {hasFooterBanner && !isKeyboardOpen && (
           <Footer><FooterText text="common.appName" /></Footer>

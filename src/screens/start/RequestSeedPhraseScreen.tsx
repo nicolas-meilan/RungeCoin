@@ -82,7 +82,7 @@ const RequestSeedPhraseScreen = ({ navigation }: RequestSeedPhraseScreenProps) =
     const inputErrors = [checkSeedPhrase(), checkPassword()];
     if (inputErrors.some((err) => err)) return;
 
-    navigation.navigate(ScreenName.createSeedPhrase);
+    navigation.navigate(ScreenName.createSeedPhrase); // TODO
   };
 
   const disableButton = passwordError || seedPhraseError || !seedPhrase || !password;
@@ -92,7 +92,6 @@ const RequestSeedPhraseScreen = ({ navigation }: RequestSeedPhraseScreenProps) =
       title="access.requestSeedPhrase.title"
       bigTitle
       hasFooterBanner
-      hasBack={false}
       scroll
     >
       <Form>

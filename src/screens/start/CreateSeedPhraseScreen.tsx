@@ -1,42 +1,66 @@
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 
-import {
-  createSeedPhrase,
-  createWalletFromSeedPhrase,
-  createWalletFromKey,
-} from '@web3/wallet';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import styled from 'styled-components/native';
 
-const CreateSeedPhraseScreen = () => {
+import Button from '@components/Button';
+import Card from '@components/Card';
+import Pill, { Type } from '@components/Pill';
+import ScreenLayout from '@components/ScreenLayout';
+import Text from '@components/Text';
+import { ScreenName } from '@navigation/constants';
+import { StartNavigatorType } from '@navigation/StartNavigator';
+import { createSeedPhrase } from '@web3/wallet';
 
+const SeedPhraseCard = styled(Card).attrs({
+  contentContainerStyle: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+})`
+  max-height: 400px;
+`;
 
-  const test = async (aa: string) => {
-    console.log({ aa });
+const WordPill = styled(Pill)`
+  background-color: ${({ theme }) => theme.colors.background.secondary};
+  border: 0px;
+  margin: 0 ${({ theme }) => theme.spacing(2)} ${({ theme }) => theme.spacing(2)} 0;
+  font-size: ${({ theme }) => theme.fonts.size[16]};
+`;
 
-    const wallet = await createWalletFromSeedPhrase(aa);
+const Message = styled(Text)`
+  text-align: center;
+  margin: ${({ theme }) => theme.spacing(6)} 0;
+  font-size: ${({ theme }) => theme.fonts.size[18]};
+`;
 
-    console.log({
-      wallet: {
-        privateKey: wallet.getPrivateKeyString(),
-        publicKey: wallet.getPublicKeyString(),
-        address: wallet.getAddressString(),
-      },
-    });
+type CreateSeedPhraseScreenProps = NativeStackScreenProps<StartNavigatorType, ScreenName.createSeedPhrase>;
 
-    const wallet2 = createWalletFromKey(wallet.getPrivateKeyString());
+const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => {
+  const seedPhrase = useMemo(() => createSeedPhrase(true).split(' '), []);
 
-    console.log({ wallet2Address: wallet2.getAddressString() });
-
-    const wallet3 = createWalletFromKey(wallet.getPublicKeyString(), false);
-
-    console.log({ wallet3Address: wallet3.getAddressString() });
-
-  };
-  useEffect(() => {
-    const seedPhrase = createSeedPhrase(true);
-  }, []);
+  const onPressContinue = () => navigation.navigate(ScreenName.requestSeedPhrase);
 
   return (
-    <></>
+    <ScreenLayout
+      title="access.createSeedPhrase.title"
+      bigTitle
+      hasFooterBanner
+      scroll
+    >
+      <SeedPhraseCard scroll>
+        {seedPhrase.map((word, index) => (
+          <WordPill
+            noI18n
+            type={Type.INFO}
+            text={`${index + 1}. ${word}`}
+            key={`PILL_${index}_${word}`}
+          />
+        ))}
+      </SeedPhraseCard>
+      <Message text="access.createSeedPhrase.warningMessage"/>
+      <Button text="common.continue" onPress={onPressContinue}/>
+    </ScreenLayout>
   );
 };
 

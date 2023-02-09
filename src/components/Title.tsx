@@ -1,13 +1,14 @@
 import React from 'react';
-import type { StyleProp, TextStyle } from 'react-native';
 
 import styled from 'styled-components/native';
 
-import Text from './Text';
+import Text, { TextProps, Weight } from './Text';
 
 type TitleProps = {
   title: string;
-  style?: StyleProp<TextStyle>;
+  style?: TextProps['style'];
+  i18nArgs?: TextProps['i18nArgs'];
+  noI18n?: boolean;
 };
 
 const StyledText = styled(Text)`
@@ -15,8 +16,13 @@ const StyledText = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[40]};
 `;
 
-const Title = ({ title, style }: TitleProps) => (
-  <StyledText text={title} style={style} />
+const Title = ({
+  i18nArgs,
+  noI18n,
+  title,
+  style,
+}: TitleProps) => (
+  <StyledText text={title} style={style} noI18n={noI18n} i18nArgs={i18nArgs} weight={Weight.BOLD}/>
 );
 
 export default Title;
