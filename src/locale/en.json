@@ -1,9 +1,13 @@
 {
   "common": {
     "appName": "RungeCoin",
-    "continue": "Continue"
+    "continue": "Continue",
+    "next": "Next"
   },
   "access": {
+    "startGuide": {
+      "title": "Create a new wallet"
+    },
     "createSeedPhrase": {
       "title": "Secret recovery words",
       "warningMessage": "If you lose these words, **you will lose access to your wallet**, it is recommended to keep them written on paper, or in some other physical medium **without internet access**."

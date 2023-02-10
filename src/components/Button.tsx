@@ -76,6 +76,7 @@ const Button = ({
   };
   const disabledColorStyleButton = disabled ? {
     backgroundColor:theme.colors.disabled,
+    borderWidth: 0,
   } : {};
   const disabledColorStyleText = disabled ? {
     color: theme.colors.text.inverted,

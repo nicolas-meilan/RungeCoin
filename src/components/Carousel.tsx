@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react';
@@ -12,11 +13,17 @@ import type {
 
 import styled from 'styled-components/native';
 
+export type CarouselRef = {
+  next: () => number;
+  prev: () => number;
+};
+
 type CarouselProps = {
   items: JSX.Element[];
   auto?: boolean;
   loop?: boolean;
   timePerItem?: number;
+  onRenderLastItem?: () => void;
 };
 
 const DOT_SIZE = 12;
@@ -47,17 +54,39 @@ const Dot = styled.View<{ selected: boolean }>`
   border-radius: ${DOT_SIZE / 2}px;
 `;
 
-const Carousel = ({
+const Carousel = React.forwardRef(({
   items,
+  onRenderLastItem,
   auto = false,
   loop = false,
   timePerItem = 3,
-}: CarouselProps) => {
+}: CarouselProps,
+ref: React.Ref<CarouselRef>) => {
   const listRef = useRef<FlatList>(null);
 
   const [itemWidth, setItemWidth] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [autoEnd, setAutoEnd] = useState(!auto);
+
+  const next = (): number => {
+    if (currentIndex >= items.length) return currentIndex;
+    const nextIndex = currentIndex + 1;
+    setCurrentIndex(nextIndex);
+    listRef.current?.scrollToIndex({ animated: true, index: nextIndex });
+
+    return nextIndex;
+  };
+
+  const prev = (): number => {
+    if (!currentIndex) return currentIndex;
+    const prevIndex = currentIndex - 1;
+    setCurrentIndex(prevIndex);
+    listRef.current?.scrollToIndex({ animated: true, index: prevIndex });
+
+    return prevIndex;
+  };
+
+  useImperativeHandle(ref, () => ({ next, prev }));
 
   useEffect(() => {
     if (!auto) return () => { };
@@ -114,6 +143,7 @@ const Carousel = ({
         snapToAlignment='center'
         decelerationRate={0.5}
         scrollEnabled={autoEnd}
+        onEndReached={onRenderLastItem}
       />
       <DotsWrapper>
         {items.map((item, index) => {
@@ -131,6 +161,6 @@ const Carousel = ({
       </DotsWrapper>
     </Wrapper>
   );
-};
+});
 
 export default Carousel;

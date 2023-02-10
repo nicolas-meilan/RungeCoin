@@ -1,9 +1,13 @@
 {
   "common": {
     "appName": "RungeCoin",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "next": "Siguiente"
   },
   "access": {
+    "startGuide": {
+      "title": "Genera una nueva billetera"
+    },
     "createSeedPhrase": {
       "title": "Palabras secretas de recuperación",
       "warningMessage": "Si pierdes estas palabras, **perderás acceso a tu billetera**, se recomienda guardarlas escritas en papel, o en algún otro medio físico **sin acceso a internet**."
