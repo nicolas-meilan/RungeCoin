@@ -8,8 +8,10 @@ import {
 } from './constants';
 import CreateSeedPhraseScreen from '@screens/start/CreateSeedPhraseScreen';
 import RequestSeedPhraseScreen from '@screens/start/RequestSeedPhraseScreen';
+import StartGuideScreen from '@screens/start/StartGuideScreen';
 
 export type StartNavigatorType = {
+  [ScreenName.startGuide]: undefined;
   [ScreenName.requestSeedPhrase]: undefined;
   [ScreenName.createSeedPhrase]: undefined;
 };
@@ -20,8 +22,11 @@ type ScreenProps = {
 };
 
 const screens: ScreenProps[] = [{
+  name: ScreenName.startGuide,
+  component: StartGuideScreen,
+}, {
   name: ScreenName.requestSeedPhrase,
-  component: CreateSeedPhraseScreen,
+  component: RequestSeedPhraseScreen,
 }, {
   name: ScreenName.createSeedPhrase,
   component: CreateSeedPhraseScreen,

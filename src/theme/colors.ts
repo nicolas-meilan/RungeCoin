@@ -50,7 +50,7 @@ export const light: Colors = {
 
 export const dark: Colors = {
   primary: '#39FF14',
-  secondary: '#05A7FF',
+  secondary: '#9D00FF',
   success:'#51C11D',
   warning: '#FF8307',
   error: '#FF0004',
