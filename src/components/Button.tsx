@@ -1,5 +1,5 @@
 import React from 'react';
-import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { ActivityIndicator, StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 import styled, { useTheme } from 'styled-components/native';
 
@@ -16,6 +16,7 @@ type ButtonProps = {
   onPress: () => void;
   type?: ButtonType;
   disabled?: boolean;
+  loading?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -36,6 +37,7 @@ const Button = ({
   onPress,
   style,
   i18nArgs,
+  loading = false,
   disabled = false,
   type = ButtonType.PRIMARY,
 }: ButtonProps) => {
@@ -44,7 +46,9 @@ const Button = ({
   const styleByType: {
     [key in ButtonType]: {
       button: StyleProp<ViewStyle>;
-      text: StyleProp<TextStyle>;
+      text: StyleProp<TextStyle> & {
+        color?: string;
+      };
     }
   } = {
     [ButtonType.PRIMARY]: {
@@ -75,7 +79,7 @@ const Button = ({
     },
   };
   const disabledColorStyleButton = disabled ? {
-    backgroundColor:theme.colors.disabled,
+    backgroundColor: theme.colors.disabled,
     borderWidth: 0,
   } : {};
   const disabledColorStyleText = disabled ? {
@@ -84,16 +88,23 @@ const Button = ({
 
   return (
     <ButtonWrapper
-      disabled={disabled}
+      disabled={disabled || loading}
       onPress={onPress}
       style={[styleByType[type].button, style, disabledColorStyleButton]}
     >
-      <ButtonText
-        text={text}
-        weight={Weight.BOLD}
-        i18nArgs={i18nArgs}
-        style={[styleByType[type].text, disabledColorStyleText]}
-      />
+      {!loading && (
+        <ButtonText
+          text={text}
+          weight={Weight.BOLD}
+          i18nArgs={i18nArgs}
+          style={[styleByType[type].text, disabledColorStyleText]}
+        />
+      )}
+      {loading && (
+        <ActivityIndicator
+          color={styleByType[type].text?.color || theme.colors.text.primary}
+        />
+      )}
     </ButtonWrapper>
   );
 };

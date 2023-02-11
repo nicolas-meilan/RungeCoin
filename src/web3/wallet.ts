@@ -1,6 +1,10 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from 'bip39';
 import { toBuffer } from 'ethereumjs-util';
 import Wallet, { hdkey } from 'ethereumjs-wallet';
+import EncryptedStorage from 'react-native-encrypted-storage';
+
+import StorageKeys from '@system/storageKeys';
 
 export const SEED_PHRASE_VALID_LENGTH = [12, 15, 18, 21];
 const ETH_DERIVATION_PATH = "m/44'/60'/0'/0"; // m/purpose'/coin_type'/account'/change/index
@@ -27,9 +31,19 @@ export const createWalletFromSeedPhrase = (mnemonic: string, index: number = 0) 
 
 export const createWalletFromKey = (key: string, isPrivate: boolean = true) => {
   const createWallet = isPrivate ? Wallet.fromPrivateKey : Wallet.fromPublicKey;
-  
+
   const bufferedKey = toBuffer(key);
   const wallet = createWallet(bufferedKey);
 
   return wallet;
+};
+
+export const storageWallet = async (wallet: Wallet) => {
+  await Promise.all([
+    () => AsyncStorage.setItem(StorageKeys.WALLET, JSON.stringify({
+      address: wallet.getAddressString(),
+      publicKey: wallet.getPublicKeyString(),
+    })),
+    () => EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
+  ]);
 };
