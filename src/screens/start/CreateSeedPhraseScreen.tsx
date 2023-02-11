@@ -44,11 +44,15 @@ const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => 
   return (
     <ScreenLayout
       title="access.createSeedPhrase.title"
+      waitUntilNavigationFinish
       bigTitle
       hasFooterBanner
       scroll
     >
-      <SeedPhraseCard scroll>
+      <SeedPhraseCard
+        scroll
+        persistentScrollbar
+      >
         {seedPhrase.map((word, index) => (
           <WordPill
             noI18n

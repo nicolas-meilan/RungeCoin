@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { ActivityIndicator, Keyboard } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { EventMapCore, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import styled from 'styled-components/native';
+import styled, { useTheme } from 'styled-components/native';
 
 import Icon from './Icon';
 import KeyboardAvoidingView from './KeyboardAvoidingView';
@@ -20,6 +20,7 @@ type ScreenLayoutProps = {
   hasBack?: boolean;
   hasFooterBanner?: boolean;
   keyboardAvoidingView?: boolean;
+  waitUntilNavigationFinish?: boolean;
   goBack?: () => void;
 };
 
@@ -66,6 +67,12 @@ const ScrollViewWrapper = styled.ScrollView`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
+const LoadingWrapper = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
 const ScreenLayout = ({
   children,
   title,
@@ -75,9 +82,13 @@ const ScreenLayout = ({
   hasFooterBanner = false,
   bigTitle = false,
   keyboardAvoidingView = false,
+  waitUntilNavigationFinish = false,
 }: ScreenLayoutProps) => {
+  const theme = useTheme();
   const navigation = useNavigation();
+
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [canRender, setCanRender] = useState(!waitUntilNavigationFinish);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -86,6 +97,12 @@ const ScreenLayout = ({
     const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
       setIsKeyboardOpen(false);
     });
+    if (!canRender) {
+      const navigationListenerSuscription = navigation.addListener('transitionEnd' as keyof EventMapCore<any>, () => {
+        setCanRender(true);
+        navigationListenerSuscription();
+      });
+    }
 
     return () => {
       showSubscription.remove();
@@ -110,6 +127,12 @@ const ScreenLayout = ({
     </KeyboardAvoidingView>
   ) : contentScrollCondition;
 
+  const loadingScreen = (
+    <LoadingWrapper>
+      <ActivityIndicator color={theme.colors.primary} size={80} />
+    </LoadingWrapper>
+  );
+
   return (
     <ScreenWrapper>
       <StyledSafeArea>
@@ -120,7 +143,7 @@ const ScreenLayout = ({
           </Header>
         )}
         {hasBigTitle && <Title title={title} />}
-        {content}
+        {canRender ? content : loadingScreen}
         {hasFooterBanner && !isKeyboardOpen && (
           <Footer>
             <FooterText text="common.appName" />

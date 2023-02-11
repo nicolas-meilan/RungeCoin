@@ -13,6 +13,7 @@ type CardProps = {
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
   scroll?: boolean;
+  persistentScrollbar?: boolean;
 };
 
 const Item = styled.View`
@@ -42,9 +43,10 @@ const ChildrenItemWrapper = styled.View`
 const Card = ({
   children,
   style,
+  contentContainerStyle,
   withSeparator = false,
   scroll = false,
-  contentContainerStyle,
+  persistentScrollbar = false,
 }: CardProps) => {
 
   const withoutSeparations = !withSeparator || !Array.isArray(children);
@@ -64,7 +66,11 @@ const Card = ({
     );
 
   const contentConditionalScroll = scroll ? (
-    <ScrollView contentContainerStyle={contentContainerStyle} nestedScrollEnabled>
+    <ScrollView
+      contentContainerStyle={contentContainerStyle}
+      persistentScrollbar={persistentScrollbar}
+      nestedScrollEnabled
+    >
       {content}
     </ScrollView>
   ) : content;

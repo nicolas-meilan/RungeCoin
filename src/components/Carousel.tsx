@@ -125,7 +125,7 @@ ref: React.Ref<CarouselRef>) => {
 
   const onChangeItem = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
     const maxIndex = viewableItems.length - 1;
-    setCurrentIndex(viewableItems?.[maxIndex].index || 0);
+    setCurrentIndex(viewableItems?.[maxIndex]?.index || 0);
   }, []);
 
   return (

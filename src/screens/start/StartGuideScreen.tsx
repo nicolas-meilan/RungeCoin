@@ -49,6 +49,7 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
       hasBack={false}
       bigTitle
       hasFooterBanner
+      waitUntilNavigationFinish
     >
       <Carousel
         ref={carouselRef}
