@@ -18,8 +18,13 @@ export type CarouselRef = {
   prev: () => number;
 };
 
+type CarouselItem = {
+  key?: string;
+  component: JSX.Element;
+};
+
 type CarouselProps = {
-  items: JSX.Element[];
+  items: CarouselItem[];
   auto?: boolean;
   loop?: boolean;
   timePerItem?: number;
@@ -117,7 +122,7 @@ ref: React.Ref<CarouselRef>) => {
 
   const renderItem = ({ item }: { item: unknown } ) => (
     <Item style={{ width: itemWidth }}>
-      {item as JSX.Element}
+      {(item as CarouselItem).component}
     </Item>
   );
 
@@ -136,7 +141,7 @@ ref: React.Ref<CarouselRef>) => {
         showsHorizontalScrollIndicator={false}
         data={items}
         renderItem={renderItem}
-        keyExtractor={(item, index) => `CAROUSEL_${item}_${index}`}
+        keyExtractor={(item, index) => `CAROUSEL_${(item as CarouselItem).key}_${index}`}
         onLayout={onListLayout}
         snapToInterval={itemWidth}
         onViewableItemsChanged={onChangeItem}

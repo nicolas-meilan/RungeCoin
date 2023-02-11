@@ -35,18 +35,21 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
     carouselRef?.current?.next();
   };
 
-  const carouselItems = useMemo(() => [(
-    <Message text="access.startGuide.guide1" svg={wallet} />
-  ), (
-    <Message text="access.startGuide.guide2" svg={keyAndLock} />
-  ), (
-    <Message text="access.startGuide.guide3" svg={congrats} />
-  )], []);
+  const carouselItems = useMemo(() => [{
+    key: 'access.startGuide.guide1',
+    component: <Message text="access.startGuide.guide1" svg={wallet} />,
+  }, {
+    key: 'access.startGuide.guide2',
+    component: <Message text="access.startGuide.guide2" svg={keyAndLock} />,
+  }, {
+    key: 'access.startGuide.guide3',
+    component: <Message text="access.startGuide.guide3" svg={congrats} />,
+  },
+  ], []);
 
   return (
     <ScreenLayout
       title="access.startGuide.title"
-      hasBack={false}
       bigTitle
       hasFooterBanner
       waitUntilNavigationFinish
