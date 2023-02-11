@@ -69,6 +69,12 @@
       "@utils/*": [
         "./src/utils/*"
       ],
+      "@assets": [
+        "./assets"
+      ],
+      "@assets/*": [
+        "./assets/*"
+      ],
     },
     "moduleResolution": "node",
     "noEmit": true,

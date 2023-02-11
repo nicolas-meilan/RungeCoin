@@ -5,8 +5,17 @@
     "next": "Siguiente"
   },
   "access": {
+    "welcome": {
+      "title": "¡Bienvenido a la billetera RungeCoin!",
+      "welcomeText": "Con esta billetera podrás almacenar tus **ethers** de forma anónima y segura.\n**¡El mundo descentralizado te espera!**",
+      "importWalletButton": "Ya tengo una billetera",
+      "createWalletButton": "Quiero crear una nueva billetera"
+    },
     "startGuide": {
-      "title": "Genera una nueva billetera"
+      "title": "Genera una nueva billetera",
+      "guide1": "Para acceder a una billetera son necesarias las **palabras secretas**, estas actúan de **llave**.\nUna vez obtenidas tus palabras, te pediremos una contraseña para que puedas abrir tu billetera de una forma más simple.",
+      "guide2": "**Nosotros no almacenamos tus palabras secretas**\n\nGuardalas en un lugar seguro. No las pierdas ni compartas con nadie.",
+      "guide3": "**¡Disfruta de tu nueva billetera!**\n\nEn caso de perder acceso a la misma, se puede recuperar usando las **palabras secretas**."
     },
     "createSeedPhrase": {
       "title": "Palabras secretas de recuperación",

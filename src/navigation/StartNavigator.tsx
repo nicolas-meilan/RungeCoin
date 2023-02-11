@@ -9,8 +9,10 @@ import {
 import CreateSeedPhraseScreen from '@screens/start/CreateSeedPhraseScreen';
 import RequestSeedPhraseScreen from '@screens/start/RequestSeedPhraseScreen';
 import StartGuideScreen from '@screens/start/StartGuideScreen';
+import WelcomeScreen from '@screens/start/WelcomeScreen';
 
 export type StartNavigatorType = {
+  [ScreenName.welcome]: undefined;
   [ScreenName.startGuide]: undefined;
   [ScreenName.requestSeedPhrase]: undefined;
   [ScreenName.createSeedPhrase]: undefined;
@@ -22,6 +24,9 @@ type ScreenProps = {
 };
 
 const screens: ScreenProps[] = [{
+  name: ScreenName.welcome,
+  component: WelcomeScreen,
+}, {
   name: ScreenName.startGuide,
   component: StartGuideScreen,
 }, {

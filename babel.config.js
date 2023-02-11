@@ -16,6 +16,7 @@ module.exports = function (api) {
             '@web3': './src/web3',
             '@utils': './src/utils',
             '@http': './src/http',
+            '@assets': './assets',
           },
           extensions: [
             '.ios.ts',

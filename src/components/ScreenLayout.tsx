@@ -7,8 +7,10 @@ import styled from 'styled-components/native';
 
 import Icon from './Icon';
 import KeyboardAvoidingView from './KeyboardAvoidingView';
+import Svg from './Svg';
 import Text from './Text';
 import Title from './Title';
+import logo from '@assets/logo.svg';
 
 type ScreenLayoutProps = {
   children: JSX.Element | JSX.Element[];
@@ -52,6 +54,7 @@ const HeaderTitle = styled(Text)`
 
 const FooterText = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
+  margin-right: ${({ theme }) => theme.spacing(1)};
 `;
 
 const BaseWrapper = styled.View`
@@ -119,7 +122,10 @@ const ScreenLayout = ({
         {hasBigTitle && <Title title={title} />}
         {content}
         {hasFooterBanner && !isKeyboardOpen && (
-          <Footer><FooterText text="common.appName" /></Footer>
+          <Footer>
+            <FooterText text="common.appName" />
+            <Svg svg={logo} size={24} />
+          </Footer>
         )}
       </StyledSafeArea>
     </ScreenWrapper>

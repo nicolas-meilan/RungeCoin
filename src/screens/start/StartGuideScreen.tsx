@@ -1,25 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
+import congrats from '@assets/images/congratsPerson.svg';
+import keyAndLock from '@assets/images/keyAndLock.svg';
+import wallet from '@assets/images/wallet.svg';
 import Button, { ButtonType } from '@components/Button';
 import Carousel, { CarouselRef } from '@components/Carousel';
+import Message from '@components/Message';
 import ScreenLayout from '@components/ScreenLayout';
-import Text from '@components/Text';
 import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
 
 const StyledButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
-
-const Item = styled.View`
-  flex: 1;
-  border: 1px solid red;
-`;
-
-const ItemText = styled(Text)``;
 
 type StartGuideScreenProps = NativeStackScreenProps<StartNavigatorType, ScreenName.startGuide>;
 
@@ -39,19 +35,13 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
     carouselRef?.current?.next();
   };
 
-  const carouselItems = [(
-    <Item>
-      <ItemText text='hola' />
-    </Item>
+  const carouselItems = useMemo(() => [(
+    <Message text="access.startGuide.guide1" svg={wallet} />
   ), (
-    <Item>
-      <ItemText text='hola2' />
-    </Item>
+    <Message text="access.startGuide.guide2" svg={keyAndLock} />
   ), (
-    <Item>
-      <ItemText text='hola3' />
-    </Item>
-  )];
+    <Message text="access.startGuide.guide3" svg={congrats} />
+  )], []);
 
   return (
     <ScreenLayout

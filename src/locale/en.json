@@ -5,8 +5,17 @@
     "next": "Next"
   },
   "access": {
+    "welcome": {
+      "title": "Welcome to the RungeCoin wallet!",
+      "welcomeText": "With this wallet you can store your **ethers** anonymously and securely.\n**The decentralized world awaits you!**",
+      "importWalletButton": "I already have a wallet",
+      "createWalletButton": "I want to create a new wallet"
+    },
     "startGuide": {
-      "title": "Create a new wallet"
+      "title": "Create a new wallet",
+      "guide1": "To access a wallet the **secret words** are necessary, these act as **key**.\nOnce you have obtained your words, we will ask you for a password so that you can open your wallet in a more simple.",
+      "guide2": "**We don't store your secret words**\n\nKeep them in a safe place. You don't lose them or share them with anyone.",
+      "guide3": "Enjoy your new wallet!\n\nIn case you lose access to it, it can be recovered using the **secret words**."
     },
     "createSeedPhrase": {
       "title": "Secret recovery words",

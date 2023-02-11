@@ -96,6 +96,10 @@
           {
             "pattern": "@web3/**",
             "group": "internal"
+          },
+          {
+            "pattern": "@assets/**",
+            "group": "internal"
           }
         ],
         "pathGroupsExcludedImportTypes": [],

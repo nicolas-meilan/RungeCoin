@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
-import Button from '@components/Button';
+import Button, { ButtonType } from '@components/Button';
 import Card from '@components/Card';
 import Pill, { Type } from '@components/Pill';
 import ScreenLayout from '@components/ScreenLayout';
@@ -18,7 +18,7 @@ const SeedPhraseCard = styled(Card).attrs({
     flexWrap: 'wrap',
   },
 })`
-  max-height: 400px;
+  max-height: 350px;
 `;
 
 const WordPill = styled(Pill)`
@@ -28,7 +28,7 @@ const WordPill = styled(Pill)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
 `;
 
-const Message = styled(Text)`
+const MessageText = styled(Text)`
   text-align: center;
   margin: ${({ theme }) => theme.spacing(6)} 0;
   font-size: ${({ theme }) => theme.fonts.size[18]};
@@ -58,8 +58,12 @@ const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => 
           />
         ))}
       </SeedPhraseCard>
-      <Message text="access.createSeedPhrase.warningMessage"/>
-      <Button text="common.continue" onPress={onPressContinue}/>
+      <MessageText text="access.createSeedPhrase.warningMessage" />
+      <Button
+        text="common.continue"
+        onPress={onPressContinue}
+        type={ButtonType.TERTIARY}
+      />
     </ScreenLayout>
   );
 };
