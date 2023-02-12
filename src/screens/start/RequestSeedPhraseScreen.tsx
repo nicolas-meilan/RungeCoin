@@ -105,15 +105,6 @@ const RequestSeedPhraseScreen = () => {
     }
   };
 
-  const test = () => {
-    const wallet = createWalletFromSeedPhrase('prosper turn volcano toilet figure rail oyster ship spider today escape goddess');
-
-    console.log({
-      address: wallet.getAddressString(),
-      publicKey: wallet.getPublicKeyString(),
-    })
-  };
-
   const disableButton = passwordError || seedPhraseError || !seedPhrase || !password;
 
   return (
@@ -155,10 +146,6 @@ const RequestSeedPhraseScreen = () => {
         disabled={disableButton}
         onPress={onPressContinue}
         loading={storageLoading}
-      />
-      <Button
-        text="access.requestSeedPhrase.continueButton"
-        onPress={test}
       />
     </ScreenLayout>
   );

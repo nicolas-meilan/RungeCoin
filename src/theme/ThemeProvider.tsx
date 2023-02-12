@@ -3,7 +3,7 @@ import React from 'react';
 import { ThemeProvider as ThemeProviderSC } from 'styled-components/native';
 
 import themes, { AvailableThemes } from './themes';
-import useTheme from '@hooks/useTheme';
+import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import { isDarkThemeEnabled } from '@system/deviceInfo';
 
 type ThemeProviderProps = {
@@ -11,7 +11,7 @@ type ThemeProviderProps = {
 };
 
 const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const { themeMode } = useTheme();
+  const { themeMode } = useThemeConfiguration();
 
   const deviceThemeMode = isDarkThemeEnabled() ? AvailableThemes.DARK : AvailableThemes.LIGHT;
 

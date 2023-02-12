@@ -1,23 +1,20 @@
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useTheme as useThemeSC } from 'styled-components/native';
 
-import { AvailableThemes, Theme } from '../theme/themes';
+import { AvailableThemes } from '../theme/themes';
 import { isDarkThemeEnabled } from '@system/deviceInfo';
 import StorageKeys from '@system/storageKeys';
 
 const THEME_QUERY_KEY = 'theme';
 
 type UseThemeReturn = {
-  theme: Theme;
   themeMode?: AvailableThemes | null;
   setThemeMode: (theme: AvailableThemes) => void;
   themeLoading?: boolean;
   initializeTheme: () => void;
 };
 
-const useTheme = (): UseThemeReturn => {
-  const theme = useThemeSC();
+const useThemeConfiguration = (): UseThemeReturn => {
   const queryClient = useQueryClient();
   const { getItem, setItem } = useAsyncStorage(StorageKeys.THEME);
 
@@ -58,7 +55,6 @@ const useTheme = (): UseThemeReturn => {
   };
 
   return {
-    theme,
     themeMode,
     setThemeMode,
     themeLoading,
@@ -66,4 +62,4 @@ const useTheme = (): UseThemeReturn => {
   };
 };
 
-export default useTheme;
+export default useThemeConfiguration;
