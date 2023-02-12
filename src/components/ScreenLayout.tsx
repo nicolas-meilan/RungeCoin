@@ -127,6 +127,7 @@ const ScreenLayout = ({
     </KeyboardAvoidingView>
   ) : contentScrollCondition;
 
+  // TODO better loading (custom skeleton per screen and one by default)
   const loadingScreen = (
     <LoadingWrapper>
       <ActivityIndicator color={theme.colors.primary} size={80} />

@@ -1,5 +1,17 @@
 import React from 'react';
 
-const HomeScreen = () => <></>;
+import ScreenLayout from '@components/ScreenLayout';
+
+const HomeScreen = () => {
+  return (
+    <ScreenLayout
+      title='main.home.title'
+      bigTitle
+      hasBack={false}
+    >
+      <></>
+    </ScreenLayout>
+  );
+};
 
 export default HomeScreen;

@@ -22,7 +22,7 @@ const Root = () => {
     setAppReady(canStart);
   }, [i18nLoading, themeMode]);
 
-  if (!appReady) return <></>; // TODO
+  if (!appReady) return <></>; // TODO better loading
 
   return (
     <NavigationContainer>

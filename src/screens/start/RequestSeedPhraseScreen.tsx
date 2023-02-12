@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
 import ScreenLayout from '@components/ScreenLayout';
 import TextInput from '@components/TextInput';
+import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import StorageKeys from '@system/storageKeys';
 import { PASSWORD_REGEX } from '@utils/text';
-import { SEED_PHRASE_VALID_LENGTH, isValidSeedPhrase, formatSeedPhrase, createWalletFromSeedPhrase, storageWallet } from '@web3/wallet';
+import { delay } from '@utils/time';
+import {
+  SEED_PHRASE_VALID_LENGTH,
+  isValidSeedPhrase,
+  formatSeedPhrase,
+  createWalletFromSeedPhrase,
+} from '@web3/wallet';
 
 const PasswordInput = styled(TextInput)`
   margin-top: ${({ theme }) => theme.spacing(4)};
@@ -20,9 +29,16 @@ const BASE_PASS_ERR = 'access.requestSeedPhrase.inputs.passwordError';
 const BASE_SEED_ERR = 'access.requestSeedPhrase.inputs.seedPhraseError';
 
 const RequestSeedPhraseScreen = () => {
+  const {
+    walletPublicValues,
+    setWalletPublicValues,
+  } = useWalletPublicValues();
+
   const [seedPhrase, setSeedPhrase] = useState('');
   const [password, setPassword] = useState('');
-  const [storageLoading, setStorageLoading] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [isEncryptedStorageFinished, setIsEncryptedStorageFinished] = useState(false);
 
   const [seedPhraseError, setSeedPhraseError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -34,6 +50,10 @@ const RequestSeedPhraseScreen = () => {
   const [seedPhraseErrorMessage, setSeedPhraseErrorMessage] = useState(BASE_SEED_ERR);
 
   const [seedPhraseHidden, setSeedPhraseHidden] = useState(true);
+
+  useEffect(() => {
+    if (isEncryptedStorageFinished && walletPublicValues) setLoading(false);
+  }, [walletPublicValues, isEncryptedStorageFinished]);
 
   const checkSeedPhrase = (seedPhraseToCheck: string = seedPhrase) => {
     if (!seedPhraseToCheck) {
@@ -95,14 +115,21 @@ const RequestSeedPhraseScreen = () => {
     const errors = [!seedPhrase, !checkSeedPhrase(), !password, !checkPassword()];
     if (errors.some((err) => err)) return;
 
-    setStorageLoading(true);
-    try {
-      const wallet = createWalletFromSeedPhrase(seedPhrase);
-      await storageWallet(wallet);
-      setStorageLoading(false);
-    } catch (error) {
-      setStorageLoading(false);
-    }
+    setLoading(true);
+    await delay(0.001); // createWalletFromSeedPhrase freeze the app, so we need a delay to impact the loading
+    const wallet = createWalletFromSeedPhrase(seedPhrase);
+
+    setWalletPublicValues({
+      address: wallet.getAddressString(),
+      publicKey: wallet.getPublicKeyString(),
+    });
+
+    await Promise.all([
+      EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
+      EncryptedStorage.setItem(StorageKeys.PASSWORD, password),
+    ]);
+
+    setIsEncryptedStorageFinished(true);
   };
 
   const disableButton = passwordError || seedPhraseError || !seedPhrase || !password;
@@ -145,7 +172,7 @@ const RequestSeedPhraseScreen = () => {
         text="access.requestSeedPhrase.continueButton"
         disabled={disableButton}
         onPress={onPressContinue}
-        loading={storageLoading}
+        loading={loading}
       />
     </ScreenLayout>
   );
