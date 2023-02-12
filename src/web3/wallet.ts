@@ -24,7 +24,7 @@ export const createWalletFromSeedPhrase = (mnemonic: string, index: number = 0) 
 
   const seed = mnemonicToSeedSync(mnemonic);
   const root = hdkey.fromMasterSeed(seed);
-  const wallet = root.derivePath(`${ETH_DERIVATION_PATH}${walletIndex}`).getWallet();
+  const wallet = root.derivePath(`${ETH_DERIVATION_PATH}/${walletIndex}`).getWallet();
 
   return wallet;
 };
