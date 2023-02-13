@@ -24,6 +24,7 @@
     "requestSeedPhrase": {
       "title": "Enter your secret recovery words",
       "continueButton": "Access the wallet",
+      "useBiometrics": "Use biometric data",
       "inputs": {
         "seedPhrase": "Secret recovery words",
         "seedPhrasePH": "Enter your secret recovery words",

@@ -130,7 +130,7 @@ const ScreenLayout = ({
   // TODO better loading (custom skeleton per screen and one by default)
   const loadingScreen = (
     <LoadingWrapper>
-      <ActivityIndicator color={theme.colors.primary} size={80} />
+      <ActivityIndicator color={theme.colors.info} size={80} />
     </LoadingWrapper>
   );
 

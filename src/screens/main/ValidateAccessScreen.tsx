@@ -10,7 +10,7 @@ import TextInput from '@components/TextInput';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import StorageKeys from '@system/storageKeys';
-import { hashFrom } from '@utils/security';
+import { hashFrom, obtainBiometrics } from '@utils/security';
 
 const PasswordInput = styled(TextInput)`
   margin-bottom: ${({ theme }) => theme.spacing(4)};
@@ -22,15 +22,25 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   const [password, setPassword] = useState('');
   const [userPassword, setUserPassword] = useState<string | null>(null);
 
-  useEffect(() => {
-    EncryptedStorage.getItem(StorageKeys.PASSWORD)
-      .then((newUserPassword) => setUserPassword(newUserPassword));
-  }, []);
-
   const goToHome = () => navigation.reset({
     index: 0,
     routes: [{ name: ScreenName.home }],
   });
+
+  const validateWithBiometrics = async () => {
+    try {
+      const biometicsEnabled = await obtainBiometrics();
+      if (!biometicsEnabled) return;
+
+      goToHome();
+    } catch (_) {}
+  };
+
+  useEffect(() => {
+    validateWithBiometrics();
+    EncryptedStorage.getItem(StorageKeys.PASSWORD)
+      .then((newUserPassword) => setUserPassword(newUserPassword));
+  }, []);
 
   const onPressContinue = () => {
     const passwordOk = userPassword === hashFrom(password);

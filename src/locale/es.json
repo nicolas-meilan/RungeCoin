@@ -24,6 +24,7 @@
     "requestSeedPhrase": {
       "title": "Ingresa tus palabras secretas de recuperación",
       "continueButton": "Acceder a la billetera",
+      "useBiometrics": "Usar datos biometricos",
       "inputs": {
         "seedPhrase": "Palabras secretas de recuperación",
         "seedPhrasePH": "Ingresa tus palabras de recuperación",

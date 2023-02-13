@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 
+import { DEV_WALLET_SEED_PHRASE } from '@env';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
 import ScreenLayout from '@components/ScreenLayout';
+import Switch from '@components/Switch';
 import TextInput from '@components/TextInput';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import StorageKeys from '@system/storageKeys';
+import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/constants';
-import { hashFrom } from '@utils/security';
+import { deviceHasBiometrics, hashFrom, toggleBiometrics } from '@utils/security';
 import { delay } from '@utils/time';
 import {
   SEED_PHRASE_VALID_LENGTH,
@@ -19,7 +22,7 @@ import {
 } from '@web3/wallet';
 
 const PasswordInput = styled(TextInput)`
-  margin-top: ${({ theme }) => theme.spacing(4)};
+  margin: ${({ theme }) => theme.spacing(4)} 0;
 `;
 
 const Form = styled.View`
@@ -29,13 +32,15 @@ const Form = styled.View`
 const BASE_PASS_ERR = 'access.requestSeedPhrase.inputs.passwordError';
 const BASE_SEED_ERR = 'access.requestSeedPhrase.inputs.seedPhraseError';
 
+const baseSeedPhrase = isDev() ? DEV_WALLET_SEED_PHRASE : '';
+
 const RequestSeedPhraseScreen = () => {
   const {
     walletPublicValues,
     setWalletPublicValues,
   } = useWalletPublicValues();
 
-  const [seedPhrase, setSeedPhrase] = useState('');
+  const [seedPhrase, setSeedPhrase] = useState(baseSeedPhrase);
   const [password, setPassword] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -51,6 +56,13 @@ const RequestSeedPhraseScreen = () => {
   const [seedPhraseErrorMessage, setSeedPhraseErrorMessage] = useState(BASE_SEED_ERR);
 
   const [seedPhraseHidden, setSeedPhraseHidden] = useState(true);
+
+  const [canUseBiometrics, setCanUSeBiometrics] = useState(true); // TODO
+  const [enableBiometricsAuth, setEnableBiometricsAuth] = useState(false);
+
+  useEffect(() => {
+    deviceHasBiometrics().then((hasBiometrics) => setCanUSeBiometrics(!hasBiometrics));
+  }, []);
 
   useEffect(() => {
     if (isEncryptedStorageFinished && walletPublicValues) setLoading(false);
@@ -112,6 +124,8 @@ const RequestSeedPhraseScreen = () => {
 
   const onPressToggleVisibilitySeedPhrase = () => setSeedPhraseHidden(!seedPhraseHidden);
 
+  const toggleBiometricsSwitch = () => setEnableBiometricsAuth(!enableBiometricsAuth);
+
   const onPressContinue = async () => {
     const errors = [!seedPhrase, !checkSeedPhrase(), !password, !checkPassword()];
     if (errors.some((err) => err)) return;
@@ -128,6 +142,7 @@ const RequestSeedPhraseScreen = () => {
     await Promise.all([
       EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
       EncryptedStorage.setItem(StorageKeys.PASSWORD, hashFrom(password)),
+      (() => enableBiometricsAuth && toggleBiometrics(true))(),
     ]);
 
     setIsEncryptedStorageFinished(true);
@@ -167,6 +182,12 @@ const RequestSeedPhraseScreen = () => {
           onBlur={onPasswordBlur}
           error={passwordShowError && passwordError}
           errorMessage={passwordErrorMessage}
+        />
+        <Switch
+          label="access.requestSeedPhrase.useBiometrics"
+          value={enableBiometricsAuth}
+          disabled={canUseBiometrics}
+          onChange={toggleBiometricsSwitch}
         />
       </Form>
       <Button
