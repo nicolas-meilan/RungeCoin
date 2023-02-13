@@ -16,9 +16,9 @@ const PasswordInput = styled(TextInput)`
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
-type RequestPasswordScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.requestPassword>;
+type ValidateAccessScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.validateAccess>;
 
-const RequestPasswordScreen = ({ navigation }: RequestPasswordScreenProps) => {
+const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   const [password, setPassword] = useState('');
   const [userPassword, setUserPassword] = useState<string | null>(null);
 
@@ -42,14 +42,14 @@ const RequestPasswordScreen = ({ navigation }: RequestPasswordScreenProps) => {
 
   return (
     <ScreenLayout
-      title='main.requestPassword.title'
+      title='main.validateAccess.title'
       bigTitle
       hasBack={false}
       hasFooterBanner
     >
       <PasswordInput
-        label="main.requestPassword.inputs.password"
-        placeholder="main.requestPassword.inputs.passwordPH"
+        label="main.validateAccess.inputs.password"
+        placeholder="main.validateAccess.inputs.passwordPH"
         type="password"
         value={password}
         onChangeText={(newPassword: string) => setPassword(newPassword)}
@@ -64,4 +64,4 @@ const RequestPasswordScreen = ({ navigation }: RequestPasswordScreenProps) => {
   );
 };
 
-export default RequestPasswordScreen;
+export default ValidateAccessScreen;
