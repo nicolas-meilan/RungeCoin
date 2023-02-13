@@ -34,5 +34,14 @@
         "seedPhraseErrorLength": "La cantidad de palabras secretas es incorrecta."
       }
     }
+  },
+  "main": {
+    "requestPassword": {
+      "title": "Ingresa tu contraseña para acceder a la billetera",
+      "inputs": {
+        "password": "Ingresa tu contraseña",
+        "passwordPH": "Contraseña"
+      }
+    }
   }
 }

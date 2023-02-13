@@ -4,8 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AvailableThemes } from '../theme/themes';
 import { isDarkThemeEnabled } from '@system/deviceInfo';
 import StorageKeys from '@system/storageKeys';
-
-const THEME_QUERY_KEY = 'theme';
+import { ReactQueryKeys } from '@utils/constants';
 
 type UseThemeReturn = {
   themeMode?: AvailableThemes | null;
@@ -25,7 +24,7 @@ const useThemeConfiguration = (): UseThemeReturn => {
   };
 
   const { data: themeMode, isLoading: themeLoading } = useQuery({
-    queryKey: [THEME_QUERY_KEY],
+    queryKey: [ReactQueryKeys.THEME],
     queryFn: getCurrentTheme,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
@@ -39,12 +38,12 @@ const useThemeConfiguration = (): UseThemeReturn => {
   };
 
   const { mutate: mutateTheme } = useMutation({
-    mutationKey: [THEME_QUERY_KEY],
+    mutationKey: [ReactQueryKeys.THEME],
     mutationFn: setStorageTheme,
   });
 
   const setThemeMode = (newThemeMode: AvailableThemes) => mutateTheme(newThemeMode, {
-    onSuccess: (savedThemeMode) => queryClient.setQueryData([THEME_QUERY_KEY], savedThemeMode),
+    onSuccess: (savedThemeMode) => queryClient.setQueryData([ReactQueryKeys.THEME], savedThemeMode),
   });
 
   const initializeTheme = () => {

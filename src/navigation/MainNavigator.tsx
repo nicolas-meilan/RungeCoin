@@ -7,8 +7,10 @@ import {
   screenOptions,
 } from './constants';
 import HomeScreen from '@screens/main/HomeScreen';
+import RequestPasswordScreen from '@screens/main/RequestPasswordScreen';
 
 export type MainNavigatorType = {
+  [ScreenName.requestPassword]: undefined;
   [ScreenName.home]: undefined;
 };
 
@@ -18,6 +20,9 @@ type ScreenProps = {
 };
 
 const screens: ScreenProps[] = [{
+  name: ScreenName.requestPassword,
+  component: RequestPasswordScreen,
+}, {
   name: ScreenName.home,
   component: HomeScreen,
 }];

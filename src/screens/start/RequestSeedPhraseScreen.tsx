@@ -8,12 +8,13 @@ import ScreenLayout from '@components/ScreenLayout';
 import TextInput from '@components/TextInput';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import StorageKeys from '@system/storageKeys';
-import { PASSWORD_REGEX } from '@utils/text';
+import { PASSWORD_REGEX } from '@utils/constants';
+import { hashFrom } from '@utils/security';
 import { delay } from '@utils/time';
 import {
   SEED_PHRASE_VALID_LENGTH,
-  isValidSeedPhrase,
   formatSeedPhrase,
+  isValidSeedPhrase,
   createWalletFromSeedPhrase,
 } from '@web3/wallet';
 
@@ -126,7 +127,7 @@ const RequestSeedPhraseScreen = () => {
 
     await Promise.all([
       EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
-      EncryptedStorage.setItem(StorageKeys.PASSWORD, password),
+      EncryptedStorage.setItem(StorageKeys.PASSWORD, hashFrom(password)),
     ]);
 
     setIsEncryptedStorageFinished(true);

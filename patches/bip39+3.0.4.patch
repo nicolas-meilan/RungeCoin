@@ -2,10 +2,32 @@ diff --git a/node_modules/bip39/src/index.js b/node_modules/bip39/src/index.js
 index 91d1a72..f71d8c6 100644
 --- a/node_modules/bip39/src/index.js
 +++ b/node_modules/bip39/src/index.js
-@@ -1,5 +1,6 @@
+@@ -1,7 +1,8 @@
  "use strict";
  Object.defineProperty(exports, "__esModule", { value: true });
+-const createHash = require("create-hash");
+-const pbkdf2_1 = require("pbkdf2");
 +global.Buffer = global.Buffer || require('buffer').Buffer
- const createHash = require("create-hash");
- const pbkdf2_1 = require("pbkdf2");
++const RNCrypto = require("react-native-crypto");
++const createHash = RNCrypto.createHash;
  const randomBytes = require("randombytes");
+ const _wordlists_1 = require("./_wordlists");
+ let DEFAULT_WORDLIST = _wordlists_1._default;
+@@ -20,7 +21,7 @@ function pbkdf2Promise(password, saltMixin, iterations, keylen, digest) {
+                 return resolve(derivedKey);
+             }
+         };
+-        pbkdf2_1.pbkdf2(password, saltMixin, iterations, keylen, digest, callback);
++        RNCrypto.pbkdf2(password, saltMixin, iterations, keylen, digest, callback);
+     }));
+ }
+ function normalize(str) {
+@@ -52,7 +53,7 @@ function salt(password) {
+ function mnemonicToSeedSync(mnemonic, password) {
+     const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
+     const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
+-    return pbkdf2_1.pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
++    return RNCrypto.pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
+ }
+ exports.mnemonicToSeedSync = mnemonicToSeedSync;
+ function mnemonicToSeed(mnemonic, password) {

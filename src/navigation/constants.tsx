@@ -8,5 +8,6 @@ export enum ScreenName {
   createSeedPhrase = 'createSeedPhrase',
 
   // Main Stack
+  requestPassword = 'requestPassword',
   home = 'home',
 }

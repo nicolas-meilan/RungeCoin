@@ -34,5 +34,14 @@
         "seedPhraseErrorLength": "The number of secret words is incorrect."
       }
     }
+  },
+  "main": {
+    "requestPassword": {
+      "title": "Enter your password to access the wallet",
+      "inputs": {
+        "password": "Enter your password",
+        "passwordPH": "Password"
+      }
+    }
   }
 }

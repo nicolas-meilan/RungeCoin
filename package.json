@@ -26,6 +26,7 @@
     "constants-browserify": "^1.0.0",
     "dns.js": "^1.0.1",
     "domain-browser": "^1.2.0",
+    "ethereumjs-units": "^0.2.0",
     "ethereumjs-util": "^7.1.5",
     "ethereumjs-wallet": "^1.0.2",
     "events": "^1.1.1",

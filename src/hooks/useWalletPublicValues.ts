@@ -2,6 +2,7 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import StorageKeys from '@system/storageKeys';
+import { ReactQueryKeys } from '@utils/constants';
 
 type WalletPublicValues = {
   publicKey: string;
@@ -18,8 +19,6 @@ type UseWalletPublicValuesReturn = {
   removeWalletPublicValues: () => void;
   walletPublicValuesLoading: boolean;
 };
-
-const WALLET_PUBLIC_VALUES_KEY = 'wallet';
 
 const useWalletPublicValues = ({
   refetchOnMount,
@@ -40,7 +39,7 @@ const useWalletPublicValues = ({
     data: walletPublicValues,
     isLoading: walletPublicValuesLoading,
   } = useQuery({
-    queryKey: [WALLET_PUBLIC_VALUES_KEY],
+    queryKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     queryFn: getWalletFromStorage,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
@@ -54,21 +53,21 @@ const useWalletPublicValues = ({
   };
 
   const { mutate: mutateSetWallet } = useMutation({
-    mutationKey: [WALLET_PUBLIC_VALUES_KEY],
+    mutationKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     mutationFn: setWallet,
   });
 
   const setWalletPublicValues = (newWalletPublicValues: WalletPublicValues) => mutateSetWallet(newWalletPublicValues, {
-    onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
+    onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
   });
 
   const { mutate: mutateRemoveWallet } = useMutation({
-    mutationKey: [WALLET_PUBLIC_VALUES_KEY],
+    mutationKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     mutationFn: removeItem,
   });
 
   const removeWalletPublicValues = () => mutateRemoveWallet(undefined, {
-    onSuccess: () => queryClient.setQueryData([WALLET_PUBLIC_VALUES_KEY], null),
+    onSuccess: () => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], null),
   });
 
   return {
