@@ -63,7 +63,10 @@ const useBiometrics = (): UseBiometricsProps => {
 
     await toggleBiometrics(true);
     const grantAccess = await dispatchBiometrics(true);
-    if (!grantAccess) return biometricsEnabled;
+    if (!grantAccess) {
+      await toggleBiometrics(false);
+      return biometricsEnabled;
+    }
     await setItem(String(true));
 
     return true;
