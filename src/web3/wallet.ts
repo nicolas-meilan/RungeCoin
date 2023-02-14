@@ -1,9 +1,9 @@
+import { toBuffer } from '@ethereumjs/util';
 import {
   generateMnemonic,
   mnemonicToSeed,
   validateMnemonic,
 } from 'bip39';
-import { toBuffer } from 'ethereumjs-util';
 import Wallet, { hdkey } from 'ethereumjs-wallet';
 
 export const SEED_PHRASE_VALID_LENGTH = [12, 15, 18, 21, 24];
