@@ -1,6 +1,6 @@
 import {
   generateMnemonic,
-  mnemonicToSeedSync,
+  mnemonicToSeed,
   validateMnemonic,
 } from 'bip39';
 import { toBuffer } from 'ethereumjs-util';
@@ -19,10 +19,10 @@ export const isValidSeedPhrase = (seedPhrase: string) => validateMnemonic(seedPh
 
 export const formatSeedPhrase = (seedPhrase: string) => seedPhrase.trim().replace(/\s+/g, ' ');
 
-export const createWalletFromSeedPhrase = (mnemonic: string, index: number = 0) => {
+export const createWalletFromSeedPhrase = async (mnemonic: string, index: number = 0) => {
   const walletIndex = index > 0 ? index : 0;
 
-  const seed = mnemonicToSeedSync(mnemonic);
+  const seed = await mnemonicToSeed(mnemonic);
   const root = hdkey.fromMasterSeed(seed);
   const wallet = root.derivePath(`${ETH_DERIVATION_PATH}/${walletIndex}`).getWallet();
 

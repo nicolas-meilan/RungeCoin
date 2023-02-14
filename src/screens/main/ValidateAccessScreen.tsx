@@ -74,8 +74,9 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
     setPasswordError(false);
   };
 
-  const onPressContinue = () => {
-    const invalidPassword = userPassword !== hashFrom(password);
+  const onPressContinue = async () => {
+    const hashedPassword = await hashFrom(password);
+    const invalidPassword = userPassword !== hashedPassword;
     setPasswordError(invalidPassword);
     if (invalidPassword) return;
 

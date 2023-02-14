@@ -3,9 +3,9 @@ import React, { useMemo, useRef, useState } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
-import congrats from '@assets/images/congratsPerson.svg';
-import keyAndLock from '@assets/images/keyAndLock.svg';
-import wallet from '@assets/images/wallet.svg';
+import congrats from '@assets/images/congratsPerson.png';
+import keyAndLock from '@assets/images/keyAndLock.png';
+import wallet from '@assets/images/wallet.png';
 import Button, { ButtonType } from '@components/Button';
 import Carousel, { CarouselRef } from '@components/Carousel';
 import Message from '@components/Message';
@@ -37,13 +37,13 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
 
   const carouselItems = useMemo(() => [{
     key: 'access.startGuide.guide1',
-    component: <Message text="access.startGuide.guide1" svg={wallet} />,
+    component: <Message text="access.startGuide.guide1" image={wallet} />,
   }, {
     key: 'access.startGuide.guide2',
-    component: <Message text="access.startGuide.guide2" svg={keyAndLock} />,
+    component: <Message text="access.startGuide.guide2" image={keyAndLock} />,
   }, {
     key: 'access.startGuide.guide3',
-    component: <Message text="access.startGuide.guide3" svg={congrats} />,
+    component: <Message text="access.startGuide.guide3" image={congrats} />,
   },
   ], []);
 
@@ -52,7 +52,6 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
       title="access.startGuide.title"
       bigTitle
       hasFooterBanner
-      waitUntilNavigationFinish
     >
       <Carousel
         ref={carouselRef}

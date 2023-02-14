@@ -1,5 +1,4 @@
 import React, {
-  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -8,7 +7,8 @@ import React, {
 import type {
   FlatList,
   LayoutChangeEvent,
-  ViewToken,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from 'react-native';
 
 import styled from 'styled-components/native';
@@ -45,7 +45,7 @@ const CarouselList = styled.FlatList`
 `;
 
 const DotsWrapper = styled.View`
-  margin-top: ${({ theme }) => theme.spacing(2)};
+  margin-top: ${({ theme }) => theme.spacing(6)};
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -74,9 +74,8 @@ ref: React.Ref<CarouselRef>) => {
   const [autoEnd, setAutoEnd] = useState(!auto);
 
   const next = (): number => {
-    if (currentIndex >= items.length) return currentIndex;
+    if (currentIndex >= items.length - 1) return currentIndex;
     const nextIndex = currentIndex + 1;
-    setCurrentIndex(nextIndex);
     listRef.current?.scrollToIndex({ animated: true, index: nextIndex });
 
     return nextIndex;
@@ -85,7 +84,6 @@ ref: React.Ref<CarouselRef>) => {
   const prev = (): number => {
     if (!currentIndex) return currentIndex;
     const prevIndex = currentIndex - 1;
-    setCurrentIndex(prevIndex);
     listRef.current?.scrollToIndex({ animated: true, index: prevIndex });
 
     return prevIndex;
@@ -128,10 +126,11 @@ ref: React.Ref<CarouselRef>) => {
 
   const onListLayout = (event: LayoutChangeEvent) => setItemWidth(event.nativeEvent.layout.width);
 
-  const onChangeItem = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const maxIndex = viewableItems.length - 1;
-    setCurrentIndex(viewableItems?.[maxIndex]?.index || 0);
-  }, []);
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offset = event.nativeEvent.contentOffset.x;
+    
+    setCurrentIndex(Math.floor(offset / itemWidth));
+  };
 
   return (
     <Wrapper>
@@ -144,11 +143,14 @@ ref: React.Ref<CarouselRef>) => {
         keyExtractor={(item, index) => `CAROUSEL_${(item as CarouselItem).key}_${index}`}
         onLayout={onListLayout}
         snapToInterval={itemWidth}
-        onViewableItemsChanged={onChangeItem}
         snapToAlignment='center'
-        decelerationRate={0.5}
+        decelerationRate={0}
         scrollEnabled={autoEnd}
         onEndReached={onRenderLastItem}
+        onScroll={onScroll}
+        getItemLayout={(_, index) => (
+          { length: itemWidth, offset: itemWidth * index, index }
+        )}
       />
       <DotsWrapper>
         {items.map((item, index) => {

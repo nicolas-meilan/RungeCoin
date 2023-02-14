@@ -14,7 +14,6 @@ import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/constants';
 import { hashFrom } from '@utils/security';
-import { delay } from '@utils/time';
 import {
   SEED_PHRASE_VALID_LENGTH,
   formatSeedPhrase,
@@ -68,13 +67,12 @@ const ObtainAccessScreen = () => {
 
   const obtainAccess = async () => {
     setLoading(true);
-    
-    await delay(0.001); // createWalletFromSeedPhrase freeze the app, so we need a delay to impact the loading
-    const wallet = createWalletFromSeedPhrase(seedPhrase);
+
+    const wallet = await createWalletFromSeedPhrase(seedPhrase);
 
     await Promise.all([
       EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
-      EncryptedStorage.setItem(StorageKeys.PASSWORD, hashFrom(password)),
+      EncryptedStorage.setItem(StorageKeys.PASSWORD, await hashFrom(password)),
     ]);
 
     setWalletPublicValues({

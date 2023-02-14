@@ -1,5 +1,4 @@
-import { createHash } from 'crypto';
-
+import Aes from 'react-native-aes-crypto';
 import {
   getSupportedBiometryType,
   setGenericPassword,
@@ -10,7 +9,7 @@ import {
   AUTHENTICATION_TYPE,
 } from 'react-native-keychain';
 
-export const hashFrom = (toHash: string): string => createHash('sha256').update(toHash).digest('hex');
+export const hashFrom = (toHash: string) => Aes.sha256(toHash);
 
 export const deviceHasBiometrics = async () => {
   const biometricsType = await getSupportedBiometryType();
