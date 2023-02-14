@@ -34,6 +34,8 @@ const useBiometrics = (): UseBiometricsProps => {
     queryFn: getBiometricsEnabled,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
   });
 
   const dispatchBiometrics = async (ignoreEnableFlag = false) => {

@@ -44,6 +44,8 @@ const useWalletPublicValues = ({
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchOnMount,
+    staleTime: Infinity,
+    cacheTime: Infinity,
   });
 
   const setWallet = async (wallet: WalletPublicValues) => {

@@ -29,6 +29,8 @@ const useThemeConfiguration = (): UseThemeReturn => {
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    staleTime: Infinity,
+    cacheTime: Infinity,
   });
 
   const setStorageTheme = async (newThemeMode: AvailableThemes) => {
