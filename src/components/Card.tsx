@@ -17,7 +17,7 @@ type CardProps = {
   full?: boolean;
   touchable?: boolean;
   onPress?: () => void;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 const Item = styled.View`

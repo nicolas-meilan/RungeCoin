@@ -57,7 +57,7 @@ const useBiometrics = (): UseBiometricsProps => {
 
       await toggleBiometrics(false);
       await setItem(String(false));
-    
+
       return false;
     }
 
@@ -78,7 +78,8 @@ const useBiometrics = (): UseBiometricsProps => {
   });
 
   const setBiometrics = (enable: boolean) => mutateBiometrics(enable, {
-    onSuccess: () => queryClient.setQueryData([ReactQueryKeys.BIOMETRICS], enable),
+    onSuccess: (newEnable?: boolean) => (newEnable !== biometricsEnabled)
+      && queryClient.setQueryData([ReactQueryKeys.BIOMETRICS], newEnable),
   });
 
   return {

@@ -30,12 +30,12 @@ const Form = styled.View`
   height: 350px;
 `;
 
-const BASE_PASS_ERR = 'access.requestSeedPhrase.inputs.passwordError';
-const BASE_SEED_ERR = 'access.requestSeedPhrase.inputs.seedPhraseError';
+const BASE_PASS_ERR = 'access.obtainAccess.inputs.passwordError';
+const BASE_SEED_ERR = 'access.obtainAccess.inputs.seedPhraseError';
 
 const baseSeedPhrase = isDev() ? DEV_WALLET_SEED_PHRASE : '';
 
-const RequestSeedPhraseScreen = () => {
+const ObtainAccessScreen = () => {
   const {
     walletPublicValues,
     setWalletPublicValues,
@@ -43,7 +43,7 @@ const RequestSeedPhraseScreen = () => {
 
   const {
     setBiometrics,
-    biometricsEnabledLoading,
+    biometricsEnabled,
     deviceHasBiometrics,
   } = useBiometrics();
 
@@ -51,7 +51,6 @@ const RequestSeedPhraseScreen = () => {
   const [password, setPassword] = useState('');
 
   const [loading, setLoading] = useState(false);
-  const [isEncryptedStorageFinished, setIsEncryptedStorageFinished] = useState(false);
 
   const [seedPhraseError, setSeedPhraseError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -64,17 +63,41 @@ const RequestSeedPhraseScreen = () => {
 
   const [seedPhraseHidden, setSeedPhraseHidden] = useState(true);
 
-  const [canUseBiometrics, setCanUSeBiometrics] = useState(true); // TODO
+  const [canUseBiometrics, setCanUseBiometrics] = useState(false);
   const [enableBiometricsAuth, setEnableBiometricsAuth] = useState(false);
 
+  const obtainAccess = async () => {
+    setLoading(true);
+    
+    await delay(0.001); // createWalletFromSeedPhrase freeze the app, so we need a delay to impact the loading
+    const wallet = createWalletFromSeedPhrase(seedPhrase);
+
+    await Promise.all([
+      EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
+      EncryptedStorage.setItem(StorageKeys.PASSWORD, hashFrom(password)),
+    ]);
+
+    setWalletPublicValues({
+      address: wallet.getAddressString(),
+      publicKey: wallet.getPublicKeyString(),
+    });
+  };
+
   useEffect(() => {
-    deviceHasBiometrics().then((hasBiometrics) => setCanUSeBiometrics(!hasBiometrics));
+    deviceHasBiometrics().then((hasBiometrics) => setCanUseBiometrics(hasBiometrics));
   }, []);
 
   useEffect(() => {
-    const finishLoading = isEncryptedStorageFinished && walletPublicValues && !biometricsEnabledLoading;
-    if (finishLoading) setLoading(false);
-  }, [walletPublicValues, isEncryptedStorageFinished, biometricsEnabledLoading]);
+    if (walletPublicValues) setLoading(false);
+  }, [walletPublicValues]);
+
+  useEffect(() => {
+    const canAccess = enableBiometricsAuth
+    && biometricsEnabled
+    && password
+    && seedPhrase;
+    if (canAccess) obtainAccess();
+  }, [biometricsEnabled]);
 
   const checkSeedPhrase = (seedPhraseToCheck: string = seedPhrase) => {
     if (!seedPhraseToCheck) {
@@ -89,7 +112,7 @@ const RequestSeedPhraseScreen = () => {
     const invalidSeedLength = !SEED_PHRASE_VALID_LENGTH.includes(seedArray.length);
     let someError = false;
     if (invalidSeedLength) {
-      setSeedPhraseErrorMessage('access.requestSeedPhrase.inputs.seedPhraseErrorLength');
+      setSeedPhraseErrorMessage('access.obtainAccess.inputs.seedPhraseErrorLength');
       setSeedPhraseError(true);
       someError = true;
     }
@@ -138,38 +161,28 @@ const RequestSeedPhraseScreen = () => {
     const errors = [!seedPhrase, !checkSeedPhrase(), !password, !checkPassword()];
     if (errors.some((err) => err)) return;
 
-    setLoading(true);
-    await delay(0.001); // createWalletFromSeedPhrase freeze the app, so we need a delay to impact the loading
-    const wallet = createWalletFromSeedPhrase(seedPhrase);
+    if (enableBiometricsAuth) {
+      setBiometrics(true);
 
-    setWalletPublicValues({
-      address: wallet.getAddressString(),
-      publicKey: wallet.getPublicKeyString(),
-    });
+      return;
+    }
 
-    if (enableBiometricsAuth) setBiometrics(true);
-  
-    await Promise.all([
-      EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
-      EncryptedStorage.setItem(StorageKeys.PASSWORD, hashFrom(password)),
-    ]);
-
-    setIsEncryptedStorageFinished(true);
+    obtainAccess();
   };
 
   const disableButton = passwordError || seedPhraseError || !seedPhrase || !password;
 
   return (
     <ScreenLayout
-      title="access.requestSeedPhrase.title"
+      title="access.obtainAccess.title"
       bigTitle
       hasFooterBanner
       scroll
     >
       <Form>
         <TextInput
-          label="access.requestSeedPhrase.inputs.seedPhrase"
-          placeholder="access.requestSeedPhrase.inputs.seedPhrasePH"
+          label="access.obtainAccess.inputs.seedPhrase"
+          placeholder="access.obtainAccess.inputs.seedPhrasePH"
           type="password"
           autoCorrect={false}
           multiline={!seedPhraseHidden}
@@ -182,8 +195,8 @@ const RequestSeedPhraseScreen = () => {
           errorMessage={seedPhraseErrorMessage}
         />
         <PasswordInput
-          label="access.requestSeedPhrase.inputs.password"
-          placeholder="access.requestSeedPhrase.inputs.passwordPH"
+          label="access.obtainAccess.inputs.password"
+          placeholder="access.obtainAccess.inputs.passwordPH"
           type="password"
           value={password}
           onChangeText={onPasswordChange}
@@ -193,14 +206,14 @@ const RequestSeedPhraseScreen = () => {
           errorMessage={passwordErrorMessage}
         />
         <Switch
-          label="access.requestSeedPhrase.useBiometrics"
+          label="access.obtainAccess.useBiometrics"
           value={enableBiometricsAuth}
-          disabled={canUseBiometrics}
+          disabled={!canUseBiometrics}
           onChange={toggleBiometricsSwitch}
         />
       </Form>
       <Button
-        text="access.requestSeedPhrase.continueButton"
+        text="access.obtainAccess.continueButton"
         disabled={disableButton}
         onPress={onPressContinue}
         loading={loading}
@@ -209,4 +222,4 @@ const RequestSeedPhraseScreen = () => {
   );
 };
 
-export default RequestSeedPhraseScreen;
+export default ObtainAccessScreen;

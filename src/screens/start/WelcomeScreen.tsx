@@ -25,7 +25,7 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
     setComesFromStartFlow(true);
   }, []);
 
-  const goToImport = () => navigation.navigate(ScreenName.requestSeedPhrase);
+  const goToImport = () => navigation.navigate(ScreenName.obtainAccess);
   const goToCreate = () => navigation.navigate(ScreenName.startGuide);
 
   return (

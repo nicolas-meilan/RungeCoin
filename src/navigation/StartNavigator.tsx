@@ -7,14 +7,14 @@ import {
   screenOptions,
 } from './constants';
 import CreateSeedPhraseScreen from '@screens/start/CreateSeedPhraseScreen';
-import RequestSeedPhraseScreen from '@screens/start/RequestSeedPhraseScreen';
+import ObtainAccessScreen from '@screens/start/ObtainAccessScreen';
 import StartGuideScreen from '@screens/start/StartGuideScreen';
 import WelcomeScreen from '@screens/start/WelcomeScreen';
 
 export type StartNavigatorType = {
   [ScreenName.welcome]: undefined;
   [ScreenName.startGuide]: undefined;
-  [ScreenName.requestSeedPhrase]: undefined;
+  [ScreenName.obtainAccess]: undefined;
   [ScreenName.createSeedPhrase]: undefined;
 };
 
@@ -30,8 +30,8 @@ const screens: ScreenProps[] = [{
   name: ScreenName.startGuide,
   component: StartGuideScreen,
 }, {
-  name: ScreenName.requestSeedPhrase,
-  component: RequestSeedPhraseScreen,
+  name: ScreenName.obtainAccess,
+  component: ObtainAccessScreen,
 }, {
   name: ScreenName.createSeedPhrase,
   component: CreateSeedPhraseScreen,

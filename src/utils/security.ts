@@ -29,7 +29,7 @@ export const toggleBiometrics = (enable?: boolean) => {
       authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
     });
   } else {
-    return resetGenericPassword();
+    return resetGenericPassword({ service: BIOMETRICS });
   }
 };
 

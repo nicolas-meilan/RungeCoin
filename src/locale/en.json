@@ -21,7 +21,7 @@
       "title": "Secret recovery words",
       "warningMessage": "If you lose these words, **you will lose access to your wallet**, it is recommended to keep them written on paper, or in some other physical medium **without internet access**."
     },
-    "requestSeedPhrase": {
+    "obtainAccess": {
       "title": "Enter your secret recovery words",
       "continueButton": "Access the wallet",
       "useBiometrics": "Use biometric data",

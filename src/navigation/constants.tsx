@@ -4,7 +4,7 @@ export enum ScreenName {
   // Start Stack
   welcome = 'welcome',
   startGuide = 'startGuide',
-  requestSeedPhrase = 'requestSeedPhrase',
+  obtainAccess = 'obtainAccess',
   createSeedPhrase = 'createSeedPhrase',
 
   // Main Stack

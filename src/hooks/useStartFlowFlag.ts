@@ -34,7 +34,9 @@ const useStartFlowFlag = (): UseStartFlowFlagReturn => {
   });
 
   const setComesFromStartFlow = (newComesFromStartFlow: boolean) => mutateComesFromStartFlow(newComesFromStartFlow, {
-    onSuccess: () => queryClient.setQueryData([ReactQueryKeys.START_FLOW_FLAG], newComesFromStartFlow),
+    onSuccess: (newComesFromStartFlowResult: boolean) => (
+      queryClient.setQueryData([ReactQueryKeys.START_FLOW_FLAG], newComesFromStartFlowResult)
+    ),
   });
 
   return {
