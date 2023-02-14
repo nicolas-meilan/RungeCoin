@@ -14,6 +14,7 @@ import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/constants';
 import { hashFrom } from '@utils/security';
+import { delay } from '@utils/time';
 import {
   SEED_PHRASE_VALID_LENGTH,
   formatSeedPhrase,
@@ -35,6 +36,8 @@ const BASE_SEED_ERR = 'access.obtainAccess.inputs.seedPhraseError';
 const baseSeedPhrase = isDev() ? DEV_WALLET_SEED_PHRASE : '';
 
 const ObtainAccessScreen = () => {
+  const [loading, setLoading] = useState(false);
+
   const {
     walletPublicValues,
     setWalletPublicValues,
@@ -44,12 +47,12 @@ const ObtainAccessScreen = () => {
     setBiometrics,
     biometricsEnabled,
     deviceHasBiometrics,
-  } = useBiometrics();
+  } = useBiometrics({
+    onBiometricsChangeCancel: () => setLoading(false),
+  });
 
   const [seedPhrase, setSeedPhrase] = useState(baseSeedPhrase);
   const [password, setPassword] = useState('');
-
-  const [loading, setLoading] = useState(false);
 
   const [seedPhraseError, setSeedPhraseError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -66,8 +69,6 @@ const ObtainAccessScreen = () => {
   const [enableBiometricsAuth, setEnableBiometricsAuth] = useState(false);
 
   const obtainAccess = async () => {
-    setLoading(true);
-
     const wallet = await createWalletFromSeedPhrase(seedPhrase);
 
     await Promise.all([
@@ -159,7 +160,9 @@ const ObtainAccessScreen = () => {
     const errors = [!seedPhrase, !checkSeedPhrase(), !password, !checkPassword()];
     if (errors.some((err) => err)) return;
 
+    setLoading(true);
     if (enableBiometricsAuth) {
+      await delay(0.0001); // react-native-keychain freeze the app when use biometrics
       setBiometrics(true);
 
       return;

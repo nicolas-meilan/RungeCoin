@@ -9,7 +9,7 @@ import {
   toggleBiometrics,
 } from '@utils/security';
 
-type UseBiometricsProps = {
+type UseBiometricsReturn = {
   biometricsEnabled?: boolean | null;
   biometricsEnabledLoading: boolean;
   setBiometrics: (enabled: boolean) => void;
@@ -17,7 +17,15 @@ type UseBiometricsProps = {
   deviceHasBiometrics: () => Promise<boolean>;
 };
 
-const useBiometrics = (): UseBiometricsProps => {
+type UseBiometricsProps = {
+  onBiometricsChangeCancel?: () => void;
+  onBiometricsChaingeSuccess?: () => void;
+};
+
+const useBiometrics = ({
+  onBiometricsChangeCancel,
+  onBiometricsChaingeSuccess,
+}: UseBiometricsProps = {}): UseBiometricsReturn => {
   const queryClient = useQueryClient();
   const { getItem, setItem } = useAsyncStorage(StorageKeys.BIOMETRICS);
 
@@ -53,11 +61,15 @@ const useBiometrics = (): UseBiometricsProps => {
   const setBiometricsMutation = async (enable: boolean) => {
     if (!enable) {
       const grantAccess = await dispatchBiometrics(true);
-      if (!grantAccess) return biometricsEnabled;
+      if (!grantAccess) {
+        onBiometricsChangeCancel?.();
+
+        return biometricsEnabled;
+      }
 
       await toggleBiometrics(false);
       await setItem(String(false));
-
+      onBiometricsChaingeSuccess?.();
       return false;
     }
 
@@ -65,9 +77,11 @@ const useBiometrics = (): UseBiometricsProps => {
     const grantAccess = await dispatchBiometrics(true);
     if (!grantAccess) {
       await toggleBiometrics(false);
+      onBiometricsChangeCancel?.();
       return biometricsEnabled;
     }
     await setItem(String(true));
+    onBiometricsChaingeSuccess?.();
 
     return true;
   };
@@ -78,8 +92,7 @@ const useBiometrics = (): UseBiometricsProps => {
   });
 
   const setBiometrics = (enable: boolean) => mutateBiometrics(enable, {
-    onSuccess: (newEnable?: boolean) => (newEnable !== biometricsEnabled)
-      && queryClient.setQueryData([ReactQueryKeys.BIOMETRICS], newEnable),
+    onSuccess: (newEnable?: boolean) => queryClient.setQueryData([ReactQueryKeys.BIOMETRICS], newEnable),
   });
 
   return {
