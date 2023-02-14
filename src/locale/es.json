@@ -24,7 +24,7 @@
     "requestSeedPhrase": {
       "title": "Ingresa tus palabras secretas de recuperación",
       "continueButton": "Acceder a la billetera",
-      "useBiometrics": "Usar datos biometricos",
+      "useBiometrics": "Usar datos biométricos",
       "inputs": {
         "seedPhrase": "Palabras secretas de recuperación",
         "seedPhrasePH": "Ingresa tus palabras de recuperación",
@@ -41,7 +41,8 @@
       "title": "Ingresa tu contraseña para acceder a la billetera",
       "inputs": {
         "password": "Ingresa tu contraseña",
-        "passwordPH": "Contraseña"
+        "passwordPH": "Contraseña",
+        "passwordError": "Contraseña incorrecta"
       }
     }
   }

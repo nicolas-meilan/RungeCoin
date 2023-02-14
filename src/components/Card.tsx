@@ -14,6 +14,10 @@ type CardProps = {
   contentContainerStyle?: StyleProp<ViewStyle>;
   scroll?: boolean;
   persistentScrollbar?: boolean;
+  full?: boolean;
+  touchable?: boolean;
+  onPress?: () => void;
+  disabled: boolean;
 };
 
 const Item = styled.View`
@@ -21,8 +25,22 @@ const Item = styled.View`
   width: 100%;
 `;
 
-const CardWrapper = styled.View<{ withoutSeparations: boolean }>`
-  flex: 1;
+const TouchableCardWrapper = styled.TouchableOpacity<{
+  withoutSeparations: boolean;
+  full: boolean;
+}>`
+  ${({ full }) => (full ? 'flex: 1;' : '')}
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius};
+  align-items: flex-start;
+  ${({ withoutSeparations, theme }) => (withoutSeparations ? `padding: ${theme.spacing(4)};` : '')}
+`;
+
+const CardWrapper = styled.View<{
+  withoutSeparations: boolean;
+  full: boolean;
+}>`
+  ${({ full }) => (full ? 'flex: 1;' : '')}
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius};
   align-items: flex-start;
@@ -44,9 +62,13 @@ const Card = ({
   children,
   style,
   contentContainerStyle,
+  onPress,
   withSeparator = false,
   scroll = false,
   persistentScrollbar = false,
+  full = false,
+  touchable = false,
+  disabled = false,
 }: CardProps) => {
 
   const withoutSeparations = !withSeparator || !Array.isArray(children);
@@ -76,9 +98,27 @@ const Card = ({
   ) : content;
 
   return (
-    <CardWrapper style={style} withoutSeparations={withoutSeparations}>
-      {contentConditionalScroll}
-    </CardWrapper>
+    <>
+      {touchable ? (
+        <TouchableCardWrapper
+          withoutSeparations={withoutSeparations}
+          style={style}
+          full={full}
+          onPress={onPress}
+          disabled={disabled}
+        >
+          {contentConditionalScroll}
+        </TouchableCardWrapper>
+      ) : (
+        <CardWrapper
+          full={full}
+          style={style}
+          withoutSeparations={withoutSeparations}
+        >
+          {contentConditionalScroll}
+        </CardWrapper>
+      )}
+    </>
   );
 };
 

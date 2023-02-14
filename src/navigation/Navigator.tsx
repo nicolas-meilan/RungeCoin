@@ -7,8 +7,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled, { useTheme } from 'styled-components/native';
 
+import { ScreenName } from './constants';
 import MainNavigator from './MainNavigator';
 import StartNavigator from './StartNavigator';
+import useStartFlowFlag from '@hooks/useStartFlowFlag';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 
 const ANIMATION_TIME = 500;
@@ -27,6 +29,9 @@ const AnimatedWrapper = styled(Animated.View)`
 
 const Navigator = () => {
   const theme = useTheme();
+
+  const { comesFromStartFlow } = useStartFlowFlag();
+
   const {
     walletPublicValues,
     walletPublicValuesLoading,
@@ -43,6 +48,11 @@ const Navigator = () => {
   }, [walletPublicValuesLoading]);
 
   const hasWallet = useMemo(() => !!walletPublicValues, [walletPublicValues]);
+
+  const mainNavigatorInitialScreen = useMemo(() => (comesFromStartFlow
+    ? ScreenName.home
+    : ScreenName.validateAccess
+  ), [comesFromStartFlow]);
 
   const loading = useMemo(() => (
     !firstFetchFinish && walletPublicValuesLoading
@@ -62,7 +72,7 @@ const Navigator = () => {
       entering={FadeIn.duration(ANIMATION_TIME)}
       exiting={FadeOut.duration(ANIMATION_TIME)}
     >
-      <MainNavigator />
+      <MainNavigator initialScreen={mainNavigatorInitialScreen} />
     </AnimatedWrapper>
 
   ) : (

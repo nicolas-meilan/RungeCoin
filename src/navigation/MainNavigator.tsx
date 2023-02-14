@@ -30,15 +30,15 @@ const screens: ScreenProps[] = [{
 const StackNavigator = createNativeStackNavigator<MainNavigatorType>();
 
 type MainNavigatorProps = {
-  firstScreen?: keyof MainNavigatorType;
+  initialScreen?: keyof MainNavigatorType;
 };
 
 const MainNavigator = ({
-  firstScreen = ScreenName.home,
+  initialScreen = ScreenName.home,
 }: MainNavigatorProps) => (
   <StackNavigator.Navigator
     screenOptions={screenOptions}
-    initialRouteName={firstScreen}
+    initialRouteName={initialScreen}
   >
     {screens.map((screen: ScreenProps) => (
       <StackNavigator.Screen

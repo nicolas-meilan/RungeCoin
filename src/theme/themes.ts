@@ -16,7 +16,7 @@ const theme = {
   spacingNative,
   inputsHeight: {
     small: '50px',
-    big: '100px',
+    big: '130px',
   },
   fonts,
   borderRadius: `${DEFAULT_BORDER_RADIUS}px`,

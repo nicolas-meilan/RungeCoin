@@ -4,6 +4,7 @@ enum StorageKeys {
   WALLET = 'wallet',
   WALLET_PRIVATE_KEY = 'walletPrivateKey',
   PASSWORD = 'password',
+  BIOMETRICS = 'biometrics',
 }
 
 export default StorageKeys;

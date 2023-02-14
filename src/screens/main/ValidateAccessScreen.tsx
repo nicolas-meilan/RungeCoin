@@ -5,21 +5,48 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
+import Card from '@components/Card';
+import Icon from '@components/Icon';
 import ScreenLayout from '@components/ScreenLayout';
 import TextInput from '@components/TextInput';
+import useBiometrics from '@hooks/useBiometrics';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import StorageKeys from '@system/storageKeys';
-import { hashFrom, obtainBiometrics } from '@utils/security';
+import { hashFrom } from '@utils/security';
 
-const PasswordInput = styled(TextInput)`
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
+const FINGERPRINT_SIZE = 80;
+
+const AlignWrapper = styled.View`
+  flex: 1;
+  justify-content: space-evenly;
+  overflow: hidden;
+`;
+
+const FingerprintCard = styled(Card)`
+  border-color: ${({ theme, disabled }) => (disabled
+    ? theme.colors.disabled
+    : theme.colors.info)};
+  align-self: center;
+`;
+
+const Fingerprint = styled(Icon).attrs({
+  name: 'fingerprint',
+})`
+  color: ${({ theme }) => theme.colors.info};
+  font-size: ${FINGERPRINT_SIZE}px;
 `;
 
 type ValidateAccessScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.validateAccess>;
 
 const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
+  const {
+    biometricsEnabled,
+    dispatchBiometrics,
+  } = useBiometrics();
+
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
   const [userPassword, setUserPassword] = useState<string | null>(null);
 
   const goToHome = () => navigation.reset({
@@ -28,24 +55,29 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   });
 
   const validateWithBiometrics = async () => {
-    try {
-      const biometicsEnabled = await obtainBiometrics();
-      if (!biometicsEnabled) return;
+    const grantAccess = await dispatchBiometrics();
 
-      goToHome();
-    } catch (_) {}
+    if (grantAccess) goToHome();
   };
 
   useEffect(() => {
-    validateWithBiometrics();
+    if (biometricsEnabled) validateWithBiometrics();
+  }, [biometricsEnabled]);
+
+  useEffect(() => {
     EncryptedStorage.getItem(StorageKeys.PASSWORD)
       .then((newUserPassword) => setUserPassword(newUserPassword));
   }, []);
 
-  const onPressContinue = () => {
-    const passwordOk = userPassword === hashFrom(password);
+  const onPasswordChange = (newPassword: string) => {
+    setPassword(newPassword);
+    setPasswordError(false);
+  };
 
-    if (!passwordOk) return;
+  const onPressContinue = () => {
+    const invalidPassword = userPassword !== hashFrom(password);
+    setPasswordError(invalidPassword);
+    if (invalidPassword) return;
 
     goToHome();
   };
@@ -57,19 +89,29 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
       hasBack={false}
       hasFooterBanner
     >
-      <PasswordInput
+      <TextInput
         label="main.validateAccess.inputs.password"
         placeholder="main.validateAccess.inputs.passwordPH"
         type="password"
         value={password}
-        onChangeText={(newPassword: string) => setPassword(newPassword)}
+        error={passwordError}
+        errorMessage="main.validateAccess.inputs.passwordError"
+        onChangeText={onPasswordChange}
       />
-
-      <Button
-        disabled={!password || !userPassword}
-        text="common.continue"
-        onPress={onPressContinue}
-      />
+      <AlignWrapper>
+        <FingerprintCard
+          touchable
+          onPress={validateWithBiometrics}
+          disabled={!biometricsEnabled}
+        >
+          <Fingerprint disabled={!biometricsEnabled} />
+        </FingerprintCard>
+        <Button
+          disabled={passwordError || !password || !userPassword}
+          text="common.continue"
+          onPress={onPressContinue}
+        />
+      </AlignWrapper>
     </ScreenLayout>
   );
 };

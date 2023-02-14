@@ -8,11 +8,12 @@ import Button from '@components/Button';
 import ScreenLayout from '@components/ScreenLayout';
 import Switch from '@components/Switch';
 import TextInput from '@components/TextInput';
+import useBiometrics from '@hooks/useBiometrics';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/constants';
-import { deviceHasBiometrics, hashFrom, toggleBiometrics } from '@utils/security';
+import { hashFrom } from '@utils/security';
 import { delay } from '@utils/time';
 import {
   SEED_PHRASE_VALID_LENGTH,
@@ -40,6 +41,12 @@ const RequestSeedPhraseScreen = () => {
     setWalletPublicValues,
   } = useWalletPublicValues();
 
+  const {
+    setBiometrics,
+    biometricsEnabledLoading,
+    deviceHasBiometrics,
+  } = useBiometrics();
+
   const [seedPhrase, setSeedPhrase] = useState(baseSeedPhrase);
   const [password, setPassword] = useState('');
 
@@ -65,8 +72,9 @@ const RequestSeedPhraseScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (isEncryptedStorageFinished && walletPublicValues) setLoading(false);
-  }, [walletPublicValues, isEncryptedStorageFinished]);
+    const finishLoading = isEncryptedStorageFinished && walletPublicValues && !biometricsEnabledLoading;
+    if (finishLoading) setLoading(false);
+  }, [walletPublicValues, isEncryptedStorageFinished, biometricsEnabledLoading]);
 
   const checkSeedPhrase = (seedPhraseToCheck: string = seedPhrase) => {
     if (!seedPhraseToCheck) {
@@ -139,10 +147,11 @@ const RequestSeedPhraseScreen = () => {
       publicKey: wallet.getPublicKeyString(),
     });
 
+    if (enableBiometricsAuth) setBiometrics(true);
+  
     await Promise.all([
       EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
       EncryptedStorage.setItem(StorageKeys.PASSWORD, hashFrom(password)),
-      (() => enableBiometricsAuth && toggleBiometrics(true))(),
     ]);
 
     setIsEncryptedStorageFinished(true);

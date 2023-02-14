@@ -55,7 +55,7 @@ const IconWrapper = styled.View<{ multiline?: boolean }>`
 
 const StyledTextInput = styled.TextInput<{ hasIcon?: boolean }>`
   vertical-align: ${({ multiline }) => (multiline ? 'top' : 'middle')};
-  font-size: ${({ theme }) => theme.fonts.size[16]};
+  font-size: ${({ multiline, theme }) => theme.fonts.size[multiline ? 20 : 16]};
   flex: 1;
 `;
 

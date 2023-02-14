@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled, { useTheme } from 'styled-components/native';
@@ -7,6 +7,7 @@ import logoWithBackground from '@assets/images/logoWithBackground.svg';
 import Button, { ButtonType } from '@components/Button';
 import Message from '@components/Message';
 import ScreenLayout from '@components/ScreenLayout';
+import useStartFlowFlag from '@hooks/useStartFlowFlag';
 import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
 
@@ -17,7 +18,13 @@ const StyledButton = styled(Button)`
 type WelcomeScreenProps = NativeStackScreenProps<StartNavigatorType, ScreenName.welcome>;
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
+  const { setComesFromStartFlow } = useStartFlowFlag();
   const theme = useTheme();
+
+  useEffect(() => {
+    setComesFromStartFlow(true);
+  }, []);
+
   const goToImport = () => navigation.navigate(ScreenName.requestSeedPhrase);
   const goToCreate = () => navigation.navigate(ScreenName.startGuide);
 

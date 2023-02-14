@@ -41,7 +41,8 @@
       "title": "Enter your password to access the wallet",
       "inputs": {
         "password": "Enter your password",
-        "passwordPH": "Password"
+        "passwordPH": "Password",
+        "passwordError": "Wrong password"
       }
     }
   }
