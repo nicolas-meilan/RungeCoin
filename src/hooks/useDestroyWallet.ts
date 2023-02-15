@@ -14,6 +14,11 @@ const useDestroyWallet = (): UseDestroyWalletReturn => {
 
   const removePrivateKey = () => EncryptedStorage.removeItem(StorageKeys.WALLET_PRIVATE_KEY);
   const removePassword = () => EncryptedStorage.removeItem(StorageKeys.PASSWORD);
+  const removeBiometrics = async () => {
+    await toggleBiometrics(false);
+
+    return false;
+  };
 
   const QueryClient = useQueryClient();
 
@@ -24,17 +29,13 @@ const useDestroyWallet = (): UseDestroyWalletReturn => {
 
   const { mutate: mutateBiometrics } = useMutation({
     mutationKey: [ReactQueryKeys.BIOMETRICS],
-    mutationFn: async () => {
-      toggleBiometrics(false);
-
-      return false;
-    },
+    mutationFn: removeBiometrics,
   });
 
   const updateQuery = (
     mutation: UseMutateFunction<unknown, unknown, any, unknown>,
     key: ReactQueryKeys,
-  ) => mutation(undefined, { onSuccess: (data: any) => QueryClient.setQueryData([key], data || null) });
+  ) => mutation(undefined, { onSuccess: (data) => QueryClient.setQueryData([key], data || null) });
 
   const destroyWallet = async () => {
     updateQuery(mutateBiometrics, ReactQueryKeys.BIOMETRICS);
