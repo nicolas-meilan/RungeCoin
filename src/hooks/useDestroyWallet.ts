@@ -1,5 +1,5 @@
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
-import { UseMutateFunction, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import StorageKeys from '@system/storageKeys';
@@ -11,41 +11,27 @@ type UseDestroyWalletReturn = () => Promise<void>;
 const useDestroyWallet = (): UseDestroyWalletReturn => {
   const { removeItem: removeWalletPublicValues } = useAsyncStorage(StorageKeys.WALLET);
   const { removeItem: removePasswordAttemps } = useAsyncStorage(StorageKeys.PASSWORD_ATTEMPS);
+  const { removeItem: removeBiometricsEnable } = useAsyncStorage(StorageKeys.BIOMETRICS);
 
   const removePrivateKey = () => EncryptedStorage.removeItem(StorageKeys.WALLET_PRIVATE_KEY);
   const removePassword = () => EncryptedStorage.removeItem(StorageKeys.PASSWORD);
   const removeBiometrics = async () => {
     await toggleBiometrics(false);
-
-    return false;
+    await removeBiometricsEnable();
   };
 
   const QueryClient = useQueryClient();
 
-  const { mutate: mutateRemoveWalletPublicValues } = useMutation({
-    mutationKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
-    mutationFn: removeWalletPublicValues,
-  });
-
-  const { mutate: mutateBiometrics } = useMutation({
-    mutationKey: [ReactQueryKeys.BIOMETRICS],
-    mutationFn: removeBiometrics,
-  });
-
-  const updateQuery = (
-    mutation: UseMutateFunction<unknown, unknown, any, unknown>,
-    key: ReactQueryKeys,
-  ) => mutation(undefined, { onSuccess: (data) => QueryClient.setQueryData([key], data || null) });
-
   const destroyWallet = async () => {
-    updateQuery(mutateBiometrics, ReactQueryKeys.BIOMETRICS);
-    updateQuery(mutateRemoveWalletPublicValues, ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY);
-
     await Promise.all([
-      removePasswordAttemps,
-      removePrivateKey,
-      removePassword,
+      removeWalletPublicValues(),
+      removePasswordAttemps(),
+      removePrivateKey(),
+      removePassword(),
+      removeBiometrics(),
     ]);
+    QueryClient.setQueryData([ReactQueryKeys.BIOMETRICS], false);
+    QueryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], null);
   };
 
   return destroyWallet;

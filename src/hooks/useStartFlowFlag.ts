@@ -20,7 +20,7 @@ const useStartFlowFlag = (): UseStartFlowFlagReturn => {
     isLoading: comesFromStartFlowLoading,
   } = useQuery({
     queryKey: [ReactQueryKeys.START_FLOW_FLAG],
-    queryFn: () => false,
+    initialData: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

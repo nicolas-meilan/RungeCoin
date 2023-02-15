@@ -60,10 +60,14 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   const [passwordError, setPasswordError] = useState(false);
   const [userPassword, setUserPassword] = useState<string | null>(null);
 
-  const goToHome = () => navigation.reset({
-    index: 0,
-    routes: [{ name: ScreenName.home }],
-  });
+  const goToHome = () => {
+    setPasswordAttemps(0);
+    storagePasswordAttemps('0');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: ScreenName.home }],
+    });
+  };
 
   const validateWithBiometrics = async () => {
     const grantAccess = await dispatchBiometrics();
@@ -71,25 +75,19 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
     if (grantAccess) goToHome();
   };
 
-  const resetAll = async () => {
-    setPasswordAttemps(0);
-    await storagePasswordAttemps('0');
-    destroyWallet();
-  };
-
   useEffect(() => {
+    getStoredPasswordAttemps().then((newPasswordAttemps) => (
+      setPasswordAttemps(parseInt(newPasswordAttemps || '0', 10))
+    ));
     EncryptedStorage.getItem(StorageKeys.PASSWORD)
       .then((newUserPassword) => setUserPassword(newUserPassword));
   }, []);
 
   useEffect(() => {
-    if (passwordAttemps >= MAX_PASSWORD_ATTEMPS) resetAll();
+    if (passwordAttemps >= MAX_PASSWORD_ATTEMPS) destroyWallet();
   }, [passwordAttemps]);
 
   useEffect(() => {
-    getStoredPasswordAttemps().then((newPasswordAttemps) => (
-      setPasswordAttemps(parseInt(newPasswordAttemps || '0', 10))
-    ));
     if (biometricsEnabled) validateWithBiometrics();
   }, [biometricsEnabled]);
 
@@ -103,17 +101,17 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
     const invalidPassword = userPassword !== hashedPassword;
     if (invalidPassword) {
       const newPasswordAttemps = passwordAttemps + 1;
+      await storagePasswordAttemps(newPasswordAttemps.toString());
       setPasswordAttemps(newPasswordAttemps);
       setPasswordError(true);
-      storagePasswordAttemps(newPasswordAttemps.toString());
 
       return;
     }
-    setPasswordAttemps(0);
-    storagePasswordAttemps('0');
 
     goToHome();
   };
+
+  const remainingAttemps = MAX_PASSWORD_ATTEMPS - passwordAttemps;
 
   return (
     <ScreenLayout
@@ -128,10 +126,10 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
         type="password"
         value={password}
         error={passwordError}
-        errorMessage={passwordAttemps
+        errorMessage={remainingAttemps
           ? 'main.validateAccess.inputs.passwordError'
           : ''}
-        errorI18nArgs={{ remainingAttemps: MAX_PASSWORD_ATTEMPS - passwordAttemps }}
+        errorI18nArgs={{ remainingAttemps }}
         onChangeText={onPasswordChange}
       />
       <AlignWrapper>
