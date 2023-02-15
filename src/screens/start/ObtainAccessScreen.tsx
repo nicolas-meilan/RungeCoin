@@ -157,8 +157,13 @@ const ObtainAccessScreen = () => {
   const toggleBiometricsSwitch = () => setEnableBiometricsAuth(!enableBiometricsAuth);
 
   const onPressContinue = async () => {
-    const errors = [!seedPhrase, !checkSeedPhrase(), !password, !checkPassword()];
-    if (errors.some((err) => err)) return;
+    const errors = !seedPhrase || seedPhraseError || !password || passwordError;
+    if (errors) {
+      setPasswordShowError(passwordError);
+      setSeedPhraseShowError(seedPhraseError);
+
+      return;
+    }
 
     setLoading(true);
     if (enableBiometricsAuth) {
@@ -171,7 +176,8 @@ const ObtainAccessScreen = () => {
     obtainAccess();
   };
 
-  const disableButton = passwordError || seedPhraseError || !seedPhrase || !password;
+  const disabledByPassword = !password || (passwordError && passwordShowError);
+  const disabledBySeedPhrase = !seedPhrase || (seedPhraseError && seedPhraseShowError);
 
   return (
     <ScreenLayout
@@ -215,7 +221,7 @@ const ObtainAccessScreen = () => {
       </Form>
       <Button
         text="access.obtainAccess.continueButton"
-        disabled={disableButton}
+        disabled={disabledByPassword || disabledBySeedPhrase}
         onPress={onPressContinue}
         loading={loading}
       />

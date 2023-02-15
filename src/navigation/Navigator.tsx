@@ -19,6 +19,11 @@ const AnimatedWrapper = styled(Animated.View)`
   flex: 1;
 `;
 
+const Wrapper = styled.View`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background.primary};
+`;
+
 const Navigator = () => {
   const { comesFromStartFlow } = useStartFlowFlag();
   const { walletPublicValues } = useWalletPublicValues();
@@ -31,26 +36,28 @@ const Navigator = () => {
   const hasWallet = useMemo(() => !!walletPublicValues, [walletPublicValues]);
 
   return (
-    <NavigationContainer>
-      {hasWallet ? (
-        <AnimatedWrapper
-          key="MainNavigator"
-          entering={FadeIn.duration(ANIMATION_TIME)}
-          exiting={FadeOut.duration(ANIMATION_TIME)}
-        >
-          <MainNavigator initialScreen={mainNavigatorInitialScreen} />
-        </AnimatedWrapper>
+    <Wrapper>
+      <NavigationContainer>
+        {hasWallet ? (
+          <AnimatedWrapper
+            key="MainNavigator"
+            entering={FadeIn.duration(ANIMATION_TIME)}
+            exiting={FadeOut.duration(ANIMATION_TIME)}
+          >
+            <MainNavigator initialScreen={mainNavigatorInitialScreen} />
+          </AnimatedWrapper>
 
-      ) : (
-        <AnimatedWrapper
-          key="StartNavigator"
-          entering={FadeIn.duration(ANIMATION_TIME)}
-          exiting={FadeOut.duration(ANIMATION_TIME)}
-        >
-          <StartNavigator />
-        </AnimatedWrapper>
-      )}
-    </NavigationContainer>
+        ) : (
+          <AnimatedWrapper
+            key="StartNavigator"
+            entering={FadeIn.duration(ANIMATION_TIME)}
+            exiting={FadeOut.duration(ANIMATION_TIME)}
+          >
+            <StartNavigator />
+          </AnimatedWrapper>
+        )}
+      </NavigationContainer>
+    </Wrapper>
   );
 };
 
