@@ -31,6 +31,7 @@ const useBiometrics = ({
 
   const getBiometricsEnabled = async () => {
     const biometricsEnabledStored = await getItem();
+
     return biometricsEnabledStored === 'true';
   };
 

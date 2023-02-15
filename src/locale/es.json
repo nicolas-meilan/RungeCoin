@@ -42,7 +42,7 @@
       "inputs": {
         "password": "Ingresa tu contraseña",
         "passwordPH": "Contraseña",
-        "passwordError": "Contraseña incorrecta"
+        "passwordError": "Contraseña incorrecta, te quedan {{remainingAttemps}} intentos."
       }
     }
   }

@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { useMemo } from 'react';
 
+import { NavigationContainer } from '@react-navigation/native';
 import Animated, {
   FadeIn,
   FadeOut,
 } from 'react-native-reanimated';
-import styled, { useTheme } from 'styled-components/native';
+import styled from 'styled-components/native';
 
 import { ScreenName } from './constants';
 import MainNavigator from './MainNavigator';
@@ -15,74 +15,42 @@ import useWalletPublicValues from '@hooks/useWalletPublicValues';
 
 const ANIMATION_TIME = 500;
 
-// TODO better loading
-const LoadingWrapper = styled.View`
-  flex: 1;
-  background-color: ${({ theme }) => theme.colors.background.primary};
-  align-items: center;
-  justify-content: center;
-`;
-
 const AnimatedWrapper = styled(Animated.View)`
   flex: 1;
 `;
 
 const Navigator = () => {
-  const theme = useTheme();
-
   const { comesFromStartFlow } = useStartFlowFlag();
-
-  const {
-    walletPublicValues,
-    walletPublicValuesLoading,
-  } = useWalletPublicValues({
-    refetchOnMount: true,
-  });
-
-  const [hasLoadedOneTime, setHasLoadedOneTime] = useState(false);
-  const [firstFetchFinish, setFirstFetchFinish] = useState(false);
-
-  useEffect(() => { // Detect first fetch
-    if (walletPublicValuesLoading) setHasLoadedOneTime(true);
-    if (hasLoadedOneTime && !walletPublicValuesLoading) setFirstFetchFinish(true);
-  }, [walletPublicValuesLoading]);
-
-  const hasWallet = useMemo(() => !!walletPublicValues, [walletPublicValues]);
+  const { walletPublicValues } = useWalletPublicValues();
 
   const mainNavigatorInitialScreen = useMemo(() => (comesFromStartFlow
     ? ScreenName.home
     : ScreenName.validateAccess
   ), [comesFromStartFlow]);
 
-  const loading = useMemo(() => (
-    !firstFetchFinish && walletPublicValuesLoading
-  ), [firstFetchFinish, walletPublicValuesLoading]);
+  const hasWallet = useMemo(() => !!walletPublicValues, [walletPublicValues]);
 
-  if (loading) { // TODO better loading
-    return (
-      <LoadingWrapper>
-        <ActivityIndicator color={theme.colors.info} size={60} />
-      </LoadingWrapper>
-    );
-  }
+  return (
+    <NavigationContainer>
+      {hasWallet ? (
+        <AnimatedWrapper
+          key="MainNavigator"
+          entering={FadeIn.duration(ANIMATION_TIME)}
+          exiting={FadeOut.duration(ANIMATION_TIME)}
+        >
+          <MainNavigator initialScreen={mainNavigatorInitialScreen} />
+        </AnimatedWrapper>
 
-  return hasWallet ? (
-    <AnimatedWrapper
-      key="MainNavigator"
-      entering={FadeIn.duration(ANIMATION_TIME)}
-      exiting={FadeOut.duration(ANIMATION_TIME)}
-    >
-      <MainNavigator initialScreen={mainNavigatorInitialScreen} />
-    </AnimatedWrapper>
-
-  ) : (
-    <AnimatedWrapper
-      key="StartNavigator"
-      entering={FadeIn.duration(ANIMATION_TIME)}
-      exiting={FadeOut.duration(ANIMATION_TIME)}
-    >
-      <StartNavigator />
-    </AnimatedWrapper>
+      ) : (
+        <AnimatedWrapper
+          key="StartNavigator"
+          entering={FadeIn.duration(ANIMATION_TIME)}
+          exiting={FadeOut.duration(ANIMATION_TIME)}
+        >
+          <StartNavigator />
+        </AnimatedWrapper>
+      )}
+    </NavigationContainer>
   );
 };
 

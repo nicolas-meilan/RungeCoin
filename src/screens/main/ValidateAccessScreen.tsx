@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
@@ -10,12 +11,14 @@ import Icon from '@components/Icon';
 import ScreenLayout from '@components/ScreenLayout';
 import TextInput from '@components/TextInput';
 import useBiometrics from '@hooks/useBiometrics';
+import useDestroyWallet from '@hooks/useDestroyWallet';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import StorageKeys from '@system/storageKeys';
 import { hashFrom } from '@utils/security';
 
 const FINGERPRINT_SIZE = 80;
+const MAX_PASSWORD_ATTEMPS = 5;
 
 const AlignWrapper = styled.View`
   flex: 1;
@@ -40,12 +43,20 @@ const Fingerprint = styled(Icon).attrs({
 type ValidateAccessScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.validateAccess>;
 
 const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
+  const destroyWallet = useDestroyWallet();
+
+  const {
+    getItem: getStoredPasswordAttemps,
+    setItem: storagePasswordAttemps,
+  } = useAsyncStorage(StorageKeys.PASSWORD_ATTEMPS);
+
   const {
     biometricsEnabled,
     dispatchBiometrics,
   } = useBiometrics();
 
   const [password, setPassword] = useState('');
+  const [passwordAttemps, setPasswordAttemps] = useState(0);
   const [passwordError, setPasswordError] = useState(false);
   const [userPassword, setUserPassword] = useState<string | null>(null);
 
@@ -60,14 +71,27 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
     if (grantAccess) goToHome();
   };
 
-  useEffect(() => {
-    if (biometricsEnabled) validateWithBiometrics();
-  }, [biometricsEnabled]);
+  const resetAll = async () => {
+    setPasswordAttemps(0);
+    await storagePasswordAttemps('0');
+    destroyWallet();
+  };
 
   useEffect(() => {
     EncryptedStorage.getItem(StorageKeys.PASSWORD)
       .then((newUserPassword) => setUserPassword(newUserPassword));
   }, []);
+
+  useEffect(() => {
+    if (passwordAttemps >= MAX_PASSWORD_ATTEMPS) resetAll();
+  }, [passwordAttemps]);
+
+  useEffect(() => {
+    getStoredPasswordAttemps().then((newPasswordAttemps) => (
+      setPasswordAttemps(parseInt(newPasswordAttemps || '0', 10))
+    ));
+    if (biometricsEnabled) validateWithBiometrics();
+  }, [biometricsEnabled]);
 
   const onPasswordChange = (newPassword: string) => {
     setPassword(newPassword);
@@ -77,8 +101,16 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   const onPressContinue = async () => {
     const hashedPassword = await hashFrom(password);
     const invalidPassword = userPassword !== hashedPassword;
-    setPasswordError(invalidPassword);
-    if (invalidPassword) return;
+    if (invalidPassword) {
+      const newPasswordAttemps = passwordAttemps + 1;
+      setPasswordAttemps(newPasswordAttemps);
+      setPasswordError(true);
+      storagePasswordAttemps(newPasswordAttemps.toString());
+
+      return;
+    }
+    setPasswordAttemps(0);
+    storagePasswordAttemps('0');
 
     goToHome();
   };
@@ -96,7 +128,10 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
         type="password"
         value={password}
         error={passwordError}
-        errorMessage="main.validateAccess.inputs.passwordError"
+        errorMessage={passwordAttemps
+          ? 'main.validateAccess.inputs.passwordError'
+          : ''}
+        errorI18nArgs={{ remainingAttemps: MAX_PASSWORD_ATTEMPS - passwordAttemps }}
         onChangeText={onPasswordChange}
       />
       <AlignWrapper>

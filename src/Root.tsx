@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
-import { NavigationContainer } from '@react-navigation/native';
-
 import initializeI18nConfig from './locale/i18nConfig';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
+import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import Navigator from '@navigation/Navigator';
 
 const Root = () => {
   const { themeMode, initializeTheme } = useThemeConfiguration();
+  const { walletPublicValuesLoading } = useWalletPublicValues({
+    refetchOnMount: true,
+  });
+
   const [appReady, setAppReady] = useState(false);
   const [i18nLoading, setI18nLoading] = useState(true);
 
@@ -17,17 +20,16 @@ const Root = () => {
   }, []);
 
   useEffect(() => {
-    const canStart = !!themeMode && !i18nLoading;
+    if (appReady) return;
 
+    const canStart = !!themeMode && !i18nLoading && !walletPublicValuesLoading;
     setAppReady(canStart);
-  }, [i18nLoading, themeMode]);
+  }, [i18nLoading, themeMode, walletPublicValuesLoading]);
 
   if (!appReady) return <></>; // TODO better loading
 
   return (
-    <NavigationContainer>
-      <Navigator />
-    </NavigationContainer>
+    <Navigator />
   );
 };
 

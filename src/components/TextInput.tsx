@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components/native';
 
 import Icon from './Icon';
-import Text from './Text';
+import Text, { TextProps } from './Text';
 
 export enum TextInputType {
   PASSWORD = 'password',
@@ -23,6 +23,7 @@ type TextInputProps = TextInputPropsRN & {
   type?: string;
   error?: boolean;
   onPressIcon?: () => void;
+  errorI18nArgs?: TextProps['i18nArgs'];
   errorMessage?: string;
 };
 
@@ -74,6 +75,7 @@ const TextInput = ({
   onPressIcon,
   style,
   errorMessage,
+  errorI18nArgs,
   multiline,
   type = TextInputType.TEXT,
   error = false,
@@ -129,7 +131,7 @@ const TextInput = ({
           {icon && !isPassword && <StyledIcon name={icon} onPress={onPressIcon} />}
         </IconWrapper>
       </InputWrapper>
-      {renderError && <ErrorMessage text={errorMessage} />}
+      {renderError && <ErrorMessage text={errorMessage} i18nArgs={errorI18nArgs} />}
     </Wrapper>
   );
 };
