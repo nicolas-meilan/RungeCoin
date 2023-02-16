@@ -45,5 +45,9 @@
         "passwordError": "Wrong password, you have 4 attempts left."
       }
     }
+  },
+  "number": {
+    "thousandSeparator": ",",
+    "decimalSeparator": "."
   }
 }

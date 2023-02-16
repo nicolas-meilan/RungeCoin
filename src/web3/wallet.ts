@@ -5,12 +5,12 @@ import {
   validateMnemonic,
 } from 'bip39';
 import Wallet, { hdkey } from 'ethereumjs-wallet';
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
+import { zipObject } from 'lodash';
 
 import { ethereumProvider } from './providers';
 import { BALANCE_CHECKER } from './smartContracts';
-import { TOKENS_ETH } from './tokensList';
-import { fromDecimalsToFullNumber } from '@utils/formatter';
+import { TokensBalance, TOKENS_ETH } from './tokens';
 
 export const SEED_PHRASE_VALID_LENGTH = [12, 15, 18, 21, 24];
 const ETH_DERIVATION_PATH = "m/44'/60'/0'/0"; // m/purpose'/coin_type'/account'/change/index
@@ -44,17 +44,12 @@ export const createWalletFromKey = (key: string, isPrivate: boolean = true) => {
   return wallet;
 };
 
-export const getBalanceFromWallet = async (walletAddress: string) => {
+export const getBalanceFromWallet = async (walletAddress: string): Promise<TokensBalance> => {
   const tokenAddresses = Object.values(TOKENS_ETH).map(({ address }) => address);
 
   const balanceChecker = new Contract(BALANCE_CHECKER.ethereum.address, BALANCE_CHECKER.ethereum.abi, ethereumProvider);
 
-  const balances = await balanceChecker.balances([walletAddress], tokenAddresses);
-  
-  const tokensWithBalance = Object.values(TOKENS_ETH).map((token, index) => ({
-    ...token,
-    balance: fromDecimalsToFullNumber(balances[index].toString(), token.decimals),
-  }));
-  
-  return tokensWithBalance;
+  const balances: BigNumber[] = await balanceChecker.balances([walletAddress], tokenAddresses);
+
+  return zipObject(Object.keys(TOKENS_ETH), balances.map((balance: BigNumber) => balance)) as TokensBalance;
 };

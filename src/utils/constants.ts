@@ -4,4 +4,5 @@ export enum ReactQueryKeys {
   ETH_BALANCE = 'ethBalance',
   START_FLOW_FLAG = 'startFlowFlag',
   BIOMETRICS = 'biometrics',
+  BALANCES = 'balances',
 }

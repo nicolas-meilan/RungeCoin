@@ -1,3 +1,5 @@
+import type { BigNumber } from 'ethers';
+
 import bnb from '@assets/tokens/bnb.svg';
 import dai from '@assets/tokens/dai.svg';
 import eth from '@assets/tokens/eth.svg';
@@ -11,7 +13,7 @@ export enum TokenSymbol {
   MATIC = 'MATIC',
   BNB = 'BNB',
   USDT = 'USDT',
-  DAI = 'dai',
+  DAI = 'DAI',
 }
 
 export type TokenType = {
@@ -24,6 +26,10 @@ export type TokenType = {
 
 export type TokensStruct = {
   [token in TokenSymbol]?: TokenType;
+};
+
+export type TokensBalance = {
+  [token in TokenSymbol]: BigNumber;
 };
 
 const TOKENS_ETH_MAINNET: TokensStruct = {
