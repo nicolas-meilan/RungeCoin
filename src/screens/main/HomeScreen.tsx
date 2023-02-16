@@ -1,25 +1,22 @@
-import React from 'react';
-
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
 
 import ScreenLayout from '@components/ScreenLayout';
 import Text from '@components/Text';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
-import { getEthersOnEthereum } from '@http/cryptoScan';
-import { ReactQueryKeys } from '@utils/constants';
+import { getBalanceFromWallet } from '@web3/wallet';
 
 const HomeScreen = () => {
   const { walletPublicValues } = useWalletPublicValues();
 
-  const {
-    data: ethBalance,
-    isLoading: ethBalanceLoading,
-  } = useQuery({
-    queryKey: [ReactQueryKeys.ETH_BALANCE],
-    queryFn: () => getEthersOnEthereum(walletPublicValues!.address),
-  });
+  useEffect(() => {
+    const test = async () => {
+      const val = await getBalanceFromWallet(walletPublicValues!.address);
 
-  if (!ethBalance && ethBalanceLoading) return <></>;
+      console.log({val});
+    };
+
+    test();
+  }, []);
 
   return (
     <ScreenLayout
@@ -27,7 +24,7 @@ const HomeScreen = () => {
       bigTitle
       hasBack={false}
     >
-      <Text text={ethBalance || '0'} />
+      <Text text="test" />
     </ScreenLayout>
   );
 };

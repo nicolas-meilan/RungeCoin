@@ -5,6 +5,12 @@ import {
   validateMnemonic,
 } from 'bip39';
 import Wallet, { hdkey } from 'ethereumjs-wallet';
+import { Contract } from 'ethers';
+
+import { ethereumProvider } from './providers';
+import { BALANCE_CHECKER } from './smartContracts';
+import { TOKENS_ETH } from './tokensList';
+import { fromDecimalsToFullNumber } from '@utils/formatter';
 
 export const SEED_PHRASE_VALID_LENGTH = [12, 15, 18, 21, 24];
 const ETH_DERIVATION_PATH = "m/44'/60'/0'/0"; // m/purpose'/coin_type'/account'/change/index
@@ -36,4 +42,19 @@ export const createWalletFromKey = (key: string, isPrivate: boolean = true) => {
   const wallet = createWallet(bufferedKey);
 
   return wallet;
+};
+
+export const getBalanceFromWallet = async (walletAddress: string) => {
+  const tokenAddresses = Object.values(TOKENS_ETH).map(({ address }) => address);
+
+  const balanceChecker = new Contract(BALANCE_CHECKER.ethereum.address, BALANCE_CHECKER.ethereum.abi, ethereumProvider);
+
+  const balances = await balanceChecker.balances([walletAddress], tokenAddresses);
+  
+  const tokensWithBalance = Object.values(TOKENS_ETH).map((token, index) => ({
+    ...token,
+    balance: fromDecimalsToFullNumber(balances[index].toString(), token.decimals),
+  }));
+  
+  return tokensWithBalance;
 };

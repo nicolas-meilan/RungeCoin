@@ -12,7 +12,7 @@ import useBiometrics from '@hooks/useBiometrics';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
-import { PASSWORD_REGEX } from '@utils/constants';
+import { PASSWORD_REGEX } from '@utils/formatter';
 import { hashFrom } from '@utils/security';
 import { delay } from '@utils/time';
 import {

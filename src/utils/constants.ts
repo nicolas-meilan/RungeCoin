@@ -1,5 +1,3 @@
-export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-
 export enum ReactQueryKeys {
   THEME = 'theme',
   WALLET_PUBLIC_VALUES_KEY = 'wallet',
