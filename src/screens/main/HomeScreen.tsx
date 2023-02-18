@@ -6,6 +6,7 @@ import styled from 'styled-components/native';
 import Card from '@components/Card';
 import Pill, { Type } from '@components/Pill';
 import ScreenLayout from '@components/ScreenLayout';
+import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import Title from '@components/Title';
 import TokenItem from '@components/TokenItem';
@@ -44,12 +45,16 @@ const AdressPill = styled(Pill)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
 `;
 
+const BalanceSkeleton = styled(Skeleton)`
+  margin: ${({ theme }) => theme.spacing(5)} 0 ${({ theme }) => theme.spacing(10)} 0;
+`;
+
 const HomeScreen = () => {
   const { tokenBalances } = useBalances();
   const { walletPublicValues } = useWalletPublicValues();
   const {
     convert,
-    tokenConversionsLoading,
+    tokenConversions,
   } = useTokenConversions();
 
   const totalConvertedBalance = useMemo(() => {
@@ -64,10 +69,7 @@ const HomeScreen = () => {
     }, 0);
 
     return numberToFiatBalance(total, 'USD');
-  }, [tokenBalances, tokenConversionsLoading]);
-
-  // TODO add skeleton
-  if (!tokenBalances) return <></>;
+  }, [tokenBalances, tokenConversions]);
 
   const onPressAdress = () => {
     Clipboard.setString(walletPublicValues!.address); // TODO add copied notification
@@ -81,7 +83,13 @@ const HomeScreen = () => {
     >
       <CenterWrapper>
         <Subtitle title="main.home.balance" isSubtitle />
-        <Balance text={totalConvertedBalance} />
+        <BalanceSkeleton
+          isLoading={!tokenBalances || !tokenConversions}
+          width={200}
+          height={30}
+        >
+          <Balance text={totalConvertedBalance} />
+        </BalanceSkeleton>
         <AdressPill
           text={formatAddress(walletPublicValues!.address)}
           type={Type.INFO}
@@ -90,14 +98,22 @@ const HomeScreen = () => {
         />
       </CenterWrapper>
       <BalancesCard scroll>
-        {TOKENS.map((token: TokenType, index: number) => (
-          <TokenItem
-            key={`BALANCE_${token.name}`}
-            withoutMargin={!index}
-            balance={tokenBalances[token.symbol]}
-            {...token}
-          />
-        ))}
+        <Skeleton
+          isLoading={!tokenBalances}
+          quantity={TOKENS.length}
+          height={40}
+        >
+          <>
+            {tokenBalances && TOKENS.map((token: TokenType, index: number) => (
+              <TokenItem
+                key={`BALANCE_${token.name}`}
+                withoutMargin={!index}
+                balance={tokenBalances[token.symbol]}
+                {...token}
+              />
+            ))}
+          </>
+        </Skeleton>
       </BalancesCard>
     </ScreenLayout>
   );
