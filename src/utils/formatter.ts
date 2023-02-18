@@ -1,36 +1,59 @@
-import type { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { t } from 'i18next';
+
+import { FIAT_DECIMALS } from './constants';
+import { WALLET_ADRESS_LENGTH } from '@web3/wallet';
 
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
-const START_WITH_ZEROS_REGEX = /^0*(?!\.)/;
-const END_WITH_ZERO_REGEX = /\.{0,1}0*$/;
-const THROUS_SEPATATOR_REGEX = /\B(?=(\d{3})+(?!\d))/g;
-
-const baseBigNumberStringFormatter = (balance: string, decimals: number): string => {
-  const numberLengthDiff = balance.length - decimals;
-
-  let strBalance = '';
-  if (!numberLengthDiff) strBalance = `0.${balance}`;
-
-  if (numberLengthDiff > 0) {
-    strBalance = [balance.slice(0, numberLengthDiff), balance.slice(numberLengthDiff)].join('.');
-  } else {
-    strBalance = `0.${''.padStart(Math.abs(numberLengthDiff), '0')}${balance}`;
-  }
-
-  return strBalance.replace(START_WITH_ZEROS_REGEX, '').replace(END_WITH_ZERO_REGEX, '') || '0';
+type NumberToFormattedStringOptions = {
+  decimals?: number;
+  localize?: boolean;
+  fixedDecimals?: number;
 };
 
-export const bigNumberToFormattedString = (number: BigNumber, decimals: number): string => {
-  const numberAfterFirstIteration = baseBigNumberStringFormatter(number.toString(), decimals);
+export const numberToFormattedString = (
+  number: BigNumber | number,
+  {
+    decimals = 0,
+    localize = true,
+    fixedDecimals = 0,
+  }: NumberToFormattedStringOptions = {},
+): string => {
+  const numberAfterFirstIteration = decimals
+    ? utils.formatUnits(number, decimals)
+    : number.toString();
 
-  const [numberUnits, numberDecimals] = numberAfterFirstIteration.split('.');
+  const numberAfterSecondIteration = fixedDecimals
+    ? Number(numberAfterFirstIteration).toFixed(fixedDecimals).toString()
+    : numberAfterFirstIteration;
+
+  if (!fixedDecimals && !Number(numberAfterFirstIteration)) return '0';
+
+  if (!localize) return numberAfterSecondIteration;
+
+  const THROUS_SEPATATOR_REGEX = /\B(?=(\d{3})+(?!\d))/g;
+
+  const [numberUnits, numberDecimals] = numberAfterSecondIteration.split('.');
 
   const formattedUnits = numberUnits.replace(THROUS_SEPATATOR_REGEX, t('number.thousandSeparator'));
-
 
   return numberDecimals
     ? [formattedUnits, numberDecimals].join(t('number.decimalSeparator') || '')
     : formattedUnits;
+};
+
+export const numberToFiatBalance = (number: BigNumber | number, symbol?: string): string => (
+  `≈ **${numberToFormattedString(number, { fixedDecimals: FIAT_DECIMALS })}**${symbol ? ` ${symbol}` : ''}`
+);
+
+export const formatAddress = (adress: string) => {
+  const { length } = adress;
+  if (length !== WALLET_ADRESS_LENGTH) return '';
+
+  const START_LENGTH = 6;
+  const FINISH_LENGTH = 4;
+  const SEPARATOR = '...';
+
+  return [adress.slice(0, START_LENGTH), adress.slice(length - FINISH_LENGTH, length)].join(SEPARATOR);
 };

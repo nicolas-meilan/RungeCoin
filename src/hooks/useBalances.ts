@@ -11,13 +11,9 @@ type UseBalancesReturn = {
 };
 
 type QueryOptions = UseQueryOptions<TokensBalance | null, unknown, TokensBalance | null, ReactQueryKeys[]>;
-type UseBalanceProps = {
-  options?: (
-    Omit<QueryOptions, 'queryKey' | 'queryFn' | 'initialData'>
-  );
-};
+type UseBalanceProps = Omit<QueryOptions, 'queryKey' | 'queryFn' | 'initialData'>;
 
-const useBalances = ({ options }: UseBalanceProps = {}): UseBalancesReturn => {
+const useBalances = (options: UseBalanceProps = {}): UseBalancesReturn => {
   const { walletPublicValues } = useWalletPublicValues();
 
   const fetchBalances = async () => {

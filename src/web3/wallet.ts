@@ -12,6 +12,7 @@ import { ethereumProvider } from './providers';
 import { BALANCE_CHECKER } from './smartContracts';
 import { TokensBalance, TOKENS_ETH } from './tokens';
 
+export const WALLET_ADRESS_LENGTH = 42;
 export const SEED_PHRASE_VALID_LENGTH = [12, 15, 18, 21, 24];
 const ETH_DERIVATION_PATH = "m/44'/60'/0'/0"; // m/purpose'/coin_type'/account'/change/index
 const SEED_24_WORDS_STRENGTH = 256;

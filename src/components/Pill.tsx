@@ -36,10 +36,9 @@ const PillWrapper = styled.TouchableOpacity<{ color: string }>`
   flex-direction: row;
 `;
 
-const PillText = styled(Text)<{ borderColor: string }>`
-  color: ${({ theme }) => theme.colors.text.primary};
+const PillText = styled(Text)<{ borderColor: string; color: string }>`
+  color: ${({ color }) => color};
   border: 1px solid ${({ borderColor }) => borderColor};
-  background-color: ${({ theme }) => theme.colors.background.secondary};
   border-radius: ${({ theme }) => theme.borderRadius};
   padding: ${({ theme }) => theme.spacing(2)};
   justify-content: center;
@@ -61,6 +60,7 @@ const Pill = ({
     return (
       <PillText
         borderColor={theme.colors[type]}
+        color={theme.colors[type]}
         style={style}
         noI18n={noI18n}
         text={text}

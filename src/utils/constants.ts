@@ -5,4 +5,13 @@ export enum ReactQueryKeys {
   START_FLOW_FLAG = 'startFlowFlag',
   BIOMETRICS = 'biometrics',
   BALANCES = 'balances',
+  TOKEN_CONVERSIONS = 'tokenConversions',
 }
+
+export enum FiatCurrencies {
+  EUR = 'EUR',
+  USD = 'USD',
+  ARS = 'ARS',
+}
+
+export const FIAT_DECIMALS = 2;

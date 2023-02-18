@@ -18,7 +18,7 @@ export enum TokenSymbol {
 
 export type TokenType = {
   name: string;
-  symbol: string;
+  symbol: TokenSymbol;
   address: string;
   decimals: number;
   svg: SvgProps['svg'];
@@ -77,6 +77,34 @@ const TOKENS_ETH_GOERLI: TokensStruct = {
     address: '0x0000000000000000000000000000000000000000',
     decimals: 18,
     svg: eth,
+  },
+  [TokenSymbol.MATIC]: {
+    name: 'Matic',
+    symbol: TokenSymbol.MATIC,
+    address: '0x88eC360e09A9cD9B37Df80c4cd587Ee375409f8C',
+    decimals: 18,
+    svg: matic,
+  },
+  [TokenSymbol.BNB]: {
+    name: 'Token BNB',
+    symbol: TokenSymbol.BNB,
+    address: '0xfb501A48aFFC39aa4b4C83A025D4F0b5C1ca4A6C',
+    decimals: 18,
+    svg: bnb,
+  },
+  [TokenSymbol.DAI]: {
+    name: 'Dai Stablecoin',
+    symbol: TokenSymbol.DAI,
+    address: '0xf2edF1c091f683E3fb452497d9a98A49cBA84666',
+    decimals: 18,
+    svg: dai,
+  },
+  [TokenSymbol.USDT]: {
+    name: 'Tether USD',
+    symbol: TokenSymbol.USDT,
+    address: '0xC51FceEc013cD34aE2e95E6D64E9858F2aC28fFf',
+    decimals: 6,
+    svg: usdt,
   },
 };
 

@@ -32,7 +32,6 @@ const TouchableCardWrapper = styled.TouchableOpacity<{
   ${({ full }) => (full ? 'flex: 1;' : '')}
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius};
-  align-items: flex-start;
   ${({ withoutSeparations, theme }) => (withoutSeparations ? `padding: ${theme.spacing(4)};` : '')}
 `;
 
@@ -43,13 +42,13 @@ const CardWrapper = styled.View<{
   ${({ full }) => (full ? 'flex: 1;' : '')}
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius};
-  align-items: flex-start;
   ${({ withoutSeparations, theme }) => (withoutSeparations ? `padding: ${theme.spacing(4)};` : '')}
 `;
 
 const Separator = styled.View`
   background-color: ${({ theme }) => theme.colors.border};
   height: 1px;
+  width: 100%;
 `;
 
 const ChildrenItemWrapper = styled.View`

@@ -44,6 +44,10 @@
         "passwordPH": "Contraseña",
         "passwordError": "Contraseña incorrecta, te quedan {{remainingAttemps}} intentos."
       }
+    },
+    "home": {
+      "title": "Mis criptos",
+      "balance": "Balance total"
     }
   },
   "number": {
