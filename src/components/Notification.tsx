@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useWindowDimensions } from 'react-native';
 
+import Animated, {
+  SlideInDown,
+  SlideOutDown,
+} from 'react-native-reanimated';
 import styled, { useTheme } from 'styled-components/native';
 
-import Text from './Text';
-import useNotifications, {
+import Text from '../components/Text';
+import type {
   Notification as TypeNotification,
 } from '@hooks/useNotifications';
-import { delay } from '@utils/time';
 
-const NOTIFICATION_TIME = 5;
-
-const NotificationWrapper = styled.View<{
+const NotificationWrapper = styled(Animated.View) <{
   color: string;
   width: number;
 }>`
@@ -32,57 +33,25 @@ const NotificationText = styled(Text)`
   color: ${({ theme }) => theme.colors.text.inverted};
 `;
 
-const Notification = () => {
+const ANIMATION_TIME = 500;
+type NotificationProps = {
+  notification: TypeNotification;
+};
+
+const Notification = ({
+  notification,
+}: NotificationProps) => {
   const theme = useTheme();
   const { width } = useWindowDimensions();
 
-  const {
-    notification,
-    resetNotification,
-  } = useNotifications({
-    enabled: true,
-    refetchOnMount: true,
-  });
-
-  const [notificationsQueue, setNotificationsQueue] = useState<TypeNotification[]>([]);
-  const [showNotification, setShowNotification] = useState(false);
-
-  useEffect(() => {
-    if (notification) {
-      setNotificationsQueue((prevNotificationsQueue: TypeNotification[]) => [
-        ...prevNotificationsQueue,
-        notification,
-      ]);
-    }
-  }, [notification]);
-
-  const dispatch = async () => {
-    setShowNotification(true);
-
-    await delay(NOTIFICATION_TIME);
-    setNotificationsQueue((prevNotificationsQueue: TypeNotification[]) => {
-      prevNotificationsQueue.shift();
-      return [...prevNotificationsQueue];
-    });
-    resetNotification();
-  };
-
-  const hasNotifications = !!notificationsQueue.length;
-
-  useEffect(() => {
-    if (hasNotifications) {
-      dispatch();
-    }
-  }, [hasNotifications]);
-
-  if (!showNotification || !hasNotifications) return null;
-
   return (
     <NotificationWrapper
-      color={theme.colors[notificationsQueue[0].type]}
       width={width - (2 * theme.spacingNative(6))}
+      color={theme.colors[notification.type]}
+      entering={SlideInDown.duration(ANIMATION_TIME)}
+      exiting={SlideOutDown.duration(ANIMATION_TIME)}
     >
-      <NotificationText text={notificationsQueue[0].message} />
+      <NotificationText text={notification.message} />
     </NotificationWrapper>
   );
 };

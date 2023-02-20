@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import initializeI18nConfig from './locale/i18nConfig';
-import Notification from '@components/Notification';
+import Notification from '@containers/Notification';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import Navigator from '@navigation/Navigator';
