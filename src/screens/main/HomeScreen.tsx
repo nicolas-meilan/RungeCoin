@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import styled from 'styled-components/native';
 
+import Button, { ButtonType } from '@components/Button';
 import Card from '@components/Card';
 import Pill, { Type } from '@components/Pill';
 import ScreenLayout from '@components/ScreenLayout';
@@ -11,6 +12,7 @@ import Text from '@components/Text';
 import Title from '@components/Title';
 import TokenItem from '@components/TokenItem';
 import useBalances from '@hooks/useBalances';
+import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { formatAddress, numberToFiatBalance } from '@utils/formatter';
@@ -38,7 +40,12 @@ const Subtitle = styled(Title)`
 
 const CenterWrapper = styled.View`
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing(10)};
+  margin: ${({ theme }) => theme.spacing(10)};
+`;
+
+const ButtonsWrapper = styled.View`
+  flex-direction: row;
+  margin-top: ${({ theme }) => theme.spacing(10)};
 `;
 
 const AdressPill = styled(Pill)`
@@ -49,9 +56,15 @@ const BalanceSkeleton = styled(Skeleton)`
   margin: ${({ theme }) => theme.spacing(5)} 0 ${({ theme }) => theme.spacing(10)} 0;
 `;
 
+const ActionButton = styled(Button)<{ margin?: boolean }>`
+  flex: 1;
+  ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
+`;
+
 const HomeScreen = () => {
   const { tokenBalances } = useBalances();
   const { walletPublicValues } = useWalletPublicValues();
+  const { dispatchNotification } = useNotifications();
   const {
     convert,
     tokenConversions,
@@ -72,15 +85,33 @@ const HomeScreen = () => {
   }, [tokenBalances, tokenConversions]);
 
   const onPressAdress = () => {
-    Clipboard.setString(walletPublicValues!.address); // TODO add copied notification
+    Clipboard.setString(walletPublicValues!.address);
+    dispatchNotification('main.home.addressCopied', NotificationTypes.SUCCESS);
   };
 
   return (
     <ScreenLayout
-      title='main.home.title'
+      title="main.home.title"
+      rightIcon="cog-outline"
       bigTitle
+      rightIconOnBigTitle
       hasBack={false}
     >
+      <ButtonsWrapper>
+        <ActionButton
+          margin
+          icon="arrow-top-right"
+          type={ButtonType.SECONDARY}
+          text="common.send"
+          onPress={() => { }}
+        />
+        <ActionButton
+          icon="arrow-bottom-left"
+          type={ButtonType.SECONDARY}
+          text="common.receive"
+          onPress={() => { }}
+        />
+      </ButtonsWrapper>
       <CenterWrapper>
         <Subtitle title="main.home.balance" isSubtitle />
         <BalanceSkeleton

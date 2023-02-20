@@ -1,5 +1,4 @@
 import {
-  useMutation,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -26,18 +25,9 @@ const useStartFlowFlag = (): UseStartFlowFlagReturn => {
     refetchOnMount: false,
   });
 
-  const setFlag = async (newComesFromStartFlow: boolean) => newComesFromStartFlow;
-
-  const { mutate: mutateComesFromStartFlow } = useMutation({
-    mutationKey: [ReactQueryKeys.START_FLOW_FLAG],
-    mutationFn: setFlag,
-  });
-
-  const setComesFromStartFlow = (newComesFromStartFlow: boolean) => mutateComesFromStartFlow(newComesFromStartFlow, {
-    onSuccess: (newComesFromStartFlowResult: boolean) => (
-      queryClient.setQueryData([ReactQueryKeys.START_FLOW_FLAG], newComesFromStartFlowResult)
-    ),
-  });
+  const setComesFromStartFlow = (newComesFromStartFlow: boolean) => (
+    queryClient.setQueryData([ReactQueryKeys.START_FLOW_FLAG], newComesFromStartFlow)
+  );
 
   return {
     comesFromStartFlow,

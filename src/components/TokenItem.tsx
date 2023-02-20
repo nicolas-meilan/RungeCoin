@@ -3,6 +3,7 @@ import React from 'react';
 import type { BigNumber } from 'ethers';
 import styled from 'styled-components/native';
 
+import Skeleton from './Skeleton';
 import Svg from './Svg';
 import Text from './Text';
 import useTokenConversions from '@hooks/useTokenConversions';
@@ -48,7 +49,7 @@ const TokenItem = ({
 }: TokenItemProps) => {
   const {
     convert,
-    tokenConversionsLoading,
+    tokenConversions,
   } = useTokenConversions({
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -63,11 +64,12 @@ const TokenItem = ({
       <Svg svg={svg} />
       <DataColumn>
         <TokenBalance text={`${balanceFormatted} ${symbol}`} noI18n />
-        {tokenConversionsLoading ? (
-          <></>
-        ) : (
+        <Skeleton
+          isLoading={!tokenConversions}
+          height={15}
+        >
           <TokenConverted text={balanceConverted} noI18n />
-        )}
+        </Skeleton>
       </DataColumn>
     </WrapperItem>
   );

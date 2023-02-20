@@ -26,6 +26,7 @@ const WordPill = styled(Pill)`
   border: 0px;
   margin: 0 ${({ theme }) => theme.spacing(2)} ${({ theme }) => theme.spacing(2)} 0;
   font-size: ${({ theme }) => theme.fonts.size[16]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 const MessageText = styled(Text)`

@@ -2,7 +2,9 @@
   "common": {
     "appName": "RungeCoin",
     "continue": "Continuar",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "send": "Enviar",
+    "receive": "Recibir"
   },
   "access": {
     "welcome": {
@@ -47,7 +49,8 @@
     },
     "home": {
       "title": "Mis criptos",
-      "balance": "Balance total"
+      "balance": "Balance total",
+      "addressCopied": "Dirección copiada correctamente"
     }
   },
   "number": {

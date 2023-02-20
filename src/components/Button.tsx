@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleProp, TextStyle, ViewStyle } from 'react-native
 
 import styled, { useTheme } from 'styled-components/native';
 
+import Icon from './Icon';
 import Text, { TextProps, Weight } from './Text';
 
 export enum ButtonType {
@@ -17,6 +18,7 @@ type ButtonProps = {
   type?: ButtonType;
   disabled?: boolean;
   loading?: boolean;
+  icon?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -28,8 +30,17 @@ const ButtonWrapper = styled.TouchableOpacity`
   height: ${({ theme }) => theme.inputsHeight.small};
 `;
 
+const ContentWrapper = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+
 const ButtonText = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
+`;
+
+const BottonIcon = styled(Icon)`
+  margin-right: ${({ theme }) => theme.spacing(1)};
 `;
 
 const Button = ({
@@ -37,6 +48,7 @@ const Button = ({
   onPress,
   style,
   i18nArgs,
+  icon,
   loading = false,
   disabled = false,
   type = ButtonType.PRIMARY,
@@ -61,10 +73,12 @@ const Button = ({
     },
     [ButtonType.SECONDARY]: {
       button: {
-        backgroundColor: theme.colors.secondary,
+        borderColor: theme.colors.secondary,
+        borderStyle: 'solid',
+        borderWidth: 1,
       },
       text: {
-        color: theme.colors.text.primary,
+        color: theme.colors.secondary,
       },
     },
     [ButtonType.TERTIARY]: {
@@ -93,12 +107,20 @@ const Button = ({
       style={[styleByType[type].button, style, disabledColorStyleButton]}
     >
       {!loading && (
-        <ButtonText
-          text={text}
-          weight={Weight.BOLD}
-          i18nArgs={i18nArgs}
-          style={[styleByType[type].text, disabledColorStyleText]}
-        />
+        <ContentWrapper>
+          {icon && (
+            <BottonIcon
+              name={icon}
+              style={[styleByType[type].text, disabledColorStyleText]}
+            />
+          )}
+          <ButtonText
+            text={text}
+            weight={Weight.BOLD}
+            i18nArgs={i18nArgs}
+            style={[styleByType[type].text, disabledColorStyleText]}
+          />
+        </ContentWrapper>
       )}
       {loading && (
         <ActivityIndicator

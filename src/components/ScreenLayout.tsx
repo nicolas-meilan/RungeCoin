@@ -21,6 +21,9 @@ type ScreenLayoutProps = {
   hasFooterBanner?: boolean;
   keyboardAvoidingView?: boolean;
   waitUntilNavigationFinish?: boolean;
+  rightIcon?: string;
+  rightIconOnBigTitle?: boolean;
+  onPressRightIcon?: () => void;
   goBack?: () => void;
 };
 
@@ -41,6 +44,7 @@ const StaticLayout = styled.View`
 `;
 
 const Header = styled(StaticLayout)`
+  flex-direction: row;
   align-items: center;
 `;
 
@@ -73,16 +77,33 @@ const LoadingWrapper = styled.View`
   justify-content: center;
 `;
 
+const HeaderRightIconWrapper = styled.View`
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+`;
+
+const HeaderRightIcon = styled(Icon)`
+  color: ${({ theme }) => theme.colors.info};
+`;
+
+const BigTitleWrapper = styled.View`
+  flex-direction: row;
+`;
+
 const ScreenLayout = ({
   children,
   title,
   goBack,
+  onPressRightIcon,
+  rightIcon,
   scroll = false,
   hasBack = true,
   hasFooterBanner = false,
   bigTitle = false,
   keyboardAvoidingView = false,
   waitUntilNavigationFinish = false,
+  rightIconOnBigTitle = false,
 }: ScreenLayoutProps) => {
   const theme = useTheme();
   const navigation = useNavigation();
@@ -112,7 +133,7 @@ const ScreenLayout = ({
 
   const hasHeaderTitle = !bigTitle && !!title;
   const hasBigTitle = bigTitle && !!title;
-  const hasHeader = hasHeaderTitle || hasBack;
+  const hasHeader = hasHeaderTitle || hasBack || (!rightIconOnBigTitle && rightIcon);
 
   const backAction = goBack ? goBack : () => navigation.goBack();
 
@@ -141,9 +162,21 @@ const ScreenLayout = ({
           <Header>
             {hasBack && <Icon onPress={backAction} name="chevron-left" />}
             {hasHeaderTitle && <HeaderTitle text={title} />}
+            {rightIcon && !rightIconOnBigTitle && (
+              <HeaderRightIconWrapper>
+                <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
+              </HeaderRightIconWrapper>)}
           </Header>
         )}
-        {hasBigTitle && <Title title={title} />}
+        {hasBigTitle && (
+          <BigTitleWrapper>
+            <Title title={title} />
+            {rightIcon && rightIconOnBigTitle && (
+              <HeaderRightIconWrapper>
+                <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
+              </HeaderRightIconWrapper>)}
+          </BigTitleWrapper>
+        )}
         {canRender ? content : loadingScreen}
         {hasFooterBanner && !isKeyboardOpen && (
           <Footer>
