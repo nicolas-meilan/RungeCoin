@@ -42,6 +42,7 @@ const PillText = styled(Text)<{ borderColor: string; color: string }>`
   border-radius: ${({ theme }) => theme.borderRadius};
   padding: ${({ theme }) => theme.spacing(2)};
   justify-content: center;
+  vertical-align: middle;
 `;
 
 const Pill = ({

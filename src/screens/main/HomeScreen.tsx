@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { ScrollView } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import QRCode from 'react-native-qrcode-svg';
 import styled from 'styled-components/native';
 
 import Button, { ButtonType } from '@components/Button';
@@ -11,6 +13,7 @@ import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import Title from '@components/Title';
 import TokenItem from '@components/TokenItem';
+import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
@@ -56,12 +59,22 @@ const BalanceSkeleton = styled(Skeleton)`
   margin: ${({ theme }) => theme.spacing(5)} 0 ${({ theme }) => theme.spacing(10)} 0;
 `;
 
-const ActionButton = styled(Button)<{ margin?: boolean }>`
+const ActionButton = styled(Button) <{ margin?: boolean }>`
   flex: 1;
   ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
 `;
 
+const Address = styled(Text)`
+  margin-top: ${({ theme }) => theme.spacing(10)};
+  font-size: ${({ theme }) => theme.fonts.size[20]};
+  color: ${({ theme }) => theme.colors.info};
+  text-decoration-line: underline;
+  text-align: center;
+`;
+
 const HomeScreen = () => {
+  const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
+
   const { tokenBalances } = useBalances();
   const { walletPublicValues } = useWalletPublicValues();
   const { dispatchNotification } = useNotifications();
@@ -89,64 +102,86 @@ const HomeScreen = () => {
     dispatchNotification('main.home.addressCopied', NotificationTypes.SUCCESS);
   };
 
+  const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
+
   return (
-    <ScreenLayout
-      title="main.home.title"
-      rightIcon="cog-outline"
-      bigTitle
-      rightIconOnBigTitle
-      hasBack={false}
-    >
-      <ButtonsWrapper>
-        <ActionButton
-          margin
-          icon="arrow-top-right"
-          type={ButtonType.SECONDARY}
-          text="common.send"
-          onPress={() => { }}
-        />
-        <ActionButton
-          icon="arrow-bottom-left"
-          type={ButtonType.SECONDARY}
-          text="common.receive"
-          onPress={() => { }}
-        />
-      </ButtonsWrapper>
-      <CenterWrapper>
-        <Subtitle title="main.home.balance" isSubtitle />
-        <BalanceSkeleton
-          isLoading={!tokenBalances || !tokenConversions}
-          width={200}
-          height={30}
-        >
-          <Balance text={totalConvertedBalance} />
-        </BalanceSkeleton>
-        <AdressPill
-          text={formatAddress(walletPublicValues!.address)}
-          type={Type.INFO}
-          onPress={onPressAdress}
-          noI18n
-        />
-      </CenterWrapper>
-      <BalancesCard scroll>
-        <Skeleton
-          isLoading={!tokenBalances}
-          quantity={TOKENS.length}
-          height={40}
-        >
-          <>
-            {tokenBalances && TOKENS.map((token: TokenType, index: number) => (
-              <TokenItem
-                key={`BALANCE_${token.name}`}
-                withoutMargin={!index}
-                balance={tokenBalances[token.symbol]}
-                {...token}
-              />
-            ))}
-          </>
-        </Skeleton>
-      </BalancesCard>
-    </ScreenLayout>
+    <>
+      <ScreenLayout
+        title="main.home.title"
+        rightIcon="cog-outline"
+        bigTitle
+        rightIconOnBigTitle
+        hasBack={false}
+      >
+        <ButtonsWrapper>
+          <ActionButton
+            margin
+            icon="arrow-top-right"
+            type={ButtonType.SECONDARY}
+            text="common.send"
+            onPress={() => {}}
+          />
+          <ActionButton
+            icon="arrow-bottom-left"
+            type={ButtonType.SECONDARY}
+            text="common.receive"
+            onPress={() => toggleReceiveBottomSheet(true)}
+          />
+        </ButtonsWrapper>
+        <CenterWrapper>
+          <Subtitle title="main.home.balance" isSubtitle />
+          <BalanceSkeleton
+            isLoading={!tokenBalances || !tokenConversions}
+            width={200}
+            height={30}
+          >
+            <Balance text={totalConvertedBalance} />
+          </BalanceSkeleton>
+          <AdressPill
+            text={formatAddress(walletPublicValues!.address)}
+            type={Type.INFO}
+            onPress={onPressAdress}
+            noI18n
+          />
+        </CenterWrapper>
+        <BalancesCard scroll>
+          <Skeleton
+            isLoading={!tokenBalances}
+            quantity={TOKENS.length}
+            height={40}
+          >
+            <>
+              {tokenBalances && TOKENS.map((token: TokenType, index: number) => (
+                <TokenItem
+                  key={`BALANCE_${token.name}`}
+                  withoutMargin={!index}
+                  balance={tokenBalances[token.symbol]}
+                  {...token}
+                />
+              ))}
+            </>
+          </Skeleton>
+        </BalancesCard>
+      </ScreenLayout>
+      <BottomSheet
+        visible={receiveBottomSheet}
+        onClose={() => toggleReceiveBottomSheet(false)}
+      >
+        <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
+          <Card>
+            <QRCode
+              value={walletPublicValues!.address}
+              size={250}
+            />
+          </Card>
+          <Address
+            text={walletPublicValues!.address}
+            onPress={onPressAdress}
+            noI18n
+          />
+        </ScrollView>
+      </BottomSheet>
+    </>
   );
 };
 

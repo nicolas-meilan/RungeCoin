@@ -69,6 +69,7 @@ const Text = ({
         {splittedText.map((currentText, index) => (
           <StyledText
             key={`TEXT_${currentText}_${index}`}
+            onPress={onPress}
             style={[{ fontWeight: weightForIndex(index) }, style, getStyleForIndex(index)]}
           >
             {currentText}
