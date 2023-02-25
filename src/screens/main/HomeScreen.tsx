@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
-import QRCode from 'react-native-qrcode-svg';
 import styled from 'styled-components/native';
 
 import Button, { ButtonType } from '@components/Button';
 import Card from '@components/Card';
 import Pill, { Type } from '@components/Pill';
+import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
@@ -62,14 +61,6 @@ const BalanceSkeleton = styled(Skeleton)`
 const ActionButton = styled(Button) <{ margin?: boolean }>`
   flex: 1;
   ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
-`;
-
-const Address = styled(Text)`
-  margin-top: ${({ theme }) => theme.spacing(10)};
-  font-size: ${({ theme }) => theme.fonts.size[20]};
-  color: ${({ theme }) => theme.colors.info};
-  text-decoration-line: underline;
-  text-align: center;
 `;
 
 const HomeScreen = () => {
@@ -167,19 +158,7 @@ const HomeScreen = () => {
         visible={receiveBottomSheet}
         onClose={() => toggleReceiveBottomSheet(false)}
       >
-        <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-          <Card>
-            <QRCode
-              value={walletPublicValues!.address}
-              size={250}
-            />
-          </Card>
-          <Address
-            text={walletPublicValues!.address}
-            onPress={onPressAdress}
-            noI18n
-          />
-        </ScrollView>
+        <Receive onPressAddress={onPressAdress} />
       </BottomSheet>
     </>
   );

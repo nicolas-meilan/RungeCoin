@@ -51,6 +51,10 @@
       "title": "Mis criptos",
       "balance": "Balance total",
       "addressCopied": "Dirección copiada correctamente"
+    },
+    "receive": {
+      "title": "Recibir",
+      "qrMessage": "Escanea este QR para recibir cryptos"
     }
   },
   "number": {

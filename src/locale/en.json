@@ -51,6 +51,10 @@
       "title": "My cryptos",
       "balance": "Total balance",
       "addressCopied": "Address copied correctly"
+    },
+    "receive": {
+      "title": "Receive",
+      "qrMessage": "Scan this QR to receive cryptos"
     }
   },
   "number": {
