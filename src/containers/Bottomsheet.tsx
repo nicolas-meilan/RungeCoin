@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { TouchableWithoutFeedback, useWindowDimensions } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -7,10 +7,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
 const Z_INDEX = 1000;
-const TOP_MARGIN = 100;
+const TOP_MARGIN = 150;
 const RADIUS = 30;
-const ANIMATION_DURATION = 700;
-const SWIPE_TO_CLOSE = 0.35;
+const ANIMATION_DURATION = 500;
+const SWIPE_TO_CLOSE = 0.30;
 
 type BottomSheetProps = {
   visible?: boolean;
@@ -78,10 +78,13 @@ const BottomSheet = ({
   const { height, width } = useWindowDimensions();
   const bottomSheetHeight = height - TOP_MARGIN;
 
-  const bottomSheetVisibleY = TOP_MARGIN;
+  const bottomSheetVisibleY = 0;
   const bottomSheetNotVisibleY = bottomSheetHeight;
 
   const currentY = useSharedValue(bottomSheetNotVisibleY);
+  const initialGetureY = useSharedValue(currentY.value);
+  const animationInProgress = useSharedValue(false);
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: currentY.value }],
   }));
@@ -94,21 +97,29 @@ const BottomSheet = ({
   const toggleBottomSheet = (show: boolean, executeOnClose?: boolean) => {
     'worklet';
 
+    if (animationInProgress.value) return;
+
+    animationInProgress.value = true;
     if (show) runOnJS(toggleCanShow)(true);
 
-    const onHideAnimationFinish = () => {
+    const onAnimationFinish = (isFinished?: boolean) => {
       'worklet';
 
-      const isHide = currentY.value !== bottomSheetNotVisibleY;
-      if (isHide) return;
-      runOnJS(toggleCanShow)(false, executeOnClose);
+      const isHide = currentY.value === bottomSheetNotVisibleY;
+      const isVisible = currentY.value === bottomSheetVisibleY;
+
+      if (isFinished && (isHide || isVisible)) {
+        animationInProgress.value = false;
+      }
+
+      if (isFinished && isHide) runOnJS(toggleCanShow)(false, executeOnClose);
     };
 
     currentY.value = withTiming(show
       ? bottomSheetVisibleY
       : bottomSheetNotVisibleY, {
       duration: ANIMATION_DURATION,
-    }, onHideAnimationFinish);
+    }, onAnimationFinish);
   };
 
   useEffect(() => {
@@ -128,40 +139,56 @@ const BottomSheet = ({
   if (!canShow) return null;
 
   const gesture = Gesture.Pan()
+    .onBegin((event) => {
+      if (animationInProgress.value) {
+        initialGetureY.value = -1;
+        return;
+      }
+
+      initialGetureY.value = event.absoluteY;
+    })
     .onUpdate((event) => {
-      const newY = event.absoluteY - TOP_MARGIN;
+      const avoidChanges = animationInProgress.value || initialGetureY.value < 0;
+      if (avoidChanges) return;
+
+      const newY = event.absoluteY - initialGetureY.value;
       const overflow = newY <= bottomSheetVisibleY;
 
       currentY.value = overflow ? bottomSheetVisibleY : newY;
     })
     .onFinalize((event) => {
-      const finalY = event.absoluteY - TOP_MARGIN;
+      const avoidChanges = animationInProgress.value || initialGetureY.value < 0;
+      if (avoidChanges) return;
+
+      const finalY = event.absoluteY - initialGetureY.value;
       const hideBottomSheet = finalY >= bottomSheetNotVisibleY * SWIPE_TO_CLOSE;
       toggleBottomSheet(!hideBottomSheet, hideBottomSheet);
     });
 
   return (
     <>
-      <Overlay
-        width={width}
-        height={height}
-      />
-      <BottomSheetContainer
-        width={width}
-        height={bottomSheetHeight}
-        style={animatedStyle}
-      >
-        <BottomSheetContent>
-          <GestureDetector gesture={gesture}>
-            <Top collapsable={false}>
+      <TouchableWithoutFeedback onPress={() => toggleBottomSheet(false, true)}>
+        <Overlay
+          width={width}
+          height={height}
+        />
+      </TouchableWithoutFeedback>
+      <GestureDetector gesture={gesture}>
+        <BottomSheetContainer
+          width={width}
+          height={bottomSheetHeight}
+          style={animatedStyle}
+        >
+          <BottomSheetContent>
+            <Top>
               <TopLine />
             </Top>
-          </GestureDetector>
-          <ChildrenWrapper>
-            {children}
-          </ChildrenWrapper>
-        </BottomSheetContent>
-      </BottomSheetContainer>
+            <ChildrenWrapper>
+              {children}
+            </ChildrenWrapper>
+          </BottomSheetContent>
+        </BottomSheetContainer>
+      </GestureDetector>
     </>
   );
 };
