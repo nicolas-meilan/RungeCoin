@@ -59,7 +59,7 @@ export const dark: Colors = {
   border: '#C5CAE0',
   background: {
     primary: '#000000',
-    secondary: '#323235',
+    secondary: '#1e1e1e',
   },
   text: {
     primary: '#FFFFFF',

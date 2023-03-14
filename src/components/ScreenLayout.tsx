@@ -12,8 +12,9 @@ import Text from './Text';
 import Title from './Title';
 import logo from '@assets/logo.svg';
 
+type Children = JSX.Element | false;
 type ScreenLayoutProps = {
-  children: JSX.Element | JSX.Element[];
+  children: Children | Children[];
   scroll?: boolean;
   title?: string;
   bigTitle?: boolean;
@@ -23,6 +24,7 @@ type ScreenLayoutProps = {
   waitUntilNavigationFinish?: boolean;
   rightIcon?: string;
   rightIconOnBigTitle?: boolean;
+  bottomSheetOpened?: boolean;
   onPressRightIcon?: () => void;
   goBack?: () => void;
 };
@@ -67,8 +69,10 @@ const BaseWrapper = styled.View`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
-const ScrollViewWrapper = styled.ScrollView`
+const ScrollViewWrapper = styled.ScrollView<{ bottomSheetOpened?: boolean }>`
+  flex: 1;
   margin-top: ${({ theme }) => theme.spacing(4)};
+  ${({ bottomSheetOpened }) => (bottomSheetOpened ? 'overflow: visible;' : '')}
 `;
 
 const LoadingWrapper = styled.View`
@@ -104,6 +108,7 @@ const ScreenLayout = ({
   keyboardAvoidingView = false,
   waitUntilNavigationFinish = false,
   rightIconOnBigTitle = false,
+  bottomSheetOpened = false,
 }: ScreenLayoutProps) => {
   const theme = useTheme();
   const navigation = useNavigation();
@@ -137,10 +142,22 @@ const ScreenLayout = ({
 
   const backAction = goBack ? goBack : () => navigation.goBack();
 
+  const contentContainerStyle = {
+    margin: -theme.spacingNative(6),
+    padding: theme.spacingNative(6),
+    ...(bottomSheetOpened ? { flex: 1 } : {}),
+  };
 
   const contentScrollCondition = scroll
-    ? <ScrollViewWrapper showsVerticalScrollIndicator={false}>{children}</ScrollViewWrapper>
-    : <BaseWrapper>{children}</BaseWrapper>;
+    ? (
+      <ScrollViewWrapper
+        bottomSheetOpened={bottomSheetOpened}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={contentContainerStyle}
+      >
+        {children}
+      </ScrollViewWrapper>
+    ) : <BaseWrapper>{children}</BaseWrapper>;
 
   const content = keyboardAvoidingView ? (
     <KeyboardAvoidingView>

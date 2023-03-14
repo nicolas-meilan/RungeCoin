@@ -1,13 +1,15 @@
 import React, { useMemo, useState } from 'react';
+import { ScrollView } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
 import Button, { ButtonType } from '@components/Button';
-import Card from '@components/Card';
 import Pill, { Type } from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
+import Separator from '@components/Separator';
 import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import Title from '@components/Title';
@@ -15,8 +17,11 @@ import TokenItem from '@components/TokenItem';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
+import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import { ScreenName } from '@navigation/constants';
+import { MainNavigatorType } from '@navigation/MainNavigator';
 import { formatAddress, numberToFiatBalance } from '@utils/formatter';
 import {
   TOKENS_ETH,
@@ -24,16 +29,11 @@ import {
 } from '@web3/tokens';
 
 const TOKENS = Object.values(TOKENS_ETH);
-const CARD_HEIGHT = 300;
 
 const Balance = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[28]};
   text-align: center;
-  margin: ${({ theme }) => theme.spacing(2)} 0 ${({ theme }) => theme.spacing(10)} 0;
-`;
-
-const BalancesCard = styled(Card)`
-  height: ${CARD_HEIGHT}px;
+  margin: ${({ theme }) => theme.spacing(2)} 0 ${({ theme }) => theme.spacing(4)} 0;
 `;
 
 const Subtitle = styled(Title)`
@@ -42,12 +42,12 @@ const Subtitle = styled(Title)`
 
 const CenterWrapper = styled.View`
   align-items: center;
-  margin: ${({ theme }) => theme.spacing(10)};
+  margin: ${({ theme }) => theme.spacing(4)};
 `;
 
 const ButtonsWrapper = styled.View`
   flex-direction: row;
-  margin-top: ${({ theme }) => theme.spacing(10)};
+  margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
 const AdressPill = styled(Pill)`
@@ -55,7 +55,7 @@ const AdressPill = styled(Pill)`
 `;
 
 const BalanceSkeleton = styled(Skeleton)`
-  margin: ${({ theme }) => theme.spacing(5)} 0 ${({ theme }) => theme.spacing(10)} 0;
+  margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(4)} 0;
 `;
 
 const ActionButton = styled(Button) <{ margin?: boolean }>`
@@ -63,16 +63,23 @@ const ActionButton = styled(Button) <{ margin?: boolean }>`
   ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
 `;
 
-const HomeScreen = () => {
+type HomeScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.home>;
+
+const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
 
-  const { tokenBalances } = useBalances();
+  const { tokenBalances, refetchBalances, tokenBalancesLoading } = useBalances();
   const { walletPublicValues } = useWalletPublicValues();
   const { dispatchNotification } = useNotifications();
   const {
     convert,
     tokenConversions,
   } = useTokenConversions();
+
+  const refreshControl = usePull2Refresh({
+    loading: tokenBalancesLoading,
+    fetch: refetchBalances,
+  });
 
   const totalConvertedBalance = useMemo(() => {
     if (!tokenBalances) return '0 USD';
@@ -93,6 +100,10 @@ const HomeScreen = () => {
     dispatchNotification('main.home.addressCopied', NotificationTypes.SUCCESS);
   };
 
+  const onPressSend = () => navigation.navigate(ScreenName.send);
+  const onPressToken = (token: TokenType) => navigation.navigate(ScreenName.send, { // TODO token screen
+    tokenToSendSymbol: token.symbol,
+  });
   const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
 
   return (
@@ -103,6 +114,7 @@ const HomeScreen = () => {
         bigTitle
         rightIconOnBigTitle
         hasBack={false}
+        keyboardAvoidingView
       >
         <ButtonsWrapper>
           <ActionButton
@@ -110,7 +122,7 @@ const HomeScreen = () => {
             icon="arrow-top-right"
             type={ButtonType.SECONDARY}
             text="common.send"
-            onPress={() => {}}
+            onPress={onPressSend}
           />
           <ActionButton
             icon="arrow-bottom-left"
@@ -135,24 +147,30 @@ const HomeScreen = () => {
             noI18n
           />
         </CenterWrapper>
-        <BalancesCard scroll>
-          <Skeleton
-            isLoading={!tokenBalances}
-            quantity={TOKENS.length}
-            height={40}
+        <Separator />
+        <Skeleton
+          isLoading={!tokenBalances}
+          quantity={TOKENS.length}
+          height={40}
+        >
+          <ScrollView
+            refreshControl={refreshControl}
+            nestedScrollEnabled
+            showsVerticalScrollIndicator={false}
           >
-            <>
-              {tokenBalances && TOKENS.map((token: TokenType, index: number) => (
-                <TokenItem
-                  key={`BALANCE_${token.name}`}
-                  withoutMargin={!index}
-                  balance={tokenBalances[token.symbol]}
-                  {...token}
-                />
-              ))}
-            </>
-          </Skeleton>
-        </BalancesCard>
+            {tokenBalances && TOKENS.map((token: TokenType, index: number) => (
+              <TokenItem
+                key={`BALANCE_${token.name}`}
+                withoutMargin={!index}
+                balance={tokenBalances[token.symbol]}
+                rightIcon="chevron-right"
+                disabled={tokenBalances[token.symbol].isZero()}
+                onPress={() => onPressToken(token)}
+                {...token}
+              />
+            ))}
+          </ScrollView>
+        </Skeleton>
       </ScreenLayout>
       <BottomSheet
         visible={receiveBottomSheet}

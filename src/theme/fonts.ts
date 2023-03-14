@@ -1,5 +1,6 @@
 export type Fonts = {
   size: {
+    8: string;
     12: string;
     14: string;
     16: string;
@@ -23,9 +24,11 @@ const SIZE_18 = '18px';
 const SIZE_16 = '16px';
 const SIZE_14 = '14px';
 const SIZE_12 = '12px';
+const SIZE_8 = '8px';
 
 const fonts: Fonts = {
   size: {
+    8: SIZE_8,
     12: SIZE_12,
     14: SIZE_14,
     16: SIZE_16,

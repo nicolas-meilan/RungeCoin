@@ -5,15 +5,31 @@ import { FIAT_DECIMALS } from './constants';
 import { WALLET_ADRESS_LENGTH } from '@web3/wallet';
 
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+export const INPUT_NUMBER = /^(\d)*.?(\d)*$/;
 
 type NumberToFormattedStringOptions = {
-  decimals?: number;
+  decimals?: number | string;
   localize?: boolean;
   fixedDecimals?: number;
 };
 
+export const localizeNumber = (number: string): string => {
+  const THROUSAND_SEPATATOR_REGEX = /\B(?=(\d{3})+(?!\d))/g;
+  const INVALID_UNIT_ZEROS_REGEX = /^0*/;
+
+  const [numberUnits, numberDecimals] = number.split('.');
+
+  const formattedUnits = numberUnits
+    .replace(INVALID_UNIT_ZEROS_REGEX, '')
+    .replace(THROUSAND_SEPATATOR_REGEX, t('number.thousandSeparator')) || '0';
+
+  return numberDecimals
+    ? [formattedUnits, numberDecimals].join(t('number.decimalSeparator') || '')
+    : formattedUnits;
+};
+
 export const numberToFormattedString = (
-  number: BigNumber | number,
+  number: BigNumber | number | string,
   {
     decimals = 0,
     localize = true,
@@ -32,19 +48,14 @@ export const numberToFormattedString = (
 
   if (!localize) return numberAfterSecondIteration;
 
-  const THROUS_SEPATATOR_REGEX = /\B(?=(\d{3})+(?!\d))/g;
-
-  const [numberUnits, numberDecimals] = numberAfterSecondIteration.split('.');
-
-  const formattedUnits = numberUnits.replace(THROUS_SEPATATOR_REGEX, t('number.thousandSeparator'));
-
-  return numberDecimals
-    ? [formattedUnits, numberDecimals].join(t('number.decimalSeparator') || '')
-    : formattedUnits;
+  return localize ? localizeNumber(numberAfterSecondIteration) : numberAfterSecondIteration;
 };
 
-export const numberToFiatBalance = (number: BigNumber | number, symbol?: string): string => (
-  `≈ **${numberToFormattedString(number, { fixedDecimals: FIAT_DECIMALS })}**${symbol ? ` ${symbol}` : ''}`
+export const numberToFiatBalance = (
+  number: BigNumber | number,
+  symbol?: string,
+): string => (
+  `≈ ${numberToFormattedString(number, { fixedDecimals: FIAT_DECIMALS })}${symbol ? ` ${symbol}` : ''}`
 );
 
 export const formatAddress = (adress: string) => {

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components/native';
 
 import Icon from './Icon';
+import Svg, { SvgProps } from './Svg';
 import Text, { TextProps } from './Text';
 
 export enum TextInputType {
@@ -22,18 +23,22 @@ type TextInputProps = TextInputPropsRN & {
   icon?: string;
   type?: string;
   error?: boolean;
+  borderColor?: string;
   onPressIcon?: () => void;
+  onPress?: () => void;
   errorI18nArgs?: TextProps['i18nArgs'];
   errorMessage?: string;
+  leftSvg?: SvgProps['svg'];
 };
 
-const Wrapper = styled.View``;
+const Wrapper = styled.TouchableOpacity``;
 
 const InputWrapper = styled.View<{ color: string; multiline?: boolean }>`
   flex-direction: row;
   width: 100%;
   border: 1px solid ${({ color }) => color};
   border-radius: ${({ theme }) => theme.borderRadius};
+  align-items: center;
   padding: ${({ multiline, theme }) => (multiline
     ? theme.spacing(2)
     : `0 ${theme.spacing(2)}`)};
@@ -54,9 +59,14 @@ const IconWrapper = styled.View<{ multiline?: boolean }>`
   justify-content: ${({ multiline }) => (multiline ? 'flex-end' : 'center')};
 `;
 
-const StyledTextInput = styled.TextInput<{ hasIcon?: boolean }>`
+const StyledTextInput = styled.TextInput<{
+  hasSvg?: boolean;
+}>`
+  margin-left: ${({ hasSvg, theme }) => hasSvg ? theme.spacing(1) : '0px'};
   vertical-align: ${({ multiline }) => (multiline ? 'top' : 'middle')};
   font-size: ${({ multiline, theme }) => theme.fonts.size[multiline ? 20 : 16]};
+  color: ${({ theme }) => theme.colors.text.primary};
+  font-size: ${({ theme }) => theme.fonts.size[16]};
   flex: 1;
 `;
 
@@ -77,6 +87,9 @@ const TextInput = ({
   errorMessage,
   errorI18nArgs,
   multiline,
+  onPress,
+  leftSvg,
+  borderColor: borderColorProp,
   type = TextInputType.TEXT,
   error = false,
   ...props
@@ -89,10 +102,11 @@ const TextInput = ({
   const [baseBorderColor, setBaseBorderColor] = useState(theme.colors.border);
   const [showText, setShowText] = useState(!isPassword);
 
-  const hasIcon = !!icon || isPassword;
   const inputPH = placeholder ? t(placeholder) : '';
   const passwordIconName = showText ? 'eye-outline' : 'eye-off-outline';
-  const borderColor = error ? theme.colors.error : baseBorderColor;
+  const borderColor = error
+    ? theme.colors.error
+    : (borderColorProp || baseBorderColor);
   const renderError = error && !!errorMessage;
 
   const handleOnFocus = (nativeEvent: NativeSyntheticEvent<TextInputFocusEventData>) => {
@@ -112,14 +126,21 @@ const TextInput = ({
 
 
   return (
-    <Wrapper style={style}>
+    <Wrapper
+      style={style}
+      onPress={onPress}
+      disabled={!onPress}
+    >
       {!!label && <Label text={label} />}
       <InputWrapper color={borderColor} multiline={multiline}>
+        {leftSvg && (
+          <Svg svg={leftSvg} size={24} />
+        )}
         <StyledTextInput
+          hasSvg={!!leftSvg}
           cursorColor={theme.colors.primary}
           placeholderTextColor={theme.colors.text.tertiary}
           {...props}
-          hasIcon={hasIcon}
           placeholder={inputPH}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}

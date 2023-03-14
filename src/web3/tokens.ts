@@ -4,9 +4,13 @@ import bnb from '@assets/tokens/bnb.svg';
 import dai from '@assets/tokens/dai.svg';
 import eth from '@assets/tokens/eth.svg';
 import matic from '@assets/tokens/matic.svg';
+import uni from '@assets/tokens/uni.svg';
 import usdt from '@assets/tokens/usdt.svg';
 import type { SvgProps } from '@components/Svg';
 import { isDev } from '@utils/config';
+
+export const BASE_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const GWEI = 'Gwei';
 
 export enum TokenSymbol {
   ETH = 'ETH',
@@ -14,6 +18,7 @@ export enum TokenSymbol {
   BNB = 'BNB',
   USDT = 'USDT',
   DAI = 'DAI',
+  UNI = 'UNI',
 }
 
 export type TokenType = {
@@ -36,7 +41,7 @@ const TOKENS_ETH_MAINNET: TokensStruct = {
   [TokenSymbol.ETH]: {
     name: 'Ether',
     symbol: TokenSymbol.ETH,
-    address: '0x0000000000000000000000000000000000000000',
+    address: BASE_TOKEN_ADDRESS,
     decimals: 18,
     svg: eth,
   },
@@ -74,7 +79,7 @@ const TOKENS_ETH_GOERLI: TokensStruct = {
   [TokenSymbol.ETH]: {
     name: 'Ether',
     symbol: TokenSymbol.ETH,
-    address: '0x0000000000000000000000000000000000000000',
+    address: BASE_TOKEN_ADDRESS,
     decimals: 18,
     svg: eth,
   },
@@ -105,6 +110,13 @@ const TOKENS_ETH_GOERLI: TokensStruct = {
     address: '0xC51FceEc013cD34aE2e95E6D64E9858F2aC28fFf',
     decimals: 6,
     svg: usdt,
+  },
+  [TokenSymbol.UNI]: {
+    name: 'Uniswap',
+    symbol: TokenSymbol.UNI,
+    address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984',
+    decimals: 18,
+    svg: uni,
   },
 };
 

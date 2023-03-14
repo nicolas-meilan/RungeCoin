@@ -7,8 +7,10 @@ import {
 
 import styled from 'styled-components/native';
 
+type Children = false | JSX.Element;
+
 type CardProps = {
-  children: JSX.Element | JSX.Element[];
+  children: Children | Children[];
   withSeparator?: boolean;
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -21,7 +23,6 @@ type CardProps = {
 };
 
 const Item = styled.View`
-  flex: 1;
   width: 100%;
 `;
 
@@ -52,9 +53,7 @@ const Separator = styled.View`
 `;
 
 const ChildrenItemWrapper = styled.View`
-  flex: 1;
   padding: ${({ theme }) => `${theme.spacing(2)} ${theme.spacing(2)} ${theme.spacing(1)} ${theme.spacing(2)}`};
-  justify-content: center;
 `;
 
 const Card = ({
@@ -75,8 +74,12 @@ const Card = ({
   const content = withoutSeparations
     ? children : (
       <>
-        {children.map((item: JSX.Element, index: number) => (
-          <Item key={`CARD_${item.props}_${item.key}_${item.type}_${index}`}>
+        {children.map((item: Children, index: number) => (
+          <Item
+            key={`CARD_${item
+              ? `CARD_ITEM_${index}`
+              : index}`}
+          >
             {index !== 0 && <Separator />}
             <ChildrenItemWrapper>
               {item}

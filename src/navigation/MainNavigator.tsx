@@ -7,11 +7,13 @@ import {
   screenOptions,
 } from './constants';
 import HomeScreen from '@screens/main/HomeScreen';
+import SendScreen from '@screens/main/SendScreen';
 import ValidateAccessScreen from '@screens/main/ValidateAccessScreen';
 
 export type MainNavigatorType = {
   [ScreenName.validateAccess]: undefined;
   [ScreenName.home]: undefined;
+  [ScreenName.send]: { tokenToSendSymbol?: string } | undefined;
 };
 
 type ScreenProps = {
@@ -25,6 +27,9 @@ const screens: ScreenProps[] = [{
 }, {
   name: ScreenName.home,
   component: HomeScreen,
+}, {
+  name: ScreenName.send,
+  component: SendScreen,
 }];
 
 const StackNavigator = createNativeStackNavigator<MainNavigatorType>();

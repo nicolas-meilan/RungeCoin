@@ -2,8 +2,10 @@ import React from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
+const ANIMATION_TIME = 100;
 const BOLD_SYMBOL = '**';
 
 export enum Weight {
@@ -17,14 +19,14 @@ export type TextProps = {
   boldTextStyle?: StyleProp<TextStyle>;
   children?: JSX.Element | JSX.Element[];
   weight?: Weight;
-  i18nArgs?: { [key: string]: string | number };
+  i18nArgs?: { [key: string]: string | number | undefined };
   onPress?: () => void;
   disabled?: boolean;
   noI18n?: boolean;
   usesFormat?: boolean;
 };
 
-const StyledText = styled.Text`
+const StyledText = styled(Animated.Text)`
   color: ${({ theme }) => theme.colors.text.primary};
   font-size: ${({ theme }) => theme.fonts.size[14]};
 `;
@@ -43,10 +45,27 @@ const Text = ({
 }: TextProps) => {
   const { t } = useTranslation();
 
+  const opacity = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  const toggleOpacity = (show: boolean) => {
+    if (!onPress) return;
+    opacity.value = withTiming(show ? 1 : 0.5, { duration: ANIMATION_TIME });
+  };
+
+  const onPressIn = () => {
+    toggleOpacity(false);
+  };
+
+  const onPressOut = () => {
+    toggleOpacity(true);
+  };
+
   if (children) return (
     <StyledText
-      style={[{ fontWeight: weight }, style]}
-      onPress={onPress}
+      style={[{ fontWeight: weight }, style, animatedStyle]}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       disabled={disabled}
     >
       {children}
@@ -62,15 +81,19 @@ const Text = ({
 
     return (
       <StyledText
-        style={[{ fontWeight: weight }, style]}
+        style={[{ fontWeight: weight }, style, animatedStyle]}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
         onPress={onPress}
         disabled={disabled}
       >
         {splittedText.map((currentText, index) => (
           <StyledText
             key={`TEXT_${currentText}_${index}`}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
             onPress={onPress}
-            style={[{ fontWeight: weightForIndex(index) }, style, getStyleForIndex(index)]}
+            style={[{ fontWeight: weightForIndex(index) }, style, getStyleForIndex(index), animatedStyle]}
           >
             {currentText}
           </StyledText>
@@ -81,7 +104,9 @@ const Text = ({
 
   return (
     <StyledText
-      style={[{ fontWeight: weight }, style]}
+      style={[{ fontWeight: weight }, style, animatedStyle]}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       onPress={onPress}
       disabled={disabled}
     >

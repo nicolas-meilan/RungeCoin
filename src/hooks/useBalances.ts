@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 
 import useWalletPublicValues from './useWalletPublicValues';
 import { ReactQueryKeys } from '@utils/constants';
@@ -8,12 +8,15 @@ import { getBalanceFromWallet } from '@web3/wallet';
 type UseBalancesReturn = {
   tokenBalances?: TokensBalance | null;
   tokenBalancesLoading: boolean;
+  refetchBalances: () => Promise<void>;
 };
 
 type QueryOptions = UseQueryOptions<TokensBalance | null, unknown, TokensBalance | null, ReactQueryKeys[]>;
 type UseBalanceProps = Omit<QueryOptions, 'queryKey' | 'queryFn' | 'initialData'>;
 
 const useBalances = (options: UseBalanceProps = {}): UseBalancesReturn => {
+  const queryClient = useQueryClient();
+
   const { walletPublicValues } = useWalletPublicValues();
 
   const fetchBalances = async () => {
@@ -24,7 +27,9 @@ const useBalances = (options: UseBalanceProps = {}): UseBalancesReturn => {
 
   const {
     data: tokenBalances,
-    isLoading: tokenBalancesLoading,
+    isLoading,
+    isRefetching,
+    refetch,
   } = useQuery({
     queryKey: [ReactQueryKeys.BALANCES],
     queryFn: fetchBalances,
@@ -32,9 +37,14 @@ const useBalances = (options: UseBalanceProps = {}): UseBalancesReturn => {
     ...(options || {}),
   });
 
+  const refetchBalances = async () => {
+    await refetch().then(({ data }) => queryClient.setQueryData([ReactQueryKeys.BALANCES], data));
+  };
+
   return {
     tokenBalances,
-    tokenBalancesLoading,
+    tokenBalancesLoading: isLoading || isRefetching,
+    refetchBalances,
   };
 };
 

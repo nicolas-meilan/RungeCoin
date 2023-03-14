@@ -1,8 +1,9 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber } from 'ethers';
 
 import { getTokenConversions, TokenConversionsEndpointResponse } from '@http/tokens';
 import { ReactQueryKeys } from '@utils/constants';
+import { bigNumberMulNumber } from '@utils/number';
 import type { TokenType } from '@web3/tokens';
 
 type TokenConversion = TokenConversionsEndpointResponse['data'];
@@ -35,14 +36,7 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
     // TODO select to
     const to = tokenConversions[from.symbol].USD;
 
-    try {
-      return balanceToConvert.mul(to).toNumber();
-
-    } catch (error) {
-      const balanceNormalNumber = Number(utils.formatUnits(balance, from.decimals));
-
-      return balanceNormalNumber * to;
-    }
+    return bigNumberMulNumber(balanceToConvert, to, from.decimals);
   };
 
   return {

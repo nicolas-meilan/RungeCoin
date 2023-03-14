@@ -53,8 +53,29 @@
       "addressCopied": "Address copied correctly"
     },
     "receive": {
-      "title": "Receive",
+      "title": "Receive cryptos",
       "qrMessage": "Scan this QR to receive cryptos"
+    },
+    "send": {
+      "title": "Send cryptos",
+      "successNotification": "Transaction completed",
+      "notFoundsForFeeNotification": "You do not have funds to pay shipping fee",
+      "gasDescription": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
+      "gasFee": "Fees",
+      "gasUnits": "Gas units: **{{units}}**",
+      "gasPrice": "Gas price: **{{price}}**",
+      "totalFee": "Total",
+      "inputs": {
+        "selectTokenLabel": "Token to send",
+        "selectTokenPlaceholder": "Select a token",
+        "addressLabel": "Shipping address",
+        "addressPlaceholder": "Enter address",
+        "addressError": "Invalid address"
+      }
+    },
+    "calculator": {
+      "exceededBalance": "Exceeded balance",
+      "gasFee": "Gas fee: ≈ {{fee}}"
     }
   },
   "number": {

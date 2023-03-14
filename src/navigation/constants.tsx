@@ -10,4 +10,5 @@ export enum ScreenName {
   // Main Stack
   validateAccess = 'validateAccess',
   home = 'home',
+  send = 'send',
 }

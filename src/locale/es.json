@@ -53,8 +53,29 @@
       "addressCopied": "Dirección copiada correctamente"
     },
     "receive": {
-      "title": "Recibir",
+      "title": "Recibir cryptos",
       "qrMessage": "Escanea este QR para recibir cryptos"
+    },
+    "send": {
+      "title": "Enviar cryptos",
+      "successNotification": "Transacción finalizada",
+      "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
+      "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+      "gasFee": "Comisiones",
+      "gasUnits": "Unidades de Gas: **{{units}}**",
+      "gasPrice": "Precio de Gas: ≈ **{{price}}**",
+      "totalFee": "Total",
+      "inputs": {
+        "selectTokenLabel": "Token a enviar",
+        "selectTokenPlaceholder": "Seleccione un token",
+        "addressLabel": "Dirección de envío",
+        "addressPlaceholder": "Ingresar dirección",
+        "addressError": "Dirección invalida"
+      }
+    },
+    "calculator": {
+      "exceededBalance": "Balance excedido",
+      "gasFee": "Costo de Gas: ≈ {{fee}}"
     }
   },
   "number": {
