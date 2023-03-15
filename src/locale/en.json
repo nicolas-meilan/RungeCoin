@@ -6,6 +6,9 @@
     "send": "Send",
     "receive": "Receive"
   },
+  "notifications": {
+    "addressCopied": "Address copied correctly"
+  },
   "access": {
     "welcome": {
       "title": "Welcome to the RungeCoin wallet!",
@@ -49,8 +52,7 @@
     },
     "home": {
       "title": "My cryptos",
-      "balance": "Total balance",
-      "addressCopied": "Address copied correctly"
+      "balance": "Total balance"
     },
     "receive": {
       "title": "Receive cryptos",

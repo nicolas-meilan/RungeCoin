@@ -6,6 +6,9 @@
     "send": "Enviar",
     "receive": "Recibir"
   },
+  "notifications": {
+    "addressCopied": "Dirección copiada correctamente"
+  },
   "access": {
     "welcome": {
       "title": "¡Bienvenido a la billetera RungeCoin!",
@@ -49,8 +52,7 @@
     },
     "home": {
       "title": "Mis criptos",
-      "balance": "Balance total",
-      "addressCopied": "Dirección copiada correctamente"
+      "balance": "Balance total"
     },
     "receive": {
       "title": "Recibir cryptos",

@@ -120,7 +120,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
 
   const onPressAdress = () => {
     Clipboard.setString(walletPublicValues!.address);
-    dispatchNotification('main.home.addressCopied', NotificationTypes.SUCCESS);
+    dispatchNotification('notifications.addressCopied', NotificationTypes.SUCCESS);
   };
 
   return (

@@ -97,7 +97,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
   const onPressAdress = () => {
     Clipboard.setString(walletPublicValues!.address);
-    dispatchNotification('main.home.addressCopied', NotificationTypes.SUCCESS);
+    dispatchNotification('notifications.addressCopied', NotificationTypes.SUCCESS);
   };
 
   const onPressSend = () => navigation.navigate(ScreenName.send);
