@@ -59,6 +59,7 @@
     "react-native-screens": "^3.19.0",
     "react-native-svg": "^13.8.0",
     "react-native-vector-icons": "^9.2.0",
+    "react-native-webview": "^11.26.1",
     "readable-stream": "^1.0.33",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",

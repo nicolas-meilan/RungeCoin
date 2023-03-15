@@ -34,6 +34,7 @@ export enum AvailableThemes {
 export type AvailableThemesType = Exclude<AvailableThemes, AvailableThemes.FROM_DEVICE>;
 
 export type Theme = {
+  name: AvailableThemes;
   spacing: (n?: number) => string;
   spacingNative: (n?: number) => number;
   inputsHeight: {
@@ -50,10 +51,12 @@ const themes: {
 } = {
   [AvailableThemes.LIGHT]: {
     ...theme,
+    name: AvailableThemes.LIGHT,
     colors: light,
   },
   [AvailableThemes.DARK]: {
     ...theme,
+    name: AvailableThemes.DARK,
     colors: dark,
   },
 };

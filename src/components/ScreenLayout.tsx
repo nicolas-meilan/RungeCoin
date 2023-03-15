@@ -27,6 +27,7 @@ type ScreenLayoutProps = {
   bottomSheetOpened?: boolean;
   onPressRightIcon?: () => void;
   goBack?: () => void;
+  refreshControl?: JSX.Element;
 };
 
 const ScreenWrapper = styled.View`
@@ -101,6 +102,7 @@ const ScreenLayout = ({
   goBack,
   onPressRightIcon,
   rightIcon,
+  refreshControl,
   scroll = false,
   hasBack = true,
   hasFooterBanner = false,
@@ -154,6 +156,7 @@ const ScreenLayout = ({
         bottomSheetOpened={bottomSheetOpened}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={contentContainerStyle}
+        refreshControl={refreshControl}
       >
         {children}
       </ScrollViewWrapper>

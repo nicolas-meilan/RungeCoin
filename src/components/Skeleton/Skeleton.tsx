@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
 
 import ContentLoader from 'react-content-loader/native';
 import styled, { useTheme } from 'styled-components/native';
@@ -22,11 +22,12 @@ type SkeletonBaseProps = {
 type Children = false | JSX.Element;
 
 export type SkeletonProps = Omit<SkeletonBaseProps, 'areMultiples' | 'isFirst'> & {
-  children: Children | Children[];
+  children?: Children | Children[];
   isLoading: boolean;
   requiredValuesToRender?: Deps;
   quantity?: number;
   keyExtractor?: (index: number) => string;
+  onLayout?: (event: LayoutChangeEvent) => void;
 };
 
 const SkeletonContainer = styled.View<{
@@ -84,6 +85,7 @@ const Skeleton = ({
   isLoading,
   requiredValuesToRender,
   style,
+  onLayout,
   ...props
 }: SkeletonProps) => {
   const skeletons = useMemo(() => [...new Array(quantity)], [quantity]);
@@ -98,7 +100,7 @@ const Skeleton = ({
   if (!loading) return <>{children}</>;
 
   return (
-    <View style={style}>
+    <View style={style} onLayout={onLayout}>
       {skeletons.map((_, index) => (
         <SkeletonBase
           areMultiples={quantity > 1}

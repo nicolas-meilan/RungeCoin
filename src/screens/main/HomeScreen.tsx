@@ -101,9 +101,11 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   };
 
   const onPressSend = () => navigation.navigate(ScreenName.send);
-  const onPressToken = (token: TokenType) => navigation.navigate(ScreenName.send, { // TODO token screen
-    tokenToSendSymbol: token.symbol,
+
+  const onPressToken = (token: TokenType) => navigation.navigate(ScreenName.token, {
+    tokenSymbol: token.symbol,
   });
+
   const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
 
   return (
@@ -164,7 +166,6 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 withoutMargin={!index}
                 balance={tokenBalances[token.symbol]}
                 rightIcon="chevron-right"
-                disabled={tokenBalances[token.symbol].isZero()}
                 onPress={() => onPressToken(token)}
                 {...token}
               />

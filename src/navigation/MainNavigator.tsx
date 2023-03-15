@@ -8,12 +8,15 @@ import {
 } from './constants';
 import HomeScreen from '@screens/main/HomeScreen';
 import SendScreen from '@screens/main/SendScreen';
+import TokenScreen from '@screens/main/TokenScreen';
 import ValidateAccessScreen from '@screens/main/ValidateAccessScreen';
+import type { TokenSymbol } from '@web3/tokens';
 
 export type MainNavigatorType = {
   [ScreenName.validateAccess]: undefined;
   [ScreenName.home]: undefined;
-  [ScreenName.send]: { tokenToSendSymbol?: string } | undefined;
+  [ScreenName.send]: { tokenToSendSymbol?: TokenSymbol } | undefined;
+  [ScreenName.token]: { tokenSymbol?: TokenSymbol } | undefined;
 };
 
 type ScreenProps = {
@@ -30,6 +33,9 @@ const screens: ScreenProps[] = [{
 }, {
   name: ScreenName.send,
   component: SendScreen,
+}, {
+  name: ScreenName.token,
+  component: TokenScreen,
 }];
 
 const StackNavigator = createNativeStackNavigator<MainNavigatorType>();

@@ -11,4 +11,5 @@ export enum ScreenName {
   validateAccess = 'validateAccess',
   home = 'home',
   send = 'send',
+  token = 'token',
 }
