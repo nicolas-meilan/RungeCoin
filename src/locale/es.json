@@ -51,7 +51,7 @@
       }
     },
     "home": {
-      "title": "Mis criptos",
+      "title": "Mis cryptos",
       "balance": "Balance total"
     },
     "receive": {
@@ -74,6 +74,12 @@
         "addressPlaceholder": "Ingresar dirección",
         "addressError": "Dirección invalida"
       }
+    },
+    "balance": {
+      "title": "Tokens"
+    },
+    "activity": {
+      "title": "Actividad"
     },
     "calculator": {
       "exceededBalance": "Balance excedido",

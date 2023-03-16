@@ -1,24 +1,23 @@
 import React, { useMemo, useState } from 'react';
-import { ScrollView } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
+import Activity from '@components/Activity';
 import Button, { ButtonType } from '@components/Button';
+import ContentSwitcher from '@components/ContentSwitcher';
 import Pill, { Type } from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
-import Separator from '@components/Separator';
 import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import Title from '@components/Title';
-import TokenItem from '@components/TokenItem';
+import TokenBalances from '@components/TokenBalances';
 import TokenPrices from '@components/TokenPrices';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
-import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
@@ -33,17 +32,12 @@ const TOKENS = Object.values(TOKENS_ETH);
 
 const Balance = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[28]};
-  text-align: center;
-  margin: ${({ theme }) => theme.spacing(2)} 0 ${({ theme }) => theme.spacing(4)} 0;
-`;
-
-const Subtitle = styled(Title)`
-  text-align: center;
+  margin-top: ${({ theme }) => theme.spacing(2)};
 `;
 
 const CenterWrapper = styled.View`
   align-items: center;
-  margin: ${({ theme }) => theme.spacing(4)};
+  margin-vertical: ${({ theme }) => theme.spacing(6)};
 `;
 
 const ButtonsWrapper = styled.View`
@@ -51,12 +45,8 @@ const ButtonsWrapper = styled.View`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
-const AdressPill = styled(Pill)`
-  font-size: ${({ theme }) => theme.fonts.size[16]};
-`;
-
 const BalanceSkeleton = styled(Skeleton)`
-  margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(4)} 0;
+  margin-top: ${({ theme }) => theme.spacing(2)};
 `;
 
 const ActionButton = styled(Button) <{ margin?: boolean }>`
@@ -69,21 +59,19 @@ type HomeScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.home
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
 
-  const { tokenBalances, refetchBalances, tokenBalancesLoading } = useBalances();
-  const { walletPublicValues } = useWalletPublicValues();
   const { dispatchNotification } = useNotifications();
+  const { walletPublicValues } = useWalletPublicValues();
+
   const {
     convert,
     tokenConversions,
+    tokenConversionsLoading,
+    refetchTokenConversions,
   } = useTokenConversions();
-
-  const refreshControl = usePull2Refresh({
-    loading: tokenBalancesLoading,
-    fetch: refetchBalances,
-  });
+  const { tokenBalances } = useBalances();
 
   const totalConvertedBalance = useMemo(() => {
-    if (!tokenBalances) return '0 USD';
+    if (!tokenBalances) return '0 USD'; // TODO
 
     const total = TOKENS.reduce((
       acc: number,
@@ -93,7 +81,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       return acc + currentBalance;
     }, 0);
 
-    return numberToFiatBalance(total, 'USD');
+    return numberToFiatBalance(total, 'USD'); // TODO
   }, [tokenBalances, tokenConversions]);
 
   const onPressAdress = () => {
@@ -135,7 +123,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           />
         </ButtonsWrapper>
         <CenterWrapper>
-          <Subtitle title="main.home.balance" isSubtitle />
+          <Title title="main.home.balance" isSubtitle />
           <BalanceSkeleton
             isLoading={!tokenBalances || !tokenConversions}
             width={200}
@@ -143,36 +131,26 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           >
             <Balance text={totalConvertedBalance} />
           </BalanceSkeleton>
-          <AdressPill
-            text={formatAddress(walletPublicValues!.address)}
-            type={Type.INFO}
-            onPress={onPressAdress}
-            noI18n
-          />
         </CenterWrapper>
-        <Separator />
-        <Skeleton
-          isLoading={!tokenBalances}
-          quantity={TOKENS.length}
-          height={40}
-        >
-          <ScrollView
-            refreshControl={refreshControl}
-            nestedScrollEnabled
-            showsVerticalScrollIndicator={false}
-          >
-            {tokenBalances && TOKENS.map((token: TokenType, index: number) => (
-              <TokenItem
-                key={`BALANCE_${token.name}`}
-                withoutMargin={!index}
-                balance={tokenBalances[token.symbol]}
-                rightIcon="chevron-right"
-                onPress={() => onPressToken(token)}
-                {...token}
-              />
-            ))}
-          </ScrollView>
-        </Skeleton>
+        <ContentSwitcher
+          labels={['main.balance.title', 'main.activity.title']}
+          components={[
+            <TokenBalances
+              onPressToken={onPressToken}
+              onRefresh={refetchTokenConversions}
+              refreshLoading={tokenConversionsLoading}
+            />,
+            <Activity />,
+          ]}
+          rightComponent={
+            <Pill
+              text={formatAddress(walletPublicValues!.address)}
+              type={Type.INFO}
+              onPress={onPressAdress}
+              noI18n
+            />
+          }
+        />
       </ScreenLayout>
       <BottomSheet
         visible={receiveBottomSheet}

@@ -114,6 +114,7 @@ const TokenItem = ({
       </Skeleton>
       <Skeleton
         isLoading={!tokenConversions}
+        width="80%"
         height={15}
       >
         <Description text={balanceConverted} noI18n />
