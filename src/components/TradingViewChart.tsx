@@ -13,9 +13,7 @@ import type { TokenType } from '@web3/tokens';
 const CHART_HEIGHT = 500;
 const LOADING_BORDERS = 20;
 
-const LOADING_TIME = '5000';
 const READY_MESSAGE = 'ready';
-
 const THEME = '{{THEME}}';
 const LOCALE = '{{LOCALE}}';
 const TOKEN = '{{TOKEN}}';
@@ -42,10 +40,12 @@ const HTML = `
       container_id: 'chart'
     });
 
-    const timeout = setTimeout(() => {
-      window.ReactNativeWebView.postMessage(JSON.stringify({ ${READY_MESSAGE}: true }));
-      clearTimeout(timeout);
-    }, ${LOADING_TIME});
+    window.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.name === 'widgetReady') window.ReactNativeWebView.postMessage(JSON.stringify({ ${READY_MESSAGE}: true }));
+      } catch (error) {}
+    });
   </script>
   </div>
 `;
@@ -63,20 +63,17 @@ const StyledWebView = styled(WebView) <{ isLoading: boolean }>`
   ` : '')}
 `;
 
-const ChartSkeleton = styled(Skeleton)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 1px solid ${({ theme }) => theme.colors.disabled};
-  border-radius: ${({ theme }) => theme.borderRadius};
-  padding: ${({ theme }) => theme.spacing(2)};
-`;
-
 const Wrapper = styled.View`
   width: 100%;
   height: ${CHART_HEIGHT}px;
+`;
+
+const ChartSkeletonWrapper = styled(Wrapper)`
+  position: absolute;
+  border: 1px solid ${({ theme }) => theme.colors.disabled};
+  padding: ${({ theme }) => theme.spacing(2)};
+  border-radius: ${({ theme }) => theme.borderRadius};
+  justify-content: center;
 `;
 
 const TradingViewChart = ({ token }: TradingViewChartProps) => {
@@ -90,7 +87,7 @@ const TradingViewChart = ({ token }: TradingViewChartProps) => {
 
   const [loading, setLoading] = useState(true);
 
-  const chart = HTML
+  const html = HTML
     .replace(TOKEN, token.symbol)
     .replace(FIAT, FiatCurrencies.USD)
     .replace(LOCALE, i18n.language)
@@ -101,20 +98,26 @@ const TradingViewChart = ({ token }: TradingViewChartProps) => {
     height: event.nativeEvent.layout.height - LOADING_BORDERS,
   });
 
+  const showSkeleton = !!size.height && !!size.width && loading;
+
   return (
     <Wrapper onLayout={onLayout}>
-      <ChartSkeleton
-        isLoading={loading}
-        Layout={CandlesChartLayout}
-        height={size.height}
-        width={size.width}
-      />
+      {showSkeleton && (
+        <ChartSkeletonWrapper>
+          <Skeleton
+            isLoading
+            Layout={CandlesChartLayout}
+            height={size.height / 2}
+            width={size.width}
+          />
+        </ChartSkeletonWrapper>
+      )}
       <StyledWebView
         isLoading={loading}
         javaScriptEnabled
         domStorageEnabled
         scalesPageToFit={false}
-        source={{ html: chart }}
+        source={{ html }}
         onMessage={(event) => {
           const data = JSON.parse(event.nativeEvent.data);
           if (data[READY_MESSAGE]) setLoading(false);

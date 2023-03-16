@@ -17,7 +17,8 @@ const CandlesChartLayout = ({
 
   const rectangles = [...Array(QUANTITY).keys()].map((value) => {
     const randomHeightMin = 0.3 * height;
-    const randomHeight = Math.random() * (height - randomHeightMin) + randomHeightMin;
+    const randomHeightMax = 0.8 * height;
+    const randomHeight = Math.random() * (randomHeightMax - randomHeightMin) + randomHeightMin;
 
     const maxPositionOffset = (height - randomHeight);
     const randomPosition = Math.random() * maxPositionOffset;
