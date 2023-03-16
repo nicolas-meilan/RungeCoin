@@ -9,6 +9,7 @@ import Button, { ButtonType } from '@components/Button';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
+import Svg from '@components/Svg';
 import Text from '@components/Text';
 import TradingViewChart from '@components/TradingViewChart';
 import BottomSheet from '@containers/Bottomsheet';
@@ -25,28 +26,36 @@ import { TOKENS_ETH } from '@web3/tokens';
 
 const TOKENS = TOKENS_ETH;
 
+const TokenInfo = styled.View`
+  flex-direction: row;
+  align-items: center;
+  margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(2)} 0;
+`;
+
+const BalanceWrapper = styled.View`
+  margin-left: ${({ theme }) => theme.spacing(2)};
+  justify-content: center;
+`;
+
 const BalanceSkeleton = styled(Skeleton)`
   margin-bottom: ${({ theme }) => theme.spacing(1)};
 `;
 
 const Balance = styled(Text)`
-  font-size: ${({ theme }) => theme.fonts.size[20]};
+  font-size: ${({ theme }) => theme.fonts.size[18]};
   margin-bottom: ${({ theme }) => theme.spacing(1)};
 `;
 
 const FiatBalanceSkeleton = styled(Skeleton)`
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
 const FiatBalance = styled(Text)`
-  font-size: ${({ theme }) => theme.fonts.size[18]};
+  font-size: ${({ theme }) => theme.fonts.size[16]};
   color: ${({ theme }) => theme.colors.text.tertiary};
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
 const ButtonsWrapper = styled.View`
   flex-direction: row;
-  margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
 const ActionButton = styled(Button) <{ margin?: boolean }>`
@@ -148,20 +157,25 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
             onPress={() => toggleReceiveBottomSheet(true)}
           />
         </ButtonsWrapper>
-        <BalanceSkeleton
-          isLoading={!tokenBalances}
-          height={30}
-        >
-          <Balance text={`${numberToFormattedString(tokenBalance, {
-            decimals: token?.decimals,
-          })} ${token?.symbol}`} />
-        </BalanceSkeleton>
-        <FiatBalanceSkeleton
-          isLoading={!tokenConversions}
-          height={25}
-        >
-          <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, FiatCurrencies.USD)} />
-        </FiatBalanceSkeleton>
+        <TokenInfo>
+          {token && <Svg svg={token?.svg} size={44} />}
+          <BalanceWrapper>
+            <BalanceSkeleton
+              isLoading={!tokenBalances}
+              height={30}
+            >
+              <Balance text={`${numberToFormattedString(tokenBalance, {
+                decimals: token?.decimals,
+              })} ${token?.symbol}`} />
+            </BalanceSkeleton>
+            <FiatBalanceSkeleton
+              isLoading={!tokenConversions}
+              height={25}
+            >
+              <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, FiatCurrencies.USD)} />
+            </FiatBalanceSkeleton>
+          </BalanceWrapper>
+        </TokenInfo>
         <>
           {!!token && (
             <TradingViewChart
