@@ -114,8 +114,6 @@ const TradingViewChart = ({ token }: TradingViewChartProps) => {
       )}
       <StyledWebView
         isLoading={loading}
-        javaScriptEnabled
-        domStorageEnabled
         scalesPageToFit={false}
         source={{ html }}
         onMessage={(event) => {

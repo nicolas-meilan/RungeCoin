@@ -28,6 +28,8 @@ type ScreenLayoutProps = {
   onPressRightIcon?: () => void;
   goBack?: () => void;
   refreshControl?: JSX.Element;
+  footer?: JSX.Element;
+  footerHeight?: number | string;
 };
 
 const ScreenWrapper = styled.View`
@@ -51,9 +53,12 @@ const Header = styled(StaticLayout)`
   align-items: center;
 `;
 
-const Footer = styled(StaticLayout)`
+const Footer = styled(StaticLayout)<{ footerHeight?: number | string }>`
   align-items: flex-end;
   justify-content: center;
+  ${({ footerHeight }) => (footerHeight
+    ? `height: ${footerHeight}${typeof footerHeight !== 'string' ? 'px' : ''};`
+    : '')}
 `;
 
 const HeaderTitle = styled(Text)`
@@ -103,6 +108,8 @@ const ScreenLayout = ({
   onPressRightIcon,
   rightIcon,
   refreshControl,
+  footer,
+  footerHeight,
   scroll = false,
   hasBack = true,
   hasFooterBanner = false,
@@ -175,6 +182,8 @@ const ScreenLayout = ({
     </LoadingWrapper>
   );
 
+  const renderFooter = (!!footer || hasFooterBanner) && !isKeyboardOpen;
+
   return (
     <ScreenWrapper>
       <StyledSafeArea>
@@ -198,10 +207,14 @@ const ScreenLayout = ({
           </BigTitleWrapper>
         )}
         {canRender ? content : loadingScreen}
-        {hasFooterBanner && !isKeyboardOpen && (
-          <Footer>
-            <FooterText text="common.appName" />
-            <Svg svg={logo} size={24} />
+        {renderFooter && (
+          <Footer footerHeight={footerHeight}>
+            {footer || (
+              <>
+                <FooterText text="common.appName" />
+                <Svg svg={logo} size={24} />
+              </>
+            )}
           </Footer>
         )}
       </StyledSafeArea>

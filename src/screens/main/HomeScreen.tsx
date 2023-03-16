@@ -14,6 +14,7 @@ import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import Title from '@components/Title';
 import TokenItem from '@components/TokenItem';
+import TokenPrices from '@components/TokenPrices';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
@@ -112,11 +113,11 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     <>
       <ScreenLayout
         title="main.home.title"
-        rightIcon="cog-outline"
         bigTitle
-        rightIconOnBigTitle
         hasBack={false}
         keyboardAvoidingView
+        footerHeight={70}
+        footer={<TokenPrices />}
       >
         <ButtonsWrapper>
           <ActionButton
