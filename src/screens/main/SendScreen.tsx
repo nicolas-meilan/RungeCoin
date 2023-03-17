@@ -47,6 +47,12 @@ const GasTitle = styled(Text).attrs({
   margin-top: ${({ avoidTopMargin, theme }) => (avoidTopMargin ? 0 : theme.spacing(2))};
 `;
 
+const TotalFeeText = styled(Text)<{ error: boolean }>`
+  ${({ error, theme }) => (error ? `
+    color: ${theme.colors.error};
+  ` : '')}
+`;
+
 type SendScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.send>;
 
 const TOKENS = Object.values(TOKENS_ETH);
@@ -80,13 +86,17 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   });
 
   const [tokenToSend, setTokenToSend] = useState<TokenType | null>(
-    TOKENS.find(({ symbol }) => ( symbol === route.params?.tokenToSendSymbol)) || null,
+    TOKENS.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
   );
 
   const [showCalculator, setShowCalculator] = useState(false);
 
   const [addressToSend, setAddressToSend] = useState(isDev() ? PUBLIC_KEY_TO_TEST : '');
   const [addressToSendError, setAddressToSendError] = useState(false);
+
+  const hasNotBalanceForGas = useMemo(() => (
+    estimatedTxInfo?.totalFee.gt(tokenBalances?.ETH || 0) || false
+  ), [estimatedTxInfo, tokenBalances]);
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
 
@@ -197,9 +207,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
                 width="90%"
                 quantity={2}
               >
-                <Text text={`≈ ${numberToFormattedString(estimatedTxInfo?.totalFee || 0, {
-                  decimals: TOKENS_ETH.ETH?.decimals,
-                })} ${TOKENS_ETH.ETH?.symbol}`} />
+                <TotalFeeText
+                  error={hasNotBalanceForGas}
+                  text={`≈ ${numberToFormattedString(estimatedTxInfo?.totalFee || 0, {
+                    decimals: TOKENS_ETH.ETH?.decimals,
+                  })} ${TOKENS_ETH.ETH?.symbol}`}
+                />
                 <Text
                   text={numberToFiatBalance(convert(estimatedTxInfo?.totalFee || 0, TOKENS_ETH.ETH!), FiatCurrencies.USD)}
                 />
@@ -209,7 +222,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         )}
         <StyledButton
           text="common.continue"
-          disabled={!allDataSetted}
+          disabled={!allDataSetted || hasNotBalanceForGas}
           loading={estimatedTxInfoLoading || sendTokenLoading}
           onPress={openCalculator}
         />
