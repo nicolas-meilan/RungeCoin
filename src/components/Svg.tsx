@@ -104,7 +104,7 @@ const Svg = ({
         uri={uri}
         onLoad={handleLoad}
         onError={onError}
-        viewBox={viewBox}
+        {...(viewBox ? { viewBox } : {})}
       />
     </View>
   );

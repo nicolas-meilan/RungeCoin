@@ -13,7 +13,6 @@ import TokenIcon from '@components/TokenIcon';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import { INPUT_NUMBER, localizeNumber, numberToFormattedString } from '@utils/formatter';
-import { bigNumberMulNumber } from '@utils/number';
 import { BASE_TOKEN_ADDRESS, TokenSymbol, TOKENS_ETH } from '@web3/tokens';
 
 type CalculatorProps = {
@@ -30,7 +29,7 @@ const ANIMATION_DURATION = 1000;
 const TOUCH_VELOCITY = 150;
 const BUTTONS_SIZE = 65;
 const PERCENTAGES = [
-  0.25, 0.5, 0.75, 1,
+  25, 50, 75, 100,
 ];
 const DELETE_BUTTON = 'x';
 const KEYBOARD_BUTTONS = [
@@ -183,7 +182,8 @@ const Calculator = ({
   useEffect(() => {
     if (!token || !tokenBalances) return;
 
-    setBalanceExceeded(Number(amount) > Number(utils.formatUnits(maxAmount, token.decimals)));
+    const amountBN = utils.parseUnits(amount);
+    setBalanceExceeded(amountBN.gt(maxAmount));
   }, [amount, tokenBalances, token]);
 
   const onCloseAnimationEnd = () => resetState();
@@ -219,7 +219,11 @@ const Calculator = ({
   const onPressPill = (percentage: number) => {
     if (!token || !tokenBalances || maxAmount.isZero()) return;
 
-    setAmount(bigNumberMulNumber(maxAmount, percentage, token.decimals).toString());
+    const newAmount = maxAmount.mul(percentage).div(100);
+    setAmount(numberToFormattedString(newAmount, {
+      decimals: token.decimals,
+      localize: false,
+    }));
   };
 
   const pills = useMemo(() => (
@@ -230,7 +234,7 @@ const Calculator = ({
             <PercentagePill
               isFirst={!index}
               key={percentage}
-              text={`${percentage * 100}%`}
+              text={`${percentage}%`}
               onPress={() => onPressPill(percentage)}
             />
           ))}

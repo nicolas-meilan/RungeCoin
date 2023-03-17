@@ -1,9 +1,9 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 
 import { getTokenConversions, TokenConversionsEndpointResponse } from '@http/tokens';
 import { ReactQueryKeys } from '@utils/constants';
-import { bigNumberMulNumber } from '@utils/number';
+import { numberToFormattedString } from '@utils/formatter';
 import type { TokenType } from '@web3/tokens';
 
 type TokenConversion = TokenConversionsEndpointResponse['data'];
@@ -11,7 +11,7 @@ type TokenConversion = TokenConversionsEndpointResponse['data'];
 type UseTokenConversionssReturn = {
   tokenConversions?: TokenConversion | null;
   tokenConversionsLoading: boolean;
-  convert: (balance: number | BigNumber, from: Omit<TokenType, 'name' | 'address' | 'svg'>) => number;
+  convert: (balance: number | BigNumber, from: Omit<TokenType, 'name' | 'address'>) => number;
   refetchTokenConversions: () => Promise<void>;
 };
 
@@ -44,8 +44,16 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
   
     // TODO select to
     const to = tokenConversions[from.symbol].USD;
+    const toDecimals = to.toString().split('.')?.[1]?.length || 0;
 
-    return bigNumberMulNumber(balanceToConvert, to, from.decimals);
+    const convertedBalance = balanceToConvert
+      .mul(utils.parseUnits(to.toString(), toDecimals)) // add extra decimals for multiplication
+      .div(BigNumber.from(`1${new Array(toDecimals).fill(0).join('')}`)); // remove extra decimals
+
+    return Number(numberToFormattedString(convertedBalance, {
+      decimals: from.decimals,
+      localize: false,
+    }));
   };
 
   return {
