@@ -43,7 +43,7 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
     const balanceToConvert = BigNumber.isBigNumber(balance) ? balance : BigNumber.from(balance);
   
     // TODO select to
-    const to = tokenConversions[from.symbol].USD;
+    const to = tokenConversions[from.symbol]?.USD || 0;
     const toDecimals = to.toString().split('.')?.[1]?.length || 0;
 
     const convertedBalance = balanceToConvert
