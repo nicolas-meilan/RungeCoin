@@ -53,7 +53,6 @@ const Select = ({
   onOpen,
   onClose,
   options = [],
-  fixScreenPadding = false,
   selected: selectedValue = '',
   placeholder = '',
   label = '',
@@ -101,7 +100,6 @@ const Select = ({
         label={label}
       />
       <BottomSheet
-        fixScreenPadding={fixScreenPadding}
         visible={showOptions}
         onCloseAnimationEnd={onCloseOptions}
       >

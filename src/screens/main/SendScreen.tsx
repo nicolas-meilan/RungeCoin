@@ -54,7 +54,6 @@ const TOKENS = Object.values(TOKENS_ETH);
 const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const theme = useTheme();
   const { dispatchNotification } = useNotifications();
-  const [bottomSheetOpened, setBottomSheetOpened] = useState(false);
   const {
     estimatedTxInfo,
     estimatedTxInfoLoading,
@@ -135,15 +134,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         bigTitle
         scroll
         title="main.send.title"
-        bottomSheetOpened={bottomSheetOpened}
       >
         <Select
           selected={tokenToSend?.symbol}
           label="main.send.inputs.selectTokenLabel"
           placeholder="main.send.inputs.selectTokenPlaceholder"
           options={tokensList}
-          onOpen={() => setBottomSheetOpened(true)}
-          onClose={() => setBottomSheetOpened(false)}
           optionComponent={(option: Option<TokenType>, selected: boolean) => (
             <TokenItem
               fullName

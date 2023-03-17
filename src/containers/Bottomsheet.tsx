@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
   Keyboard,
+  Modal,
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native';
 
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
-const Z_INDEX = 1000;
-const TOP_MARGIN = 150;
+const BASE_TOP_MARGIN = 150;
 const RADIUS = 30;
 const ANIMATION_DURATION = 700;
 const SWIPE_TO_CLOSE = 0.30;
@@ -25,55 +25,32 @@ type BottomSheetProps = {
   children: Children | Children[];
   topMargin?: number;
   animationDuration?: number;
-  fixScreenPadding?: boolean;
   onOpenAnimationEnd?: () => void;
   onCloseAnimationEnd?: () => void;
 };
 
-const ElevationWrapper = styled.View<{ visible?: boolean }>`
-  position: absolute;
-  z-index: ${Z_INDEX};
-  elevation: ${Z_INDEX};
-  bottom: 0;
-  ${({ visible }) => (visible ? `
-  top: 0;
-  left: 0;
-  right: 0;
-` : '')}
-`;
-
 const Overlay = styled.View <{
   height: number;
   width: number;
-  fixScreenPadding?: boolean;
 }>`
   position: absolute;
-  width: ${({ width }) => width}px;
-  height: ${({ height }) => height}px;
-  z-index: ${Z_INDEX};
-  elevation: ${Z_INDEX};
   bottom: 0;
   top: 0;
   left: 0;
   right: 0;
-  left: -${({ theme, fixScreenPadding }) => (fixScreenPadding ? theme.spacing(6) : 0)};
 `;
 
 const BottomSheetContainer = styled(Animated.View) <{
   height: number;
   width: number;
-  fixScreenPadding?: boolean;
 }>`
+  position: absolute;
+  bottom: 0;
   width: ${({ width }) => width}px;
   height: ${({ height }) => height}px;
   border-top-left-radius: ${RADIUS}px;
   border-top-right-radius: ${RADIUS}px;
-  z-index: ${Z_INDEX};
-  elevation: ${Z_INDEX};
   background-color: ${({ theme }) => theme.colors.background.secondary};
-  position: absolute;
-  left: -${({ theme, fixScreenPadding }) => (fixScreenPadding ? theme.spacing(6) : 0)};
-  bottom: -${({ theme, fixScreenPadding }) => (fixScreenPadding ? theme.spacing(6) : 0)};
 `;
 
 const Top = styled.View`
@@ -99,16 +76,19 @@ const ChildrenWrapper = styled.View`
   padding: ${({ theme }) => theme.spacing(6)};
 `;
 
+const StyledGestureHandlerRootView = styled(GestureHandlerRootView)`
+  flex: 1;
+`;
+
 const BottomSheetContent = ({
   onOpen,
   onClose,
   children,
   onOpenAnimationEnd,
   onCloseAnimationEnd,
-  topMargin = TOP_MARGIN,
+  topMargin = BASE_TOP_MARGIN,
   animationDuration = ANIMATION_DURATION,
   visible = false,
-  fixScreenPadding = false,
 }: BottomSheetProps) => {
   const [neverWasVisible, setNeverWasVisible] = useState(true);
   const [canShow, setCanShow] = useState(false);
@@ -216,7 +196,6 @@ const BottomSheetContent = ({
         <Overlay
           width={width}
           height={height}
-          fixScreenPadding={fixScreenPadding}
         />
       </TouchableWithoutFeedback>
       <GestureDetector gesture={gesture}>
@@ -224,7 +203,6 @@ const BottomSheetContent = ({
           width={width}
           height={bottomSheetHeight}
           style={animatedStyle}
-          fixScreenPadding={fixScreenPadding}
         >
           <Content>
             <Top>
@@ -241,16 +219,16 @@ const BottomSheetContent = ({
 };
 
 const BottomSheet = ({
-  onOpenAnimationEnd,
+  onOpen,
   onCloseAnimationEnd,
   visible,
   ...props
 }: BottomSheetProps) => {
   const [canShow, setCanShow] = useState(visible);
 
-  const handleOpenAnimationEnd = () => {
+  const handleOpen = () => {
     setCanShow(true);
-    onOpenAnimationEnd?.();
+    onOpen?.();
   };
 
   const handleCloseAnimationEnd = () => {
@@ -259,14 +237,21 @@ const BottomSheet = ({
   };
 
   return (
-    <ElevationWrapper visible={canShow}>
-      <BottomSheetContent
-        onOpenAnimationEnd={handleOpenAnimationEnd}
-        onCloseAnimationEnd={handleCloseAnimationEnd}
-        visible={visible}
-        {...props}
-      />
-    </ElevationWrapper>
+    <Modal
+      visible={visible || canShow}
+      animationType="none"
+      transparent
+      hardwareAccelerated
+    >
+      <StyledGestureHandlerRootView>
+        <BottomSheetContent
+          onOpen={handleOpen}
+          onCloseAnimationEnd={handleCloseAnimationEnd}
+          visible={visible}
+          {...props}
+        />
+      </StyledGestureHandlerRootView>
+    </Modal>
   );
 };
 
