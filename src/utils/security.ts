@@ -26,7 +26,8 @@ const biometricsConfig = {
   accessControl: ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
   accessible: ACCESSIBLE.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY,
   authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
-}
+};
+
 export const toggleBiometrics = (enable?: boolean) => {
   if (enable) {
     return setGenericPassword(BIOMETRICS, BIOMETRICS, biometricsConfig);

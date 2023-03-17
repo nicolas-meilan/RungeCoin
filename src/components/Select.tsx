@@ -1,19 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import styled, { useTheme } from 'styled-components/native';
 
 import Card from './Card';
-import type { SvgProps } from './Svg';
 import Text from './Text';
-import TextInput from './TextInput';
+import TextInput, { TextInputProps } from './TextInput';
 import BottomSheet from '@containers/Bottomsheet';
 
 export interface Option<DataType = undefined> {
   data: DataType;
   value: string;
   label?: string;
-  svg?: SvgProps['svg'];
   disabled?: boolean;
+  svg?: TextInputProps['leftSvg'];
+  leftComponent?: TextInputProps['leftComponent'];
 }
 
 type SelectProps = {
@@ -97,6 +97,7 @@ const Select = ({
         icon={showOptions ? 'chevron-up' : 'chevron-down'}
         placeholder={placeholder}
         leftSvg={selected?.svg}
+        leftComponent={selected?.leftComponent}
         label={label}
       />
       <BottomSheet

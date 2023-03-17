@@ -18,7 +18,7 @@ export enum TextInputType {
   TEXT = 'text',
 }
 
-type TextInputProps = TextInputPropsRN & {
+export type TextInputProps = TextInputPropsRN & {
   label?: string;
   icon?: string;
   type?: string;
@@ -29,6 +29,7 @@ type TextInputProps = TextInputPropsRN & {
   errorI18nArgs?: TextProps['i18nArgs'];
   errorMessage?: string;
   leftSvg?: SvgProps['svg'];
+  leftComponent?: JSX.Element;
 };
 
 const Wrapper = styled.TouchableOpacity``;
@@ -89,6 +90,7 @@ const TextInput = ({
   multiline,
   onPress,
   leftSvg,
+  leftComponent,
   borderColor: borderColorProp,
   type = TextInputType.TEXT,
   error = false,
@@ -124,6 +126,9 @@ const TextInput = ({
     setShowText(!showText);
   };
 
+  const renderLeftComponent = !!(leftComponent || leftSvg);
+
+  const left = leftComponent || <Svg svg={leftSvg} size={24} />;
 
   return (
     <Wrapper
@@ -133,9 +138,7 @@ const TextInput = ({
     >
       {!!label && <Label text={label} />}
       <InputWrapper color={borderColor} multiline={multiline}>
-        {leftSvg && (
-          <Svg svg={leftSvg} size={24} />
-        )}
+        {renderLeftComponent && left}
         <StyledTextInput
           hasSvg={!!leftSvg}
           cursorColor={theme.colors.primary}

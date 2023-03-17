@@ -9,8 +9,8 @@ import Button, { ButtonType } from '@components/Button';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
-import Svg from '@components/Svg';
 import Text from '@components/Text';
+import TokenIcon from '@components/TokenIcon';
 import TradingViewChart from '@components/TradingViewChart';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
@@ -158,7 +158,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
           />
         </ButtonsWrapper>
         <TokenInfo>
-          {token && <Svg svg={token?.svg} size={44} />}
+          {token && <TokenIcon tokenSymbol={token.symbol} size={44} />}
           <BalanceWrapper>
             <BalanceSkeleton
               isLoading={!tokenBalances}

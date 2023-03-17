@@ -8,8 +8,8 @@ import Button from '@components/Button';
 import Icon from '@components/Icon';
 import Pill from '@components/Pill';
 import Skeleton from '@components/Skeleton';
-import Svg from '@components/Svg';
 import Text, { Weight } from '@components/Text';
+import TokenIcon from '@components/TokenIcon';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import { INPUT_NUMBER, localizeNumber, numberToFormattedString } from '@utils/formatter';
@@ -281,7 +281,7 @@ const Calculator = ({
     >
       {!!token && (
         <Token>
-          <Svg svg={token.svg} />
+          <TokenIcon tokenSymbol={token.symbol} />
           <SkeletonWrapper isLoading={tokenBalancesLoading}>
             <Skeleton
               isLoading={tokenBalancesLoading}

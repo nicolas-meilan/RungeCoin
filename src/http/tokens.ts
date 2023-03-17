@@ -5,6 +5,9 @@ import { TokenSymbol } from '@web3/tokens';
 
 const PRICES_URL = 'https://min-api.cryptocompare.com/data/pricemulti?fsyms={{FROM}}&tsyms={{TO}}';
 
+export const TOKEN_ICON_URL_REPLACER = '{{TOKEN}}';
+export const TOKEN_ICON_URL = `https://s3-symbol-logo.tradingview.com/crypto/XTVC${TOKEN_ICON_URL_REPLACER}.svg`;
+
 export type TokenConversionsEndpointResponse = {
   data: {
     [token in TokenSymbol]: {

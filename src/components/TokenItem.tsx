@@ -5,8 +5,8 @@ import styled from 'styled-components/native';
 
 import Icon from './Icon';
 import Skeleton from './Skeleton';
-import Svg from './Svg';
 import Text from './Text';
+import TokenIcon from './TokenIcon';
 import useTokenConversions from '@hooks/useTokenConversions';
 import {
   numberToFormattedString,
@@ -62,7 +62,7 @@ const Description = styled(Text)`
   color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
-const TokenIcon = styled(Svg)`
+const StyledTokenIcon = styled(TokenIcon)`
   align-self: center;
 `;
 
@@ -70,7 +70,6 @@ const TokenItem = ({
   symbol,
   decimals,
   balance,
-  svg,
   name,
   borderColor,
   rightIcon = '',
@@ -131,7 +130,7 @@ const TokenItem = ({
       disabledStyle={disabled}
       disabled={disabled || !onPress}
     >
-      <TokenIcon svg={svg} size={32} />
+      <StyledTokenIcon tokenSymbol={symbol} size={fullName ? 44 : 32} />
       <DataColumn>
         {dataColumn}
       </DataColumn>

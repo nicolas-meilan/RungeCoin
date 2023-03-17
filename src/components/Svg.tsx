@@ -1,8 +1,13 @@
-import React from 'react';
-import { View, ViewProps } from 'react-native';
+import React, { useState } from 'react';
+import { StyleProp, View, ViewProps, ViewStyle } from 'react-native';
 
-import type { SvgProps as RnSvgProps } from 'react-native-svg';
-import { useTheme } from 'styled-components/native';
+import {
+  SvgUri,
+  SvgProps as RnSvgProps,
+} from 'react-native-svg';
+import styled, { useTheme } from 'styled-components/native';
+
+import Skeleton from './Skeleton';
 
 type BaseSvg = React.FC<RnSvgProps>;
 
@@ -16,10 +21,23 @@ type BaseSvgProps = {
   strokeLinejoin?: RnSvgProps['strokeLinejoin'];
   preserveAspectRatio?: string;
   aspectRatio?: number;
+  viewBox?: string;
   color?: string;
+  onLoad?: () => void;
+  onError?: () => void;
+  uri?: string | null;
+  svgStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 
-export type SvgProps = BaseSvgProps & { svg: BaseSvg };
+export type SvgProps = BaseSvgProps & { svg?: BaseSvg | null };
+
+const StyledSkeleton = styled(Skeleton)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`;
 
 const Svg = ({
   svg: SVG,
@@ -34,9 +52,18 @@ const Svg = ({
   aspectRatio = 1,
   preserveAspectRatio,
   color,
+  viewBox,
+  onLoad,
+  onError,
+  svgStyle,
+  uri = null,
   ...rest
 }: SvgProps) => {
   const theme = useTheme();
+
+  const SvgComponent = SVG || SvgUri;
+
+  const [loading, setLoading] = useState(SvgComponent === SvgUri);
 
   // Workaround for Jest
   if (typeof SVG === 'number') return <View testID={rest.testID} />;
@@ -44,12 +71,27 @@ const Svg = ({
   const svgFill = fill;
   const svgStroke = stroke;
 
+
+  const handleLoad = () => {
+    setLoading(false);
+    onLoad?.();
+  };
+
+  const svgBaseStyle: ViewStyle = {
+    overflow: 'hidden',
+    opacity: loading ? 0 : 1,
+  };
+
   const content = (
     <View
       style={[{ width: size, aspectRatio }, style]}
       {...rest}
     >
-      <SVG
+      <StyledSkeleton
+        isLoading={loading}
+      />
+      <SvgComponent
+        style={[svgBaseStyle, svgStyle]}
         width="100%"
         height="100%"
         preserveAspectRatio={preserveAspectRatio || 'xMidYMid meet'}
@@ -59,6 +101,10 @@ const Svg = ({
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
         color={color || theme.colors.text.primary}
+        uri={uri}
+        onLoad={handleLoad}
+        onError={onError}
+        viewBox={viewBox}
       />
     </View>
   );

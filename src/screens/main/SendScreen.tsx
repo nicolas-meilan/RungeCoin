@@ -13,6 +13,7 @@ import Select, { Option } from '@components/Select';
 import Skeleton from '@components/Skeleton';
 import Text, { Weight } from '@components/Text';
 import TextInput from '@components/TextInput';
+import TokenIcon from '@components/TokenIcon';
 import TokenItem from '@components/TokenItem';
 import useBalances from '@hooks/useBalances';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
@@ -124,7 +125,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     value: token.symbol as string,
     data: token,
     label: token.name,
-    svg: token.svg,
+    leftComponent: <TokenIcon tokenSymbol={token.symbol} size={24} />,
     disabled: tokenBalances?.[token.symbol].isZero(),
   })), [tokenBalances]);
 
