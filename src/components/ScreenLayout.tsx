@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Keyboard } from 'react-native';
+import {
+  BackHandler,
+  ActivityIndicator,
+  Keyboard,
+} from 'react-native';
 
 import { EventMapCore, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -122,31 +126,42 @@ const ScreenLayout = ({
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [canRender, setCanRender] = useState(!waitUntilNavigationFinish);
 
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+  const backAction = goBack ? goBack : () => navigation.goBack();
+
+  useEffect(() => { // keyboard listeners
+    const showKeyboardSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setIsKeyboardOpen(true);
     });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+    const hideKeyboardSubscription = Keyboard.addListener('keyboardDidHide', () => {
       setIsKeyboardOpen(false);
     });
+
+    const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!hasBack) return true;
+
+      backAction();
+      return true;
+    });
+
+    return () => {
+      showKeyboardSubscription.remove();
+      hideKeyboardSubscription.remove();
+      backSubscription.remove();
+    };
+  }, []);
+
+  useEffect(() => { // Initial loading
     if (!canRender) {
       const navigationListenerSuscription = navigation.addListener('transitionEnd' as keyof EventMapCore<any>, () => {
         setCanRender(true);
         navigationListenerSuscription();
       });
     }
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
   }, []);
 
   const hasHeaderTitle = !bigTitle && !!title;
   const hasBigTitle = bigTitle && !!title;
   const hasHeader = hasHeaderTitle || hasBack || (!rightIconOnBigTitle && rightIcon);
-
-  const backAction = goBack ? goBack : () => navigation.goBack();
 
   const contentScrollCondition = scroll
     ? (

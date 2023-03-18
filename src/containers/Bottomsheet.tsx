@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import {
   Keyboard,
-  Modal,
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native';
 
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
+
+import Modal from './Modal';
 
 const BASE_TOP_MARGIN = 150;
 const RADIUS = 30;
@@ -74,10 +80,6 @@ const Content = styled(SafeAreaView)`
 const ChildrenWrapper = styled.View`
   flex: 1;
   padding: ${({ theme }) => theme.spacing(6)};
-`;
-
-const StyledGestureHandlerRootView = styled(GestureHandlerRootView)`
-  flex: 1;
 `;
 
 const BottomSheetContent = ({
@@ -243,14 +245,12 @@ const BottomSheet = ({
       transparent
       hardwareAccelerated
     >
-      <StyledGestureHandlerRootView>
-        <BottomSheetContent
-          onOpen={handleOpen}
-          onCloseAnimationEnd={handleCloseAnimationEnd}
-          visible={visible}
-          {...props}
-        />
-      </StyledGestureHandlerRootView>
+      <BottomSheetContent
+        onOpen={handleOpen}
+        onCloseAnimationEnd={handleCloseAnimationEnd}
+        visible={visible}
+        {...props}
+      />
     </Modal>
   );
 };

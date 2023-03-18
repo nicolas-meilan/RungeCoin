@@ -55,6 +55,7 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
     dispatchBiometrics,
   } = useBiometrics();
 
+  const [transitionEnd, setTransitionEnd] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordAttemps, setPasswordAttemps] = useState(0);
   const [passwordError, setPasswordError] = useState(false);
@@ -84,12 +85,18 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   }, []);
 
   useEffect(() => {
-    if (passwordAttemps >= MAX_PASSWORD_ATTEMPS) destroyWallet();
-  }, [passwordAttemps]);
+    const unsubscribe = navigation.addListener('transitionEnd', () => setTransitionEnd(true));
+  
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
-    if (biometricsEnabled) validateWithBiometrics();
-  }, [biometricsEnabled]);
+    if (passwordAttemps >= MAX_PASSWORD_ATTEMPS) destroyWallet();
+  }, [passwordAttemps]);
+  
+  useEffect(() => {
+    if (biometricsEnabled && transitionEnd) validateWithBiometrics();
+  }, [biometricsEnabled, transitionEnd]);
 
   const onPasswordChange = (newPassword: string) => {
     setPassword(newPassword);

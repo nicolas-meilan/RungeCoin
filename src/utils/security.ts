@@ -5,9 +5,10 @@ import {
   getGenericPassword,
   resetGenericPassword,
   ACCESS_CONTROL,
-  ACCESSIBLE,
   AUTHENTICATION_TYPE,
   STORAGE_TYPE,
+  SECURITY_LEVEL,
+  Options,
 } from 'react-native-keychain';
 
 export const hashFrom = (toHash: string) => Aes.sha256(toHash);
@@ -20,12 +21,12 @@ export const deviceHasBiometrics = async () => {
 
 const BIOMETRICS = 'biometrics';
 
-const biometricsConfig = {
+const biometricsConfig: Options = {
   service: BIOMETRICS,
   storage: STORAGE_TYPE.RSA,
-  accessControl: ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,
-  accessible: ACCESSIBLE.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY,
-  authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
+  accessControl: ACCESS_CONTROL.BIOMETRY_ANY,
+  authenticationType: AUTHENTICATION_TYPE.BIOMETRICS,
+  securityLevel: SECURITY_LEVEL.SECURE_HARDWARE,
 };
 
 export const toggleBiometrics = (enable?: boolean) => {

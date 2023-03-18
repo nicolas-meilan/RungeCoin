@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 
 import {
   ScreenName,
@@ -16,17 +16,19 @@ export type MainNavigatorType = {
   [ScreenName.validateAccess]: undefined;
   [ScreenName.home]: undefined;
   [ScreenName.send]: { tokenToSendSymbol?: TokenSymbol } | undefined;
-  [ScreenName.token]: { tokenSymbol?: TokenSymbol } | undefined;
+  [ScreenName.token]: { tokenSymbol: TokenSymbol };
 };
 
 type ScreenProps = {
   name: keyof MainNavigatorType;
   component: (props: any) => JSX.Element;
+  options?: NativeStackNavigationOptions;
 };
 
 const screens: ScreenProps[] = [{
   name: ScreenName.validateAccess,
   component: ValidateAccessScreen,
+  options: { gestureEnabled: false },
 }, {
   name: ScreenName.home,
   component: HomeScreen,
@@ -56,6 +58,7 @@ const MainNavigator = ({
         key={screen.name}
         name={screen.name}
         component={screen.component}
+        options={screen.options}
       />
     ))}
   </StackNavigator.Navigator>

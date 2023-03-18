@@ -1,6 +1,9 @@
 import React from 'react';
 
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
 
 import {
   ScreenName,
@@ -21,6 +24,7 @@ export type StartNavigatorType = {
 type ScreenProps = {
   name: keyof StartNavigatorType;
   component: (props: any) => JSX.Element;
+  options?: NativeStackNavigationOptions;
 };
 
 const screens: ScreenProps[] = [{
@@ -46,6 +50,7 @@ const StartNavigator = () => (
         key={screen.name}
         name={screen.name}
         component={screen.component}
+        options={screen.options}
       />
     ))}
   </StackNavigator.Navigator>

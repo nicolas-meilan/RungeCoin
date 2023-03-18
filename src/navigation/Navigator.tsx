@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -8,8 +8,9 @@ import Animated, {
 import styled from 'styled-components/native';
 
 import { ScreenName } from './constants';
-import MainNavigator from './MainNavigator';
+import MainNavigator, { MainNavigatorType } from './MainNavigator';
 import StartNavigator from './StartNavigator';
+import useLockScreen from '@hooks/useLockScreen';
 import useStartFlowFlag from '@hooks/useStartFlowFlag';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 
@@ -25,6 +26,7 @@ const Wrapper = styled.View`
 `;
 
 const Navigator = () => {
+  const navigatorRef = useRef<NavigationContainerRef<MainNavigatorType>>(null);
   const { comesFromStartFlow } = useStartFlowFlag();
   const { walletPublicValues } = useWalletPublicValues();
 
@@ -35,9 +37,11 @@ const Navigator = () => {
 
   const hasWallet = useMemo(() => !!walletPublicValues, [walletPublicValues]);
 
+  useLockScreen(navigatorRef, hasWallet);
+
   return (
     <Wrapper>
-      <NavigationContainer>
+      <NavigationContainer ref={navigatorRef}>
         {hasWallet ? (
           <AnimatedWrapper
             key="MainNavigator"
