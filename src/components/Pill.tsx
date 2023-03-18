@@ -22,7 +22,7 @@ type PillProps = {
   type?: Type;
   text?: string;
   i18nArgs?: TextProps['i18nArgs'];
-  children?: JSX.Element | JSX.Element[];
+  children?: React.ReactNode;
   onPress?: () => void;
   disabled?: boolean;
   noI18n?: boolean;

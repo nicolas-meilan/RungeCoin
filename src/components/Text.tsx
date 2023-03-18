@@ -17,7 +17,7 @@ export type TextProps = {
   text: string;
   style?: StyleProp<TextStyle>;
   boldTextStyle?: StyleProp<TextStyle>;
-  children?: JSX.Element | JSX.Element[];
+  children?: React.ReactNode;
   weight?: Weight;
   i18nArgs?: { [key: string]: string | number | undefined };
   onPress?: () => void;

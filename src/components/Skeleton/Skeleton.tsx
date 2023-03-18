@@ -19,10 +19,8 @@ type SkeletonBaseProps = {
   isFirst?: boolean;
 };
 
-type Children = false | JSX.Element;
-
 export type SkeletonProps = Omit<SkeletonBaseProps, 'areMultiples' | 'isFirst'> & {
-  children?: Children | Children[];
+  children?: React.ReactNode;
   isLoading: boolean;
   requiredValuesToRender?: Deps;
   quantity?: number;

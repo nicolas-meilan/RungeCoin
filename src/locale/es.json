@@ -2,6 +2,7 @@
   "common": {
     "appName": "RungeCoin",
     "continue": "Continuar",
+    "cancel": "Cancelar",
     "next": "Siguiente",
     "send": "Enviar",
     "receive": "Recibir"
@@ -39,7 +40,8 @@
         "seedPhraseError": "Las palabras secretas son incorrectas.",
         "seedPhraseErrorLength": "La cantidad de palabras secretas es incorrecta."
       }
-    }
+    },
+    "biometricsTitle": "Usa tu huella digital"
   },
   "main": {
     "validateAccess": {

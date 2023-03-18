@@ -169,20 +169,14 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
               })} ${token?.symbol}`} />
             </BalanceSkeleton>
             <FiatBalanceSkeleton
-              isLoading={!tokenConversions}
+              isLoading={!tokenBalances || !tokenConversions}
               height={25}
             >
               <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, FiatCurrencies.USD)} />
             </FiatBalanceSkeleton>
           </BalanceWrapper>
         </TokenInfo>
-        <>
-          {!!token && (
-            <TradingViewChart
-              token={token}
-            />
-          )}
-        </>
+        <TradingViewChart token={token} />
       </ScreenLayout>
       <BottomSheet
         visible={receiveBottomSheet}

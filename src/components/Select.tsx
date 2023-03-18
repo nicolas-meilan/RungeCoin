@@ -18,8 +18,8 @@ export interface Option<DataType = undefined> {
 
 type SelectProps = {
   options: Option<any>[];
-  optionComponent?: (option: Option<any>, selected: boolean) => JSX.Element;
-  selectedComponent?: (option: Option<any>) => JSX.Element;
+  optionComponent?: (option: Option<any>, selected: boolean) => React.ReactNode;
+  selectedComponent?: (option: Option<any>) => React.ReactNode;
   keyExtractor?: (option: Option<any>) => string;
   onChange: (option: Option<any>) => void;
   onOpen?: () => void;
@@ -80,7 +80,7 @@ const Select = ({
   };
 
   const optionComponent = optionComponentProp || (
-    (currentOption: typeof options[0], currentSelected: boolean): JSX.Element => (
+    (currentOption: typeof options[0], currentSelected: boolean): React.ReactNode => (
       <OptionCard selected={currentSelected}>
         <OptionText text={currentOption.label || currentOption.value} />
       </OptionCard>

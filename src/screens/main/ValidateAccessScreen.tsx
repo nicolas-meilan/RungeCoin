@@ -42,7 +42,7 @@ const Fingerprint = styled(Icon).attrs({
 
 type ValidateAccessScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.validateAccess>;
 
-const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
+const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) => {
   const destroyWallet = useDestroyWallet();
 
   const {
@@ -61,9 +61,16 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   const [passwordError, setPasswordError] = useState(false);
   const [userPassword, setUserPassword] = useState<string | null>(null);
 
-  const goToHome = () => {
+  const comesFromBackground = route.params?.comesFromBackground;
+
+  const goToNextScreen = () => {
     setPasswordAttemps(0);
     storagePasswordAttemps('0');
+    if (comesFromBackground) {
+      navigation.goBack();
+      return;
+    }
+  
     navigation.reset({
       index: 0,
       routes: [{ name: ScreenName.home }],
@@ -73,7 +80,7 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
   const validateWithBiometrics = async () => {
     const grantAccess = await dispatchBiometrics();
 
-    if (grantAccess) goToHome();
+    if (grantAccess) goToNextScreen();
   };
 
   useEffect(() => {
@@ -115,7 +122,7 @@ const ValidateAccessScreen = ({ navigation }: ValidateAccessScreenProps) => {
       return;
     }
 
-    goToHome();
+    goToNextScreen();
   };
 
   const remainingAttemps = MAX_PASSWORD_ATTEMPS - passwordAttemps;

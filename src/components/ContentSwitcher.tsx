@@ -7,9 +7,9 @@ import Pill, { Type } from './Pill';
 
 type ContentSwitcherProps = {
   labels: string[];
-  components: JSX.Element[];
+  components: React.ReactNode[];
   initialIndex?: number;
-  rightComponent?: JSX.Element;
+  rightComponent?: React.ReactNode;
 };
 
 const SWITCHER_HEIGHT = 35;

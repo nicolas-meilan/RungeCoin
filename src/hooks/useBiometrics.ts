@@ -1,5 +1,6 @@
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import StorageKeys from '@system/storageKeys';
 import { ReactQueryKeys } from '@utils/constants';
@@ -26,6 +27,7 @@ const useBiometrics = ({
   onBiometricsChangeCancel,
   onBiometricsChaingeSuccess,
 }: UseBiometricsProps = {}): UseBiometricsReturn => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { getItem, setItem } = useAsyncStorage(StorageKeys.BIOMETRICS);
 
@@ -51,7 +53,7 @@ const useBiometrics = ({
     if (!ignoreEnableFlag && !biometricsEnabled) return false;
 
     try {
-      const biometicsEnabled = await obtainBiometrics();
+      const biometicsEnabled = await obtainBiometrics(t('access.biometricsTitle'), t('common.cancel'));
 
       return !!biometicsEnabled;
     } catch (_) {

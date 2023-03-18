@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
 
+import { debounce } from 'lodash';
 import styled from 'styled-components/native';
 
 import Skeleton from './Skeleton';
@@ -66,7 +67,7 @@ const TokenBalances = ({
             withoutMargin={!index}
             balance={tokenBalances[token.symbol]}
             rightIcon="chevron-right"
-            onPress={() => onPressToken(token)}
+            onPress={debounce(() => onPressToken(token))}
             {...token}
           />
         ))}

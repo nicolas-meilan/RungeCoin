@@ -2,6 +2,7 @@
   "common": {
     "appName": "RungeCoin",
     "continue": "Continue",
+    "cancel": "Cancel",
     "next": "Next",
     "send": "Send",
     "receive": "Receive"
@@ -39,7 +40,8 @@
         "seedPhraseError": "Secret words are wrong.",
         "seedPhraseErrorLength": "The number of secret words is incorrect."
       }
-    }
+    },
+    "biometricsTitle": "Use your fingerprint"
   },
   "main": {
     "validateAccess": {

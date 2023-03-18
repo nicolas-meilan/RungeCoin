@@ -52,7 +52,7 @@ const HTML = `
 
 
 type TradingViewChartProps = {
-  token: TokenType;
+  token?: TokenType | null;
 };
 
 const StyledWebView = styled(WebView) <{ isLoading: boolean }>`
@@ -87,18 +87,21 @@ const TradingViewChart = ({ token }: TradingViewChartProps) => {
 
   const [loading, setLoading] = useState(true);
 
-  const html = HTML
-    .replace(TOKEN, token.symbol)
-    .replace(FIAT, FiatCurrencies.USD)
-    .replace(LOCALE, i18n.language)
-    .replace(THEME, theme.name);
+  const html = token
+    ? HTML
+      .replace(TOKEN, token.symbol)
+      .replace(FIAT, FiatCurrencies.USD)
+      .replace(LOCALE, i18n.language)
+      .replace(THEME, theme.name)
+    : '';
 
   const onLayout = (event: LayoutChangeEvent) => setSize({
     width: event.nativeEvent.layout.width - LOADING_BORDERS,
     height: event.nativeEvent.layout.height - LOADING_BORDERS,
   });
 
-  const showSkeleton = !!size.height && !!size.width && loading;
+  const sizeLoaded = !!size.height && !!size.width;
+  const showSkeleton = sizeLoaded && (loading || !token);
 
   return (
     <Wrapper onLayout={onLayout}>
@@ -113,7 +116,7 @@ const TradingViewChart = ({ token }: TradingViewChartProps) => {
         </ChartSkeletonWrapper>
       )}
       <StyledWebView
-        isLoading={loading}
+        isLoading={loading || !token}
         scalesPageToFit={false}
         source={{ html }}
         onMessage={(event) => {

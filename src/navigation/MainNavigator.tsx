@@ -13,7 +13,7 @@ import ValidateAccessScreen from '@screens/main/ValidateAccessScreen';
 import type { TokenSymbol } from '@web3/tokens';
 
 export type MainNavigatorType = {
-  [ScreenName.validateAccess]: undefined;
+  [ScreenName.validateAccess]: { comesFromBackground: boolean } | undefined;
   [ScreenName.home]: undefined;
   [ScreenName.send]: { tokenToSendSymbol?: TokenSymbol } | undefined;
   [ScreenName.token]: { tokenSymbol: TokenSymbol };

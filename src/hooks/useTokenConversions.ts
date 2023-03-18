@@ -38,10 +38,10 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
   };
 
   const convert: UseTokenConversionssReturn['convert'] = (balance, from) => {
-    if (!tokenConversions) return 0;
-
     const balanceToConvert = BigNumber.isBigNumber(balance) ? balance : BigNumber.from(balance);
-  
+
+    if (!tokenConversions || balanceToConvert.isZero()) return 0;
+
     // TODO select to
     const to = tokenConversions[from.symbol]?.USD || 0;
     const toDecimals = to.toString().split('.')?.[1]?.length || 0;

@@ -7,7 +7,7 @@ import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import { isDarkThemeEnabled } from '@system/deviceInfo';
 
 type ThemeProviderProps = {
-  children: JSX.Element;
+  children: React.ReactNode;
 };
 
 const ThemeProvider = ({ children }: ThemeProviderProps) => {

@@ -37,4 +37,12 @@ export const toggleBiometrics = (enable?: boolean) => {
   }
 };
 
-export const obtainBiometrics = () => getGenericPassword(biometricsConfig);
+export const obtainBiometrics = (title?: string | null, cancel?: string | null) => getGenericPassword({
+  ...biometricsConfig,
+  ...(title || cancel ? {
+    authenticationPrompt: {
+      title: title || undefined,
+      cancel: cancel || undefined,
+    },
+  } : {}),
+});

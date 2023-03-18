@@ -22,13 +22,11 @@ const RADIUS = 30;
 const ANIMATION_DURATION = 700;
 const SWIPE_TO_CLOSE = 0.30;
 
-type Children = false | JSX.Element;
-
 type BottomSheetProps = {
   visible?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
-  children: Children | Children[];
+  children?: React.ReactNode;
   topMargin?: number;
   animationDuration?: number;
   onOpenAnimationEnd?: () => void;

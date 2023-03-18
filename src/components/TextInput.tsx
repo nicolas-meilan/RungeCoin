@@ -29,7 +29,7 @@ export type TextInputProps = TextInputPropsRN & {
   errorI18nArgs?: TextProps['i18nArgs'];
   errorMessage?: string;
   leftSvg?: SvgProps['svg'];
-  leftComponent?: JSX.Element;
+  leftComponent?: React.ReactNode;
 };
 
 const Wrapper = styled.TouchableOpacity``;

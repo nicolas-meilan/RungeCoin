@@ -22,10 +22,13 @@ export const useLockScreen = (
   };
 
   const onAppActive = () => {
+    const currentScreen = navigatorRef.current?.getCurrentRoute()?.name;
+    if (currentScreen === ScreenName.validateAccess) return;
+
     const currentTime = Date.now();
     const timeDif = currentTime - time;
 
-    if (timeDif >= MS_TO_LOCK) navigatorRef.current?.navigate(ScreenName.validateAccess);
+    if (timeDif >= MS_TO_LOCK) navigatorRef.current?.navigate(ScreenName.validateAccess, { comesFromBackground: true });
   };
 
   const onAppBackground = () => setTime(Date.now());

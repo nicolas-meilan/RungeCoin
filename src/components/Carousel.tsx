@@ -20,7 +20,7 @@ export type CarouselRef = {
 
 type CarouselItem = {
   key?: string;
-  component: JSX.Element;
+  component: React.ReactNode;
 };
 
 type CarouselProps = {

@@ -16,9 +16,8 @@ import Text from './Text';
 import Title from './Title';
 import logo from '@assets/logo.svg';
 
-type Children = JSX.Element | false;
 type ScreenLayoutProps = {
-  children: Children | Children[];
+  children: React.ReactNode;
   scroll?: boolean;
   title?: string;
   bigTitle?: boolean;
@@ -31,7 +30,7 @@ type ScreenLayoutProps = {
   onPressRightIcon?: () => void;
   goBack?: () => void;
   refreshControl?: JSX.Element;
-  footer?: JSX.Element;
+  footer?: React.ReactNode;
   footerHeight?: number | string;
 };
 
