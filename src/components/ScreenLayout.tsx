@@ -127,7 +127,7 @@ const ScreenLayout = ({
 
   const backAction = goBack ? goBack : () => navigation.goBack();
 
-  useEffect(() => { // keyboard listeners
+  useEffect(() => { // listeners
     const showKeyboardSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setIsKeyboardOpen(true);
     });

@@ -30,9 +30,11 @@ const HTML = `
 </div>
 `;
 
+// opacity 0.99 to fix webview crash with navigation animation
 const StyledWebView = styled(WebView)`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background.primary};
+  opacity: 0.99;
 `;
 
 const Overlay = styled.View`
@@ -60,7 +62,6 @@ const TokenPrices = () => {
   return (
     <>
       <StyledWebView
-        pointerEvents="none"
         scalesPageToFit={false}
         source={{ html }}
       />

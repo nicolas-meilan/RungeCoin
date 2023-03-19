@@ -66,6 +66,9 @@ const StyledTokenIcon = styled(TokenIcon)`
   align-self: center;
 `;
 
+const StyledSkeleton = styled(Skeleton)`
+  margin-top: ${({ theme }) => theme.spacing(1)}
+`;
 const TokenItem = ({
   symbol,
   decimals,
@@ -100,8 +103,14 @@ const TokenItem = ({
         height={15}
       >
         <Description text={`${balanceFormatted} ${symbol}`} noI18n />
-        <Description text={balanceConverted} noI18n />
       </Skeleton>
+      <StyledSkeleton
+        isLoading={balanceLoading || !tokenConversions}
+        height={15}
+        width="80%"
+      >
+        <Description text={balanceConverted} noI18n />
+      </StyledSkeleton>
     </>
   ) : (
     <>
@@ -111,13 +120,13 @@ const TokenItem = ({
       >
         <Title text={`${balanceFormatted} ${symbol}`} noI18n />
       </Skeleton>
-      <Skeleton
+      <StyledSkeleton
         isLoading={!tokenConversions}
         width="80%"
         height={15}
       >
         <Description text={balanceConverted} noI18n />
-      </Skeleton>
+      </StyledSkeleton>
     </>
   );
 

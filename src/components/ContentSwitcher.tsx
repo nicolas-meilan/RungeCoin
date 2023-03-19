@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import styled from 'styled-components/native';
 
@@ -10,6 +10,7 @@ type ContentSwitcherProps = {
   components: React.ReactNode[];
   initialIndex?: number;
   rightComponent?: React.ReactNode;
+  onChange?: (tabIndex: number) => void;
 };
 
 const SWITCHER_HEIGHT = 35;
@@ -45,18 +46,31 @@ const ContentSwitcher = ({
   labels,
   components,
   rightComponent,
+  onChange,
   initialIndex = 0,
 }: ContentSwitcherProps) => {
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
+  const [neverChange, setNeverChange] = useState(true);
+
+  useEffect(() => {
+    if (neverChange) return;
+
+    onChange?.(selectedIndex);
+  }, [selectedIndex, neverChange]);
 
   const switcherItems = useMemo(() => labels.map((label, index) => {
     const key = `SWITCHER_LABEL_${index}_${label}`;
+
+    const handlePress = () => {
+      setNeverChange(false);
+      setSelectedIndex(index);
+    };
 
     return (
       <PillItem
         key={key}
         selected={selectedIndex === index}
-        onPress={() => setSelectedIndex(index)}
+        onPress={handlePress}
         text={label}
         type={Type.INFO}
       />

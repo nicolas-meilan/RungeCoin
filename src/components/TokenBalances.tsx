@@ -1,13 +1,11 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
 
-import { debounce } from 'lodash';
 import styled from 'styled-components/native';
 
 import Skeleton from './Skeleton';
 import TokenItem from './TokenItem';
 import useBalances from '@hooks/useBalances';
-import usePull2Refresh from '@hooks/usePull2Refresh';
 import {
   TOKENS_ETH,
   TokenType,
@@ -27,27 +25,13 @@ const StyledSkeleton = styled(Skeleton)`
 
 const TokenBalances = ({
   onPressToken,
-  onRefresh,
-  refreshLoading = false,
 }: TokenBalancesProps) => {
   const {
     tokenBalances,
-    refetchBalances,
-    tokenBalancesLoading,
   } = useBalances({
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
-  });
-
-  const refetch = () => {
-    refetchBalances();
-    onRefresh?.();
-  };
-
-  const refreshControl = usePull2Refresh({
-    loading: tokenBalancesLoading || refreshLoading,
-    fetch: refetch,
   });
 
   return (
@@ -57,7 +41,6 @@ const TokenBalances = ({
       height={35}
     >
       <ScrollView
-        refreshControl={refreshControl}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
       >
@@ -67,7 +50,7 @@ const TokenBalances = ({
             withoutMargin={!index}
             balance={tokenBalances[token.symbol]}
             rightIcon="chevron-right"
-            onPress={debounce(() => onPressToken(token))}
+            onPress={() => onPressToken(token)}
             {...token}
           />
         ))}

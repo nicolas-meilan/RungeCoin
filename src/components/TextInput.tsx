@@ -127,6 +127,7 @@ const TextInput = ({
   };
 
   const renderLeftComponent = !!(leftComponent || leftSvg);
+  const renderRightComponent = !!(isPassword || icon);
 
   const left = leftComponent || <Svg svg={leftSvg} size={24} />;
 
@@ -150,10 +151,12 @@ const TextInput = ({
           secureTextEntry={!showText}
           multiline={multiline}
         />
-        <IconWrapper multiline={multiline}>
-          {isPassword && <StyledIcon name={passwordIconName} onPress={toggleShowText} />}
-          {icon && !isPassword && <StyledIcon name={icon} onPress={onPressIcon} />}
-        </IconWrapper>
+        {renderRightComponent && (
+          <IconWrapper multiline={multiline}>
+            {isPassword && <StyledIcon name={passwordIconName} onPress={toggleShowText} />}
+            {icon && !isPassword && <StyledIcon name={icon} onPress={onPressIcon} />}
+          </IconWrapper>
+        )}
       </InputWrapper>
       {renderError && <ErrorMessage text={errorMessage} i18nArgs={errorI18nArgs} />}
     </Wrapper>

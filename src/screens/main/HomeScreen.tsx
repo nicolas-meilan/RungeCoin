@@ -18,6 +18,7 @@ import TokenPrices from '@components/TokenPrices';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
+import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
@@ -58,6 +59,7 @@ type HomeScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.home
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
+  const [isOnActivity, setIsOnActivity] = useState(false);
 
   const { dispatchNotification } = useNotifications();
   const { walletPublicValues } = useWalletPublicValues();
@@ -68,7 +70,23 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     tokenConversionsLoading,
     refetchTokenConversions,
   } = useTokenConversions();
-  const { tokenBalances } = useBalances();
+
+  const {
+    tokenBalances,
+    refetchBalances,
+    tokenBalancesLoading,
+  } = useBalances();
+
+  const refetch = () => {
+    refetchBalances();
+    refetchTokenConversions();
+    if (isOnActivity) console.log('FETCH ACTIVITIES'); // TODO refetch activities
+  };
+
+  const refreshControl = usePull2Refresh({
+    loading: tokenBalancesLoading || tokenConversionsLoading,
+    fetch: refetch,
+  });
 
   const totalConvertedBalance = useMemo(() => {
     if (!tokenBalances) return '0 USD'; // TODO
@@ -90,12 +108,13 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   };
 
   const onPressSend = () => navigation.navigate(ScreenName.send);
-
   const onPressToken = (token: TokenType) => navigation.navigate(ScreenName.token, {
     tokenSymbol: token.symbol,
   });
 
   const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
+
+  const onTabChange = () => setIsOnActivity(!isOnActivity);
 
   return (
     <>
@@ -104,6 +123,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         bigTitle
         hasBack={false}
         keyboardAvoidingView
+        scroll
+        refreshControl={refreshControl}
         footerHeight={70}
         footer={<TokenPrices />}
       >
@@ -134,6 +155,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         </CenterWrapper>
         <ContentSwitcher
           labels={['main.balance.title', 'main.activity.title']}
+          onChange={onTabChange}
           components={[
             <TokenBalances
               onPressToken={onPressToken}

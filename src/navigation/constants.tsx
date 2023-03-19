@@ -1,4 +1,6 @@
-export const screenOptions = { headerShown: false };
+import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+
+export const screenOptions: NativeStackNavigationOptions = { headerShown: false };
 
 export enum ScreenName {
   // Start Stack
