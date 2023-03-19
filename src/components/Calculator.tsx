@@ -186,8 +186,6 @@ const Calculator = ({
     setBalanceExceeded(amountBN.gt(maxAmount));
   }, [amount, tokenBalances, token]);
 
-  const onCloseAnimationEnd = () => resetState();
-
   const onKeyPress = (key: string) => setAmount((prevAmount) => {
     const value = t(key);
 
@@ -224,6 +222,11 @@ const Calculator = ({
       decimals: token.decimals,
       localize: false,
     }));
+  };
+
+  const handleClose = () => {
+    onClose?.();
+    resetState();
   };
 
   const pills = useMemo(() => (
@@ -278,10 +281,9 @@ const Calculator = ({
   return (
     <BottomSheet
       visible={visible}
-      onClose={onClose}
+      onClose={handleClose}
       topMargin={100}
       animationDuration={ANIMATION_DURATION}
-      onCloseAnimationEnd={onCloseAnimationEnd}
     >
       {!!token && (
         <Token>

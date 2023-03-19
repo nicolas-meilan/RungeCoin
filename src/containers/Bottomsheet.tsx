@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Keyboard,
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native';
 
+import { useFocusEffect } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -30,7 +31,6 @@ type BottomSheetProps = {
   topMargin?: number;
   animationDuration?: number;
   onOpenAnimationEnd?: () => void;
-  onCloseAnimationEnd?: () => void;
 };
 
 const Overlay = styled.View <{
@@ -85,13 +85,11 @@ const BottomSheetContent = ({
   onClose,
   children,
   onOpenAnimationEnd,
-  onCloseAnimationEnd,
   topMargin = BASE_TOP_MARGIN,
   animationDuration = ANIMATION_DURATION,
   visible = false,
 }: BottomSheetProps) => {
   const [neverWasVisible, setNeverWasVisible] = useState(true);
-  const [canShow, setCanShow] = useState(false);
 
   const { height, width } = useWindowDimensions();
   const bottomSheetHeight = height - topMargin;
@@ -107,20 +105,22 @@ const BottomSheetContent = ({
     transform: [{ translateY: currentY.value }],
   }));
 
-  const toggleCanShow = (newCanShow: boolean, executeOnClose?: boolean) => {
-    if (newCanShow) Keyboard.dismiss();
-    if (!newCanShow && executeOnClose) onClose?.();
-
-    setCanShow(newCanShow);
+  const toggleVisibility = (newVisibility: boolean, executeOnClose?: boolean) => {
+    if (newVisibility) Keyboard.dismiss();
+    if (!newVisibility && executeOnClose) onClose?.();
   };
 
   const toggleBottomSheet = (show: boolean, executeOnClose?: boolean) => {
     'worklet';
 
-    if (animationInProgress.value) return;
+    const toY = show ? bottomSheetVisibleY : bottomSheetNotVisibleY;
+
+    const isOnCurrentState = currentY.value === toY;
+    if (isOnCurrentState || animationInProgress.value) return;
 
     animationInProgress.value = true;
-    if (show) runOnJS(toggleCanShow)(true);
+
+    if (show) runOnJS(toggleVisibility)(true);
 
     const onAnimationFinish = (isFinished?: boolean) => {
       'worklet';
@@ -132,17 +132,12 @@ const BottomSheetContent = ({
         animationInProgress.value = false;
       }
 
-      if (isFinished && isHide) {
-        runOnJS(toggleCanShow)(false, executeOnClose);
-        if (onCloseAnimationEnd) runOnJS(onCloseAnimationEnd)();
-      }
+      if (isFinished && isHide) runOnJS(toggleVisibility)(false, executeOnClose);
 
       if (isFinished && isVisible && onOpenAnimationEnd) runOnJS(onOpenAnimationEnd)();
     };
 
-    currentY.value = withTiming(show
-      ? bottomSheetVisibleY
-      : bottomSheetNotVisibleY, {
+    currentY.value = withTiming(toY, {
       duration: animationDuration,
     }, onAnimationFinish);
   };
@@ -155,13 +150,12 @@ const BottomSheetContent = ({
       return;
     }
 
-    if (!neverWasVisible) {
-      toggleBottomSheet(false);
-      onClose?.();
-    }
+    if (!neverWasVisible) toggleBottomSheet(false, true);
   }, [visible]);
 
-  if (!canShow) return null;
+  useFocusEffect(useCallback(() => () => {
+    toggleBottomSheet(false, true); // Execute on blur
+  }, []));
 
   const gesture = Gesture.Pan()
     .onBegin((event) => {
@@ -220,7 +214,7 @@ const BottomSheetContent = ({
 
 const BottomSheet = ({
   onOpen,
-  onCloseAnimationEnd,
+  onClose,
   visible,
   ...props
 }: BottomSheetProps) => {
@@ -231,9 +225,9 @@ const BottomSheet = ({
     onOpen?.();
   };
 
-  const handleCloseAnimationEnd = () => {
+  const handleClose = () => {
     setCanShow(false);
-    onCloseAnimationEnd?.();
+    onClose?.();
   };
 
   return (
@@ -245,7 +239,7 @@ const BottomSheet = ({
     >
       <BottomSheetContent
         onOpen={handleOpen}
-        onCloseAnimationEnd={handleCloseAnimationEnd}
+        onClose={handleClose}
         visible={visible}
         {...props}
       />

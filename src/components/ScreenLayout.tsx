@@ -136,7 +136,7 @@ const ScreenLayout = ({
     });
 
     const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (!hasBack) return true;
+      if (!hasBack && !goBack) return true;
 
       backAction();
       return true;

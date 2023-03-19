@@ -101,7 +101,7 @@ const Select = ({
       />
       <BottomSheet
         visible={showOptions}
-        onCloseAnimationEnd={onCloseOptions}
+        onClose={onCloseOptions}
       >
         <Card scroll>
           {options.map((currentOption, index) => (
