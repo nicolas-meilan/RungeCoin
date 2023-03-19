@@ -19,13 +19,13 @@ const HTML = `
   <div class="tradingview-widget-container__widget"></div>
   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
   {
-  "symbols": [${TOKENS_WIDGET}],
-  "showSymbolLogo": true,
-  "colorTheme": "${THEME}",
-  "isTransparent": true,
-  "displayMode": "regular",
-  "locale": "${LOCALE}"
-}
+    "symbols": [${TOKENS_WIDGET}],
+    "showSymbolLogo": true,
+    "colorTheme": "${THEME}",
+    "isTransparent": true,
+    "displayMode": "regular",
+    "locale": "${LOCALE}"
+  }
   </script>
 </div>
 `;
