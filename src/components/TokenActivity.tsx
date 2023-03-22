@@ -13,6 +13,8 @@ type TokenActivityProps = {
   refreshControl?: FlatListProps<any>['refreshControl'];
 };
 
+const WAIT_UNTIL_LIST_LOADED_TIME = 500;
+
 const ListLoading = styled.ActivityIndicator`
   margin: ${({ theme }) => theme.spacing(4)};
 `;
@@ -23,6 +25,7 @@ const TokenActivity = ({
 }: TokenActivityProps) => {
   const theme = useTheme();
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [timeFinish, setTimeFinish] = useState(false);
 
   const {
     refetchTokenActivity,
@@ -34,6 +37,11 @@ const TokenActivity = ({
   });
 
   useEffect(() => {
+    const timeRef = setTimeout(() => { // Wait a time for list loading
+      setTimeFinish(true);
+      clearTimeout(timeRef);
+    }, WAIT_UNTIL_LIST_LOADED_TIME);
+
     if (!tokenActivity) {
       refetchTokenActivity();
       return;
@@ -46,11 +54,11 @@ const TokenActivity = ({
   return (
     <Skeleton
       quantity={15}
-      isLoading={!dataLoaded && tokenActivityLoading}
+      isLoading={!dataLoaded && tokenActivityLoading || !timeFinish}
     >
       <FlatList
         refreshControl={refreshControl}
-        data={tokenActivity}
+        data={timeFinish ? tokenActivity : []}
         renderItem={({ item }) => <TokenActivityItem activityItem={item} />}
         keyExtractor={(item) => item.hash}
         onEndReached={next}
