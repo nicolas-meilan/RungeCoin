@@ -8,6 +8,7 @@ import styled, { useTheme } from 'styled-components/native';
 import Button from '@components/Button';
 import Calculator from '@components/Calculator';
 import Card from '@components/Card';
+import QrScanner from '@components/QrScanner';
 import ScreenLayout from '@components/ScreenLayout';
 import Select, { Option } from '@components/Select';
 import Skeleton from '@components/Skeleton';
@@ -21,10 +22,10 @@ import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
-import { isDev } from '@utils/config';
 import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { GWEI, TOKENS_ETH, TokenType } from '@web3/tokens';
+import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
 
 const StyledButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing(10)};
@@ -90,8 +91,9 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   );
 
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showQrScanner, setShowQrScanner] = useState(false);
 
-  const [addressToSend, setAddressToSend] = useState(isDev() ? PUBLIC_KEY_TO_TEST : '');
+  const [addressToSend, setAddressToSend] = useState('');
   const [addressToSendError, setAddressToSendError] = useState(false);
 
   const hasNotBalanceForGas = useMemo(() => (
@@ -119,6 +121,9 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const openCalculator = () => setShowCalculator(true);
   const closeCalculator = () => setShowCalculator(false);
 
+  const openQrScanner = () => setShowQrScanner(true);
+  const closeQrScanner = () => setShowQrScanner(false);
+
   const onCalculatorEnd = (amount: string) => {
     if (!tokenToSend) return;
 
@@ -128,6 +133,21 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
       return;
     }
     sendToken(addressToSend, tokenToSend, amount);
+  };
+
+  const onScanQr = (qrCode: string) => {
+    const address = WALLET_ADDRESS_REGEX.exec(qrCode)?.[0] || '';
+
+    const qrError = !ethers.utils.isAddress(address);
+    if (qrError) {
+      dispatchNotification('main.send.invalidQRNotification', NotificationTypes.ERROR);
+      closeQrScanner();
+      return;
+    }
+
+    setAddressToSendError(false);
+    setAddressToSend(address);
+    closeQrScanner();
   };
 
   const tokensList = useMemo(() => TOKENS.map((token: TokenType) => ({
@@ -171,6 +191,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           value={addressToSend}
           onChangeText={onAddressChange}
           error={addressToSendError}
+          icon="qrcode-scan"
+          onPressIcon={openQrScanner}
         />
         {allDataSetted && (
           <>
@@ -233,6 +255,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         onClose={closeCalculator}
         onEnd={onCalculatorEnd}
         transactionFee={estimatedTxInfo?.totalFee}
+      />
+      <QrScanner
+        visible={showQrScanner}
+        onClose={closeQrScanner}
+        onScan={onScanQr}
       />
     </>
   );

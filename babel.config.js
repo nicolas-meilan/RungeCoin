@@ -32,20 +32,20 @@ module.exports = function (api) {
         },
       ],
       [
-        '@babel/plugin-transform-flow-strip-types',
-        {
+        '@babel/plugin-transform-flow-strip-types', {
           allowDeclareFields: true,
         },
       ],
       [
-        'module:react-native-dotenv',
-        {
+        'module:react-native-dotenv', {
           'envName': 'APP_ENV',
           'moduleName': '@env',
           'path': '.env',
         },
       ],
-      'react-native-reanimated/plugin',
+      ['react-native-reanimated/plugin', {
+        globals: ['__scanCodes'],
+      }],
     ],
     env: {
       production: {
