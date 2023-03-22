@@ -17,6 +17,7 @@ type SkeletonBaseProps = {
   style?: StyleProp<ViewStyle>;
   areMultiples?: boolean;
   isFirst?: boolean;
+  speed?: number;
 };
 
 export type SkeletonProps = Omit<SkeletonBaseProps, 'areMultiples' | 'isFirst'> & {
@@ -47,6 +48,7 @@ const SkeletonBase = ({
   height,
   width,
   style,
+  speed,
   areMultiples = false,
   isFirst = false,
 }: SkeletonBaseProps) => {
@@ -66,6 +68,7 @@ const SkeletonBase = ({
         height={calculatedHeight}
         width={calculatedWidth}
         backgroundColor={theme.colors.background.secondary}
+        speed={speed}
       >
         <Layout
           height={calculatedHeight}

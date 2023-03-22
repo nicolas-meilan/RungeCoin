@@ -10,18 +10,29 @@ import {
 } from '@http/tokens';
 import type { TokenType } from '@web3/tokens';
 
-type TokenIconProps = SvgProps & {
+type TokenStatus = 'success' | 'warning' | 'error';
+
+export type TokenIconProps = SvgProps & {
   tokenSymbol: TokenType['symbol'];
+  status?: TokenStatus;
 };
 
-const StyledSvg = styled(Svg)`
+const StyledSvg = styled(Svg) <{ status?: TokenStatus }>`
   border-radius: 2000px;
   overflow: hidden;
-  border: 1px solid ${({ theme }) => theme.colors.border};
+  border: ${({ status }) => (status ? 3 : 1)}px solid;
+  border-color: ${({ status, theme }) => (status
+    ? theme.colors[status]
+    : theme.colors.border
+  )};
   background-color: ${({ theme }) => theme.colors.border};
 `;
 
-const TokenIcon = ({ tokenSymbol, ...props }: TokenIconProps) => {
+const TokenIcon = ({
+  status,
+  tokenSymbol,
+  ...props
+}: TokenIconProps) => {
   const [hasError, setHasError] = useState(false);
 
   const onError = () => setHasError(true);
@@ -30,6 +41,7 @@ const TokenIcon = ({ tokenSymbol, ...props }: TokenIconProps) => {
 
   return (
     <StyledSvg
+      status={status}
       svg={svg}
       onError={onError}
       viewBox='0 0 18 18'

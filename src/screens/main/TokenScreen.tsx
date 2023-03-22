@@ -6,10 +6,12 @@ import { BigNumber } from 'ethers';
 import styled from 'styled-components/native';
 
 import Button, { ButtonType } from '@components/Button';
+import ContentSwitcher from '@components/ContentSwitcher';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
+import TokenActivity from '@components/TokenActivity';
 import TokenIcon from '@components/TokenIcon';
 import TradingViewChart from '@components/TradingViewChart';
 import BottomSheet from '@containers/Bottomsheet';
@@ -17,6 +19,7 @@ import useBalances from '@hooks/useBalances';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
+import useWalletActivity from '@hooks/useWalletActivity';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
@@ -29,7 +32,7 @@ const TOKENS = TOKENS_ETH;
 const TokenInfo = styled.View`
   flex-direction: row;
   align-items: center;
-  margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(2)} 0;
+  margin-vertical: ${({ theme }) => theme.spacing(4)};
 `;
 
 const BalanceWrapper = styled.View`
@@ -58,6 +61,10 @@ const ButtonsWrapper = styled.View`
   flex-direction: row;
 `;
 
+const StyledScrollView = styled.ScrollView`
+  flex: 1;
+`;
+
 const ActionButton = styled(Button) <{ margin?: boolean }>`
   flex: 1;
   ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
@@ -69,6 +76,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   const tokenSymbol = route.params?.tokenSymbol || '';
 
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
+  const [isOnActivity, setIsOnActivity] = useState(false);
 
   const { dispatchNotification } = useNotifications();
 
@@ -92,6 +100,13 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     tokenSymbol ? TOKENS[tokenSymbol] : null
   ), [tokenSymbol]);
 
+  const {
+    refetchTokenActivity,
+    tokenActivityLoading,
+  } = useWalletActivity({
+    tokenAddress: token?.address || '',
+  });
+
   const tokenBalance = useMemo(() => {
     const zero = BigNumber.from(0);
     if (!token) return zero;
@@ -110,10 +125,11 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   const refetch = () => {
     refetchBalances();
     refetchTokenConversions();
+    if (isOnActivity) refetchTokenActivity();
   };
 
   const refreshControl = usePull2Refresh({
-    loading: tokenBalancesLoading || tokenConversionsLoading,
+    loading: tokenBalancesLoading || tokenConversionsLoading || tokenActivityLoading,
     fetch: refetch,
   });
 
@@ -131,14 +147,16 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     Clipboard.setString(walletPublicValues!.address);
     dispatchNotification('notifications.addressCopied', NotificationTypes.SUCCESS);
   };
+  const onTabChange = () => setIsOnActivity(!isOnActivity);
+
+  const contentContainerStyle = isOnActivity ? { flex: 1 } : {};
 
   return (
     <>
       <ScreenLayout
         title={token?.name || ''}
         bigTitle
-        scroll
-        refreshControl={refreshControl}
+        contentContainerStyle={contentContainerStyle}
       >
         <ButtonsWrapper>
           {!tokenBalance.isZero() && (
@@ -176,7 +194,23 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
             </FiatBalanceSkeleton>
           </BalanceWrapper>
         </TokenInfo>
-        <TradingViewChart token={token} />
+        <ContentSwitcher
+          labels={['main.token.info', 'main.token.activity']}
+          onChange={onTabChange}
+          components={[
+            (
+              <StyledScrollView refreshControl={refreshControl}>
+                <TradingViewChart token={token} />
+              </StyledScrollView>
+            ),
+            (
+              <TokenActivity
+                token={token}
+                refreshControl={refreshControl}
+              />
+            ),
+          ]}
+        />
       </ScreenLayout>
       <BottomSheet
         visible={receiveBottomSheet}

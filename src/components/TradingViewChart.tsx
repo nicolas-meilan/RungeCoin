@@ -10,7 +10,7 @@ import CandlesChartLayout from './Skeleton/CandlesChartLayout';
 import { FiatCurrencies } from '@utils/constants';
 import type { TokenType } from '@web3/tokens';
 
-const CHART_HEIGHT = 500;
+const CHART_HEIGHT = 450;
 const LOADING_BORDERS = 20;
 
 const READY_MESSAGE = 'ready';

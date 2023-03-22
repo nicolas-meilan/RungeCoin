@@ -77,15 +77,13 @@
         "addressError": "Dirección invalida"
       }
     },
-    "balance": {
-      "title": "Tokens"
-    },
-    "activity": {
-      "title": "Actividad"
-    },
     "calculator": {
       "exceededBalance": "Balance excedido",
       "gasFee": "Costo de Gas: ≈ {{fee}}"
+    },
+    "token": {
+      "info": "Información",
+      "activity": "Actividad"
     }
   },
   "number": {

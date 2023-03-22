@@ -77,11 +77,9 @@
         "addressError": "Invalid address"
       }
     },
-    "balance": {
-      "title": "Tokens"
-    },
-    "activity": {
-      "title": "Activity"
+    "token": {
+      "info": "Information",
+      "activity": "Activity"
     },
     "calculator": {
       "exceededBalance": "Exceeded balance",

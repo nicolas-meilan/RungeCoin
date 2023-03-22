@@ -89,6 +89,7 @@ const Svg = ({
     >
       <StyledSkeleton
         isLoading={loading}
+        speed={0.5}
       />
       <SvgComponent
         style={[svgBaseStyle, svgStyle]}

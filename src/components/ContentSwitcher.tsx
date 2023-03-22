@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import type { ScrollViewProps } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -11,6 +12,8 @@ type ContentSwitcherProps = {
   initialIndex?: number;
   rightComponent?: React.ReactNode;
   onChange?: (tabIndex: number) => void;
+  scroll?: boolean;
+  refreshControl?: ScrollViewProps['refreshControl'];
 };
 
 const SWITCHER_HEIGHT = 35;
@@ -42,11 +45,17 @@ const Top = styled.View`
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
+const StyledScrollView = styled.ScrollView`
+  flex: 1;
+`;
+
 const ContentSwitcher = ({
   labels,
   components,
   rightComponent,
   onChange,
+  scroll = false,
+  refreshControl,
   initialIndex = 0,
 }: ContentSwitcherProps) => {
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
@@ -79,6 +88,12 @@ const ContentSwitcher = ({
 
   if (!switcherItems.length) return <></>;
 
+  const switcherComponent = scroll ? (
+    <StyledScrollView refreshControl={refreshControl}>
+      {components[selectedIndex]}
+    </StyledScrollView>
+  ) : components[selectedIndex];
+
   return (
     <>
       <Top>
@@ -87,7 +102,7 @@ const ContentSwitcher = ({
         </SwitcherButtonsWrapper>
         {rightComponent}
       </Top>
-      {components[selectedIndex]}
+      {switcherComponent}
     </>
   );
 };

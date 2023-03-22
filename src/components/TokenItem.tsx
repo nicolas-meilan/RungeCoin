@@ -6,7 +6,7 @@ import styled from 'styled-components/native';
 import Icon from './Icon';
 import Skeleton from './Skeleton';
 import Text from './Text';
-import TokenIcon from './TokenIcon';
+import TokenIcon, { TokenIconProps } from './TokenIcon';
 import useTokenConversions from '@hooks/useTokenConversions';
 import {
   numberToFormattedString,
@@ -22,6 +22,8 @@ type TokenItemProps = Omit<TokenType, 'address'> & {
   withBorders?: boolean;
   borderColor?: string;
   rightIcon?: string;
+  rightIconColor?: string;
+  status?: TokenIconProps['status'];
   disabled?: boolean;
   onPress?: () => void;
 };
@@ -69,14 +71,21 @@ const StyledTokenIcon = styled(TokenIcon)`
 const StyledSkeleton = styled(Skeleton)`
   margin-top: ${({ theme }) => theme.spacing(1)}
 `;
+
+const RightIcon = styled(Icon)<{ color?: string }>`
+  color: ${({ color, theme }) => (color || theme.colors.text.primary)};
+`;
+
 const TokenItem = ({
   symbol,
   decimals,
   balance,
   name,
   borderColor,
-  rightIcon = '',
   onPress,
+  status,
+  rightIcon = '',
+  rightIconColor = '',
   disabled = false,
   balanceLoading = false,
   withoutMargin = false,
@@ -139,11 +148,15 @@ const TokenItem = ({
       disabledStyle={disabled}
       disabled={disabled || !onPress}
     >
-      <StyledTokenIcon tokenSymbol={symbol} size={fullName ? 44 : 32} />
+      <StyledTokenIcon
+        tokenSymbol={symbol}
+        size={fullName ? 44 : 36}
+        status={status}
+      />
       <DataColumn>
         {dataColumn}
       </DataColumn>
-      {!!rightIcon && <Icon name={rightIcon} />}
+      {!!rightIcon && <RightIcon name={rightIcon} color={rightIconColor} />}
     </WrapperItem>
   );
 };

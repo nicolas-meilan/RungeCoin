@@ -4,9 +4,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
-import Activity from '@components/Activity';
 import Button, { ButtonType } from '@components/Button';
-import ContentSwitcher from '@components/ContentSwitcher';
 import Pill, { Type } from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
@@ -33,12 +31,12 @@ const TOKENS = Object.values(TOKENS_ETH);
 
 const Balance = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[28]};
-  margin-top: ${({ theme }) => theme.spacing(2)};
+  margin: ${({ theme }) => theme.spacing(2)} 0 ${({ theme }) => theme.spacing(4)} 0;
 `;
 
 const CenterWrapper = styled.View`
   align-items: center;
-  margin-vertical: ${({ theme }) => theme.spacing(6)};
+  margin-vertical: ${({ theme }) => theme.spacing(4)};
 `;
 
 const ButtonsWrapper = styled.View`
@@ -47,7 +45,7 @@ const ButtonsWrapper = styled.View`
 `;
 
 const BalanceSkeleton = styled(Skeleton)`
-  margin-top: ${({ theme }) => theme.spacing(2)};
+  margin: ${({ theme }) => theme.spacing(2)} 0 ${({ theme }) => theme.spacing(4)} 0;
 `;
 
 const ActionButton = styled(Button) <{ margin?: boolean }>`
@@ -59,7 +57,6 @@ type HomeScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.home
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
-  const [isOnActivity, setIsOnActivity] = useState(false);
 
   const { dispatchNotification } = useNotifications();
   const { walletPublicValues } = useWalletPublicValues();
@@ -80,7 +77,6 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const refetch = () => {
     refetchBalances();
     refetchTokenConversions();
-    if (isOnActivity) console.log('FETCH ACTIVITIES'); // TODO refetch activities
   };
 
   const refreshControl = usePull2Refresh({
@@ -113,8 +109,6 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   });
 
   const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
-
-  const onTabChange = () => setIsOnActivity(!isOnActivity);
 
   return (
     <>
@@ -152,26 +146,17 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           >
             <Balance text={totalConvertedBalance} />
           </BalanceSkeleton>
+          <Pill
+            text={formatAddress(walletPublicValues!.address)}
+            type={Type.INFO}
+            onPress={onPressAdress}
+            noI18n
+          />
         </CenterWrapper>
-        <ContentSwitcher
-          labels={['main.balance.title', 'main.activity.title']}
-          onChange={onTabChange}
-          components={[
-            <TokenBalances
-              onPressToken={onPressToken}
-              onRefresh={refetchTokenConversions}
-              refreshLoading={tokenConversionsLoading}
-            />,
-            <Activity />,
-          ]}
-          rightComponent={
-            <Pill
-              text={formatAddress(walletPublicValues!.address)}
-              type={Type.INFO}
-              onPress={onPressAdress}
-              noI18n
-            />
-          }
+        <TokenBalances
+          onPressToken={onPressToken}
+          onRefresh={refetchTokenConversions}
+          refreshLoading={tokenConversionsLoading}
         />
       </ScreenLayout>
       <BottomSheet

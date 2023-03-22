@@ -12,6 +12,8 @@ import {
   TxInfo,
 } from '@web3/tx';
 
+export const CONFIRMATIONS_TO_SUCCESS_TRANSACTION = 5;
+
 type UseTxReturn = {
   estimatedTxInfo: TxInfo | null;
   estimatedTxInfoLoading: boolean;

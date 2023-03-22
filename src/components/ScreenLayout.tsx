@@ -3,6 +3,7 @@ import {
   BackHandler,
   ActivityIndicator,
   Keyboard,
+  ScrollViewProps,
 } from 'react-native';
 
 import { EventMapCore, useNavigation } from '@react-navigation/native';
@@ -29,9 +30,10 @@ type ScreenLayoutProps = {
   rightIconOnBigTitle?: boolean;
   onPressRightIcon?: () => void;
   goBack?: () => void;
-  refreshControl?: JSX.Element;
+  refreshControl?: ScrollViewProps['refreshControl'];
   footer?: React.ReactNode;
   footerHeight?: number | string;
+  contentContainerStyle?: ScrollViewProps['contentContainerStyle'];
 };
 
 const ScreenWrapper = styled.View`
@@ -111,6 +113,7 @@ const ScreenLayout = ({
   refreshControl,
   footer,
   footerHeight,
+  contentContainerStyle,
   scroll = false,
   hasBack = true,
   hasFooterBanner = false,
@@ -167,6 +170,7 @@ const ScreenLayout = ({
       <ScrollViewWrapper
         showsVerticalScrollIndicator={false}
         refreshControl={refreshControl}
+        contentContainerStyle={contentContainerStyle}
       >
         {children}
       </ScrollViewWrapper>
