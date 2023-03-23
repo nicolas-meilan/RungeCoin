@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
+import SplashScreen from 'react-native-splash-screen'
+
 import initializeI18nConfig from './locale/i18nConfig';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
@@ -26,7 +28,11 @@ const Root = () => {
     setAppReady(canStart);
   }, [i18nLoading, themeMode, walletPublicValuesLoading]);
 
-  if (!appReady) return <></>; // TODO better loading
+  useEffect(() => {
+    if (appReady) SplashScreen.hide();
+  }, [appReady]);
+
+  if (!appReady) return <></>;
 
   return <Navigator />;
 };
