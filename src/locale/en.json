@@ -63,13 +63,17 @@
     "send": {
       "title": "Send cryptos",
       "successNotification": "Transaction completed",
-      "invalidQRNotification": "Invalid QR",
       "notFoundsForFeeNotification": "You do not have funds to pay shipping fee",
       "gasDescription": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
       "gasFee": "Fees",
       "gasUnits": "Gas units: **{{units}}**",
       "gasPrice": "Gas price: **{{price}}**",
       "totalFee": "Total",
+      "qr": {
+        "title": "Scan the QR code of the destination wallet",
+        "message": "Remember that the wallet must be from the **Ethereum** network, otherwise you may lose your funds",
+        "invalidNotification": "Invalid QR"
+      },
       "inputs": {
         "selectTokenLabel": "Token to send",
         "selectTokenPlaceholder": "Select a token",

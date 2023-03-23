@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 
 import {
@@ -10,6 +10,7 @@ import { Camera, useCameraDevices } from 'react-native-vision-camera';
 import styled from 'styled-components/native';
 import { BarcodeFormat, useScanBarcodes } from 'vision-camera-code-scanner';
 
+import Text from './Text';
 import BottomSheet from '@containers/Bottomsheet';
 import { requestCameraPermission } from '@system/camera';
 
@@ -57,6 +58,18 @@ const StyledCamera = styled(Camera) <{ size: number }>`
   height: ${({ size, theme }) => size - theme.spacingNative(10)}px;
 `;
 
+const Message = styled(Text)`
+  text-align: center;
+  font-size: ${({ theme }) => theme.fonts.size[16]};
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const Title = styled(Text)`
+  text-align: center;
+  font-size: ${({ theme }) => theme.fonts.size[20]};
+  margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(10)} 0;
+`;
+
 const SCAN_FPS = 60;
 
 type QrScannerProps = {
@@ -64,6 +77,8 @@ type QrScannerProps = {
   visible?: boolean;
   onClose: () => void;
   closeAfterScan?: boolean;
+  title?: string;
+  message?: string;
 };
 
 type Focus = {
@@ -75,6 +90,8 @@ const QrScanner = ({
   onScan,
   visible,
   onClose,
+  title = '',
+  message = '',
   closeAfterScan = false,
 }: QrScannerProps) => {
   const cameraRef = useRef<Camera>(null);
@@ -163,6 +180,8 @@ const QrScanner = ({
           )}
         </CameraWrapper>
       </BaseCameraWrapper>
+      {title && <Title text={title} />}
+      {message && <Message text={message} />}
     </BottomSheet>
   );
 };

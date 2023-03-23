@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { PUBLIC_KEY_TO_TEST } from '@env';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BigNumber, ethers } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
@@ -140,7 +139,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
     const qrError = !ethers.utils.isAddress(address);
     if (qrError) {
-      dispatchNotification('main.send.invalidQRNotification', NotificationTypes.ERROR);
+      dispatchNotification('main.send.qr.invalidNotification', NotificationTypes.ERROR);
+      setAddressToSend('');
       closeQrScanner();
       return;
     }
@@ -260,6 +260,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         visible={showQrScanner}
         onClose={closeQrScanner}
         onScan={onScanQr}
+        title="main.send.qr.title"
+        message="main.send.qr.message"
       />
     </>
   );

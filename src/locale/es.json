@@ -64,12 +64,16 @@
       "title": "Enviar cryptos",
       "successNotification": "Transacción finalizada",
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
-      "invalidQRNotification": "QR Inválido",
       "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
       "gasFee": "Comisiones",
       "gasUnits": "Unidades de Gas: **{{units}}**",
       "gasPrice": "Precio de Gas: ≈ **{{price}}**",
       "totalFee": "Total",
+      "qr": {
+        "title": "Escanea el código QR de la billetera destino",
+        "message": "Recuerda que la billetera debe ser de la red **Ethereum**, de otra forma podrás perder tus fondos",
+        "invalidNotification": "QR Inválido"
+      },
       "inputs": {
         "selectTokenLabel": "Token a enviar",
         "selectTokenPlaceholder": "Seleccione un token",
