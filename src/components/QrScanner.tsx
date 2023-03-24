@@ -107,24 +107,8 @@ const QrScanner = ({
   const backCamera = devices.back;
 
   useEffect(() => {
-    if (visible) {
-      requestCameraPermission().then((permissions) => {
-        setHasPermission(permissions);
-        if (!permissions) onClose();
-      });
-    }
-  }, [visible]);
+    if (!visible) return;
 
-  useEffect(() => {
-    if (!focusLoading && focus) {
-      setFocusLoading(true);
-      cameraRef.current?.focus(focus)
-        .then(() => setFocusLoading(false))
-        .catch(() => setFocusLoading(false));
-    }
-  }, [focus]);
-
-  useEffect(() => {
     const newQrcode = barcodes[0]?.displayValue;
 
     if (newQrcode) setQrCode(newQrcode);
@@ -136,6 +120,28 @@ const QrScanner = ({
       if (closeAfterScan) onClose();
     }
   }, [qrCode]);
+
+  useEffect(() => {
+    if (visible) {
+      requestCameraPermission().then((permissions) => {
+        setHasPermission(permissions);
+        if (!permissions) onClose();
+      });
+
+      return;
+    }
+
+    setQrCode('');
+  }, [visible]);
+
+  useEffect(() => {
+    if (!focusLoading && focus) {
+      setFocusLoading(true);
+      cameraRef.current?.focus(focus)
+        .then(() => setFocusLoading(false))
+        .catch(() => setFocusLoading(false));
+    }
+  }, [focus]);
 
   const onTap = async (event: HandlerStateChangeEvent<TapGestureHandlerEventPayload>) => {
     const newFocus = {
