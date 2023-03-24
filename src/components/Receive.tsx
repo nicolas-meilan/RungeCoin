@@ -8,6 +8,9 @@ import Card from './Card';
 import Text from './Text';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 
+const QR_SIZE = 300;
+const QR_PADDING = 20;
+
 type ReceiveProps = {
   onPressAddress?: (address: string) => void;
 };
@@ -33,6 +36,16 @@ const Message = styled(Text)`
 const QRCard = styled(Card)`
   margin: ${({ theme }) => theme.spacing(6)} 0;
 `;
+
+const QRWrapper = styled.View`
+  width: ${QR_SIZE}px;
+  height: ${QR_SIZE}px;
+  border-radius: ${({ theme }) => theme.borderRadius};
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.colors.statics.white};
+`;
+
 const scrollviewContentStyle: StyleProp<ViewStyle> = {
   alignItems: 'center',
 };
@@ -44,16 +57,22 @@ const Receive = ({ onPressAddress }: ReceiveProps) => {
   const onPress = () => onPressAddress?.(address);
 
   return (
-    <ScrollView contentContainerStyle={scrollviewContentStyle}>
+    <ScrollView
+      nestedScrollEnabled
+      contentContainerStyle={scrollviewContentStyle}
+    >
       <Title text="main.receive.title" />
       <QRCard
         touchable={!!onPressAddress}
         onPress={onPress}
       >
-        <QRCode
-          value={address}
-          size={250}
-        />
+        <QRWrapper>
+          <QRCode
+            value={address}
+            size={QR_SIZE - QR_PADDING}
+            ecl="H"
+          />
+        </QRWrapper>
       </QRCard>
       <Message text="main.receive.qrMessage" />
       <Address
