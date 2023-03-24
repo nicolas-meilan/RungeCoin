@@ -86,10 +86,21 @@
       "info": "Information",
       "activity": {
         "title": "Activity",
-        "status": {
-          "error": "Error",
-          "warning": "Pending",
-          "success": "Finished"
+        "tx": {
+          "title": "Transaction detail",
+          "rows": {
+            "hash": "Hash",
+            "date": "Date: {{- date}}",
+            "gasTitle": "Gas",
+            "gasUsed": "Used: {{gasUsed}}",
+            "gasPrice": "Unit price: {{gasPrice}}",
+            "gasTotal": "Total price: {{gasTotal}}"
+          },
+          "status": {
+            "error": "Error",
+            "warning": "Pending",
+            "success": "Finished"
+          }
         }
       }
     },

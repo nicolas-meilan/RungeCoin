@@ -20,7 +20,7 @@ export type TokenIconProps = SvgProps & {
 const StyledSvg = styled(Svg) <{ status?: TokenStatus }>`
   border-radius: 2000px;
   overflow: hidden;
-  border: ${({ status }) => (status ? 3 : 1)}px solid;
+  border: ${({ status, theme }) => (status ? theme.spacing(2) : '1px')} solid;
   border-color: ${({ status, theme }) => (status
     ? theme.colors[status]
     : theme.colors.border

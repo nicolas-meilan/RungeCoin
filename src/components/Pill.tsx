@@ -15,6 +15,7 @@ export enum Type {
   INFO = 'info',
   SUCCESS = 'success',
   ERROR = 'error',
+  WARNING = 'warning',
 }
 
 type PillProps = {

@@ -9,5 +9,5 @@ export const delay = (seconds: number) => new Promise((resolve) => {
 });
 
 export const formatDate = (timestamp: string, datetime: boolean = true) => (
-  format(new Date(Number(timestamp) * 1000), t(datetime ? 'dateformat.datetime' : 'dateformat.date'))
+  format(new Date(Number(timestamp) * 1000), t(datetime ? 'dateformat.datetime' : 'dateformat.date')).toUpperCase()
 );

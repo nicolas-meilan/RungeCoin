@@ -2,18 +2,17 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { BigNumber } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import Icon from './Icon';
 import Skeleton from './Skeleton';
 import Text from './Text';
-import useBalances from '@hooks/useBalances';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
-import type { WalletTx } from '@http/wallet';
+import type { WalletTx } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import type { MainNavigatorType } from '@navigation/MainNavigator';
+import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/tx';
@@ -85,15 +84,6 @@ const TokenActivityItem = ({
   const navigation = useNavigation<NavigationProp<MainNavigatorType>>();
 
   const {
-    tokenBalancesLoading,
-    tokenBalances,
-  } = useBalances({
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
-
-  const {
     convert,
     tokenConversions,
   } = useTokenConversions({
@@ -108,8 +98,7 @@ const TokenActivityItem = ({
     ))
     : TOKENS_ETH.ETH;
 
-  const balance = BigNumber.from(activityItem.value);
-
+  const balance = activityItem.value;
   const isSending = isSendTx(activityItem, walletPublicValues?.address);
   const txIcon = isSending ? 'arrow-top-right' : 'arrow-bottom-left';
   const txIconColor = isSending ? theme.colors.error : theme.colors.success;
@@ -118,8 +107,8 @@ const TokenActivityItem = ({
 
   if (!token) return null;
 
-  const balanceFormatted = numberToFormattedString(balance || 0, { decimals: token.decimals });
-  const balanceConverted = numberToFiatBalance(convert(balance || 0, token), 'USD');
+  const balanceFormatted = numberToFormattedString(balance, { decimals: token.decimals });
+  const balanceConverted = numberToFiatBalance(convert(balance, token), FiatCurrencies.USD);
 
   const goToTx = () => navigation.navigate(ScreenName.tx, { token, tx: activityItem });
 
@@ -129,16 +118,11 @@ const TokenActivityItem = ({
         <TxIcon name={txIcon} color={txIconColor} />
         <Data>
           <BalanceData>
-            <Skeleton
-              isLoading={!tokenBalances && tokenBalancesLoading}
-              height={15}
-            >
-              <Text
-                text={`${balanceFormatted} ${token.symbol}`}
-                noI18n
-                numberOfLines={1}
-              />
-            </Skeleton>
+            <Text
+              text={`${balanceFormatted} ${token.symbol}`}
+              noI18n
+              numberOfLines={1}
+            />
             <StyledSkeleton
               isLoading={!tokenConversions}
               width="80%"
@@ -153,7 +137,7 @@ const TokenActivityItem = ({
           </BalanceData>
           <View>
             <StatusText
-              text={`main.token.activity.status.${status}`}
+              text={`main.token.activity.tx.status.${status}`}
               color={theme.colors[status]}
             />
             <Description

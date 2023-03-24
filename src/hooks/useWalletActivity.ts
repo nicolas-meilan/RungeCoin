@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useInfiniteQuery, UseInfiniteQueryOptions, useQueryClient } from '@tanstack/react-query';
 
 import useWalletPublicValues from './useWalletPublicValues';
-import { WalletTx, getWalletTxs } from '@http/wallet';
+import { WalletTx, getWalletTxs } from '@http/tx';
 import { ReactQueryKeys } from '@utils/constants';
 
 

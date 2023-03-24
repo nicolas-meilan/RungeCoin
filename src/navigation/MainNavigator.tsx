@@ -6,7 +6,7 @@ import {
   ScreenName,
   screenOptions,
 } from './constants';
-import type { WalletTx } from '@http/wallet';
+import type { WalletTx } from '@http/tx';
 import HomeScreen from '@screens/main/HomeScreen';
 import SendScreen from '@screens/main/SendScreen';
 import TokenScreen from '@screens/main/TokenScreen';

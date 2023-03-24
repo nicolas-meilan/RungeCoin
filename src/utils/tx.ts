@@ -1,5 +1,5 @@
 import { CONFIRMATIONS_TO_SUCCESS_TRANSACTION } from '@hooks/useTx';
-import type { WalletTx } from '@http/wallet';
+import type { WalletTx } from '@http/tx';
 
 export const isSendTx = (tx: WalletTx, currentAddress?: string) => (
   (currentAddress || '').toUpperCase() === tx.from.toUpperCase()

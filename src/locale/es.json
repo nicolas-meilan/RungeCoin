@@ -66,8 +66,8 @@
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
       "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
       "gasFee": "Comisiones",
-      "gasUnits": "Unidades de Gas: **{{units}}**",
-      "gasPrice": "Precio de Gas: ≈ **{{price}}**",
+      "gasUnits": "Unidades de gas: **{{units}}**",
+      "gasPrice": "Precio de gas: ≈ **{{price}}**",
       "totalFee": "Total",
       "qr": {
         "title": "Escanea el código QR de la billetera destino",
@@ -90,10 +90,21 @@
       "info": "Información",
       "activity": {
         "title": "Actividad",
-        "status": {
-          "error": "Error",
-          "warning": "Pendiente",
-          "success": "Finalizada"
+        "tx": {
+          "title": "Detalle de transacción",
+          "rows": {
+            "hash": "Hash",
+            "date": "Fecha: {{- date}}",
+            "gasTitle": "Gas",
+            "gasUsed": "Usado: {{gasUsed}}",
+            "gasPrice": "Precio/unidad: {{gasPrice}}",
+            "gasTotal": "Precio total: {{gasTotal}}"
+          },
+          "status": {
+            "error": "Error",
+            "warning": "Pendiente",
+            "success": "Finalizada"
+          }
         }
       }
     }
