@@ -1,6 +1,5 @@
 import { HTTP_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY } from '@env';
 import axios from 'axios';
-import { BigNumber } from 'ethers';
 
 import { isDev } from '@utils/config';
 import { BASE_TOKEN_ADDRESS } from '@web3/tokens';
@@ -17,21 +16,19 @@ export type WalletTx = {
   confirmations: number;
   contractAddress: string;
   from: string;
-  gasPrice: BigNumber;
+  gasPrice: string;
   gasUsed: number;
   hash: string;
   isError: boolean;
   timeStamp: string;
   to: string;
-  value: BigNumber;
+  value: string;
 };
 
-export type WalletTxResponse = Omit<WalletTx, 'value' | 'isError' | 'confirmations' | 'gasPrice' | 'gasUsed'> & {
+export type WalletTxResponse = Omit<WalletTx, 'isError' | 'confirmations' | 'gasUsed'> & {
   isError: string;
   confirmations: string;
-  gasPrice: string;
   gasUsed: string;
-  value: string;
 };
 
 export const getWalletTxs = async (
@@ -66,13 +63,13 @@ ${contractAddress}\
     confirmations: Number(item.confirmations),
     contractAddress: item.contractAddress,
     from: item.from,
-    gasPrice: BigNumber.from(item.gasPrice),
+    gasPrice: item.gasPrice,
     gasUsed: Number(item.gasUsed),
     hash: item.hash,
     isError: !!Number(item.isError),
     timeStamp: item.timeStamp,
     to: item.to,
-    value: BigNumber.from(item.value),
+    value: item.value,
   }));
 
   return formattedResponse;

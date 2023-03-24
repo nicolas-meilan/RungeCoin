@@ -3,6 +3,7 @@ import { Linking } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BigNumber } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import Card from '@components/Card';
@@ -106,13 +107,13 @@ const TxScreen = ({ route }: TxScreenProps) => {
     tx,
   } = route.params;
 
-  const txGasTotal = useMemo(() => tx.gasPrice.mul(tx.gasUsed), [tx]);
+  const txGasTotal = useMemo(() => BigNumber.from(tx.gasPrice).mul(tx.gasUsed), [tx]);
   const status = txStatus(tx);
   const isSending = isSendTx(tx, walletPublicValues?.address);
   const txIcon = isSending ? 'arrow-right' : 'arrow-left';
   const txIconColor = isSending ? theme.colors.error : theme.colors.success;
   const txAddress = isSending ? tx.to : tx.from;
-  const balance = tx.value;
+  const balance = BigNumber.from(tx.value);
 
   const balanceFormatted = numberToFormattedString(balance || 0, { decimals: token.decimals });
   const balanceConverted = numberToFiatBalance(convert(balance || 0, token), FiatCurrencies.USD);
