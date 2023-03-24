@@ -3,7 +3,7 @@ import type { ScrollViewProps } from 'react-native';
 
 import styled from 'styled-components/native';
 
-import Pill, { Type } from './Pill';
+import Pill from './Pill';
 
 
 type ContentSwitcherProps = {
@@ -81,7 +81,7 @@ const ContentSwitcher = ({
         selected={selectedIndex === index}
         onPress={handlePress}
         text={label}
-        type={Type.INFO}
+        type="info"
       />
     );
   }), [labels, selectedIndex]);

@@ -11,13 +11,13 @@ import QrScanner from '@components/QrScanner';
 import ScreenLayout from '@components/ScreenLayout';
 import Select, { Option } from '@components/Select';
 import Skeleton from '@components/Skeleton';
-import Text, { Weight } from '@components/Text';
+import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import TokenIcon from '@components/TokenIcon';
 import TokenItem from '@components/TokenItem';
 import useBalances from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
-import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
+import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import { ScreenName } from '@navigation/constants';
@@ -41,7 +41,7 @@ const GasMessage = styled(Text)`
 `;
 
 const GasTitle = styled(Text).attrs({
-  weight: Weight.BOLD,
+  weight: 'bold',
 }) <{ avoidTopMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fonts.size[18]};
   margin-bottom: ${({ theme }) => theme.spacing(2)};
@@ -73,7 +73,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     sendToken,
   } = useTx({
     onSendFinish: () => {
-      dispatchNotification('main.send.successNotification', NotificationTypes.SUCCESS);
+      dispatchNotification('main.send.successNotification');
       navigation.navigate(ScreenName.home);
     },
   });
@@ -138,7 +138,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
     closeCalculator();
     if (estimatedTxInfo?.totalFee.gt(tokenToSendBalance)) {
-      dispatchNotification('main.send.notFoundsForFeeNotification', NotificationTypes.ERROR);
+      dispatchNotification('main.send.notFoundsForFeeNotification', 'error');
       return;
     }
     sendToken(addressToSend, tokenToSend, amount);
@@ -149,7 +149,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
     const qrError = !ethers.utils.isAddress(address);
     if (qrError) {
-      dispatchNotification('main.send.qr.invalidNotification', NotificationTypes.ERROR);
+      dispatchNotification('main.send.qr.invalidNotification', 'error');
       setAddressToSend('');
       closeQrScanner();
       return;

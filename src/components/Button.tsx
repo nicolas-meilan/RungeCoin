@@ -4,13 +4,10 @@ import { ActivityIndicator, StyleProp, TextStyle, ViewStyle } from 'react-native
 import styled, { useTheme } from 'styled-components/native';
 
 import Icon from './Icon';
-import Text, { TextProps, Weight } from './Text';
+import Text, { TextProps } from './Text';
 
-export enum ButtonType {
-  PRIMARY = 'primary',
-  SECONDARY = 'secondary',
-  TERTIARY = 'tertiary',
-}
+type ButtonType = 'primary' | 'secondary' | 'tertiary';
+
 type ButtonProps = {
   text: string;
   i18nArgs?: TextProps['i18nArgs'];
@@ -51,7 +48,7 @@ const Button = ({
   icon,
   loading = false,
   disabled = false,
-  type = ButtonType.PRIMARY,
+  type = 'primary',
 }: ButtonProps) => {
   const theme = useTheme();
 
@@ -63,7 +60,7 @@ const Button = ({
       };
     }
   } = {
-    [ButtonType.PRIMARY]: {
+    primary: {
       button: {
         backgroundColor: theme.colors.primary,
       },
@@ -71,7 +68,7 @@ const Button = ({
         color: theme.colors.text.inverted,
       },
     },
-    [ButtonType.SECONDARY]: {
+    secondary: {
       button: {
         borderColor: theme.colors.secondary,
         borderStyle: 'solid',
@@ -81,7 +78,7 @@ const Button = ({
         color: theme.colors.secondary,
       },
     },
-    [ButtonType.TERTIARY]: {
+    tertiary: {
       button: {
         borderColor: theme.colors.info,
         borderStyle: 'solid',
@@ -116,7 +113,7 @@ const Button = ({
           )}
           <ButtonText
             text={text}
-            weight={Weight.BOLD}
+            weight="bold"
             i18nArgs={i18nArgs}
             style={[styleByType[type].text, disabledColorStyleText]}
           />

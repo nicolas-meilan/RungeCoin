@@ -4,8 +4,8 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
-import Button, { ButtonType } from '@components/Button';
-import Pill, { Type } from '@components/Pill';
+import Button from '@components/Button';
+import Pill from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
@@ -15,7 +15,7 @@ import TokenBalances from '@components/TokenBalances';
 import TokenPrices from '@components/TokenPrices';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
-import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
+import useNotifications from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
@@ -100,7 +100,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
 
   const onPressAdress = () => {
     Clipboard.setString(walletPublicValues!.address);
-    dispatchNotification('notifications.addressCopied', NotificationTypes.SUCCESS);
+    dispatchNotification('notifications.addressCopied');
   };
 
   const onPressSend = () => navigation.navigate(ScreenName.send);
@@ -126,13 +126,13 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           <ActionButton
             margin
             icon="arrow-top-right"
-            type={ButtonType.SECONDARY}
+            type="secondary"
             text="common.send"
             onPress={onPressSend}
           />
           <ActionButton
             icon="arrow-bottom-left"
-            type={ButtonType.SECONDARY}
+            type="secondary"
             text="common.receive"
             onPress={() => toggleReceiveBottomSheet(true)}
           />
@@ -148,7 +148,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           </BalanceSkeleton>
           <Pill
             text={formatAddress(walletPublicValues!.address)}
-            type={Type.INFO}
+            type="info"
             onPress={onPressAdress}
             noI18n
           />

@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BigNumber } from 'ethers';
 import styled from 'styled-components/native';
 
-import Button, { ButtonType } from '@components/Button';
+import Button from '@components/Button';
 import ContentSwitcher from '@components/ContentSwitcher';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
@@ -16,7 +16,7 @@ import TokenIcon from '@components/TokenIcon';
 import TradingViewChart from '@components/TradingViewChart';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
-import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
+import useNotifications from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletActivity from '@hooks/useWalletActivity';
@@ -145,7 +145,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
 
   const onPressAdress = () => {
     Clipboard.setString(walletPublicValues!.address);
-    dispatchNotification('notifications.addressCopied', NotificationTypes.SUCCESS);
+    dispatchNotification('notifications.addressCopied');
   };
   const onTabChange = () => setIsOnActivity(!isOnActivity);
 
@@ -160,14 +160,14 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
             <ActionButton
               margin
               icon="arrow-top-right"
-              type={ButtonType.SECONDARY}
+              type="secondary"
               text="common.send"
               onPress={onPressSend}
             />
           )}
           <ActionButton
             icon="arrow-bottom-left"
-            type={ButtonType.SECONDARY}
+            type="secondary"
             text="common.receive"
             onPress={() => toggleReceiveBottomSheet(true)}
           />

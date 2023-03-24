@@ -12,10 +12,7 @@ import styled from 'styled-components/native';
 const ANIMATION_TIME = 100;
 const BOLD_SYMBOL = '**';
 
-export enum Weight {
-  REGULAR = 'normal',
-  BOLD = 'bold',
-}
+type Weight = 'normal' | 'bold';
 
 export type TextProps = TextPropsRN & {
   text: string;
@@ -40,7 +37,7 @@ const Text = ({
   children,
   style,
   onPress,
-  weight = Weight.REGULAR,
+  weight = 'normal',
   boldTextStyle,
   i18nArgs = {},
   disabled = false,
@@ -80,9 +77,9 @@ const Text = ({
 
   const text = noI18n ? textProp : t(textProp, i18nArgs);
 
-  if (usesFormat && weight !== Weight.BOLD) {
+  if (usesFormat && weight !== 'bold') {
     const splittedText = text.split(BOLD_SYMBOL);
-    const weightForIndex = (index: number) => (index % 2 !== 0 ? Weight.BOLD : weight);
+    const weightForIndex = (index: number) => (index % 2 !== 0 ? 'bold' : weight);
     const getStyleForIndex = (index: number) => (index % 2 !== 0 ? boldTextStyle : undefined);
 
     return (

@@ -9,18 +9,11 @@ import styled, { useTheme } from 'styled-components/native';
 
 import Text, { TextProps } from './Text';
 
-export enum Type {
-  PRIMARY = 'primary',
-  SECONDARY = 'secondary',
-  INFO = 'info',
-  SUCCESS = 'success',
-  ERROR = 'error',
-  WARNING = 'warning',
-}
+type PillType = 'primary' | 'secondary' | 'info' | 'success' | 'error' | 'warning';
 
 type PillProps = {
   style?: StyleProp<ViewStyle | TextStyle>;
-  type?: Type;
+  type?: PillType;
   text?: string;
   i18nArgs?: TextProps['i18nArgs'];
   children?: React.ReactNode;
@@ -47,7 +40,7 @@ const PillText = styled(Text)<{ borderColor: string; color: string }>`
 `;
 
 const Pill = ({
-  type = Type.PRIMARY,
+  type = 'primary',
   style,
   text,
   children,

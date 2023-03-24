@@ -6,12 +6,7 @@ import {
 
 import { ReactQueryKeys } from '@utils/constants';
 
-export enum NotificationTypes {
-  ERROR = 'error',
-  SUCCESS = 'success',
-  INFO = 'info',
-  WARNING = 'warning',
-}
+type NotificationTypes = 'error' | 'success' | 'info' | 'warning';
 
 export type Notification = {
   message: string;
@@ -21,7 +16,7 @@ export type Notification = {
 type UseNotificationsReturn = {
   notification?: Notification | null;
   notificationLoading: boolean;
-  dispatchNotification: (message: Notification['message'], type: Notification['type']) => void;
+  dispatchNotification: (message: Notification['message'], type?: Notification['type']) => void;
   resetNotification: () => void;
 };
 
@@ -45,9 +40,9 @@ const useNotifications = (options: UseNotificationsProps = {}): UseNotifications
     ...options,
   });
 
-  const dispatchNotification = (
-    message: Notification['message'],
-    type: Notification['type'],
+  const dispatchNotification: UseNotificationsReturn['dispatchNotification'] = (
+    message,
+    type = 'success',
   ) => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], { message, type });
 
   const resetNotification = () => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], null);

@@ -2,7 +2,7 @@ import React from 'react';
 
 import styled from 'styled-components/native';
 
-import Text, { TextProps, Weight } from './Text';
+import Text, { TextProps } from './Text';
 
 type TitleProps = {
   title: string;
@@ -35,7 +35,7 @@ const Title = ({
     style={style}
     noI18n={noI18n}
     i18nArgs={i18nArgs}
-    weight={isSubtitle ? Weight.REGULAR : Weight.BOLD}
+    weight={isSubtitle ? 'normal' : 'bold'}
   />
 );
 

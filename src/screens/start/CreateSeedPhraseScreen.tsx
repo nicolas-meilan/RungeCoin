@@ -3,9 +3,9 @@ import React, { useMemo } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
-import Button, { ButtonType } from '@components/Button';
+import Button from '@components/Button';
 import Card from '@components/Card';
-import Pill, { Type } from '@components/Pill';
+import Pill from '@components/Pill';
 import ScreenLayout from '@components/ScreenLayout';
 import Text from '@components/Text';
 import { ScreenName } from '@navigation/constants';
@@ -57,7 +57,7 @@ const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => 
         {seedPhrase.map((word, index) => (
           <WordPill
             noI18n
-            type={Type.INFO}
+            type="info"
             text={`${index + 1}. ${word}`}
             key={`PILL_${index}_${word}`}
           />
@@ -67,7 +67,7 @@ const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => 
       <Button
         text="common.continue"
         onPress={onPressContinue}
-        type={ButtonType.TERTIARY}
+        type="tertiary"
       />
     </ScreenLayout>
   );

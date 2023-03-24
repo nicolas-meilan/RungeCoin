@@ -8,7 +8,7 @@ import Button from '@components/Button';
 import Icon from '@components/Icon';
 import Pill from '@components/Pill';
 import Skeleton from '@components/Skeleton';
-import Text, { Weight } from '@components/Text';
+import Text from '@components/Text';
 import TokenIcon from '@components/TokenIcon';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
@@ -307,7 +307,7 @@ const Calculator = ({
       )}
       <Amount
         text={localizeNumber(amount)}
-        weight={Weight.BOLD}
+        weight="bold"
         balanceExceeded={balanceExceeded}
         noI18n
       />

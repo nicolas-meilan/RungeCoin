@@ -6,7 +6,7 @@ import styled from 'styled-components/native';
 import congrats from '@assets/images/congratsPerson.png';
 import keyAndLock from '@assets/images/keyAndLock.png';
 import wallet from '@assets/images/wallet.png';
-import Button, { ButtonType } from '@components/Button';
+import Button from '@components/Button';
 import Carousel, { CarouselRef } from '@components/Carousel';
 import Message from '@components/Message';
 import ScreenLayout from '@components/ScreenLayout';
@@ -61,7 +61,7 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
       <StyledButton
         text={`common.${guideFinish ? 'continue' : 'next'}`}
         onPress={goNext}
-        type={ButtonType.TERTIARY}
+        type="tertiary"
       />
     </ScreenLayout>
   );

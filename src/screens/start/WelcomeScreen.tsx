@@ -4,7 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled, { useTheme } from 'styled-components/native';
 
 import appIcon from '@assets/images/icon.png';
-import Button, { ButtonType } from '@components/Button';
+import Button from '@components/Button';
 import Message from '@components/Message';
 import ScreenLayout from '@components/ScreenLayout';
 import useStartFlowFlag from '@hooks/useStartFlowFlag';
@@ -40,12 +40,11 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
       <StyledButton
         text="access.welcome.importWalletButton"
         onPress={goToImport}
-        type={ButtonType.PRIMARY}
       />
       <StyledButton
         text="access.welcome.createWalletButton"
         onPress={goToCreate}
-        type={ButtonType.TERTIARY}
+        type="tertiary"
       />
     </ScreenLayout>
   );

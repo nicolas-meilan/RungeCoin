@@ -1,20 +1,21 @@
 import React, { useMemo } from 'react';
+import { Linking } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BigNumber } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import Card from '@components/Card';
 import Icon from '@components/Icon';
-import Pill, { Type } from '@components/Pill';
+import Pill from '@components/Pill';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import TokenIcon from '@components/TokenIcon';
-import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
+import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import { TX_URL } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
@@ -22,8 +23,6 @@ import { formatAddress, numberToFiatBalance, numberToFormattedString } from '@ut
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/tx';
 import { GWEI, TOKENS_ETH } from '@web3/tokens';
-import { Linking } from 'react-native';
-import { TX_URL } from '@http/tx';
 
 type TxScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.tx>;
 
@@ -120,7 +119,7 @@ const TxScreen = ({ route }: TxScreenProps) => {
 
   const onPressAdress = (address: string) => {
     Clipboard.setString(address);
-    dispatchNotification('notifications.addressCopied', NotificationTypes.SUCCESS);
+    dispatchNotification('notifications.addressCopied');
   };
 
   const onPressHash = () => Linking.openURL(`${TX_URL}${tx.hash}`);
@@ -139,14 +138,14 @@ const TxScreen = ({ route }: TxScreenProps) => {
         <FromToWrapper>
           <Pill
             text={formatAddress(walletPublicValues!.address)}
-            type={Type.INFO}
+            type="info"
             noI18n
             onPress={() => onPressAdress(walletPublicValues!.address)}
           />
           <FromToIcon name={txIcon} color={txIconColor} />
           <Pill
             text={formatAddress(txAddress)}
-            type={Type.INFO}
+            type="info"
             noI18n
             onPress={() => onPressAdress(txAddress)}
           />
