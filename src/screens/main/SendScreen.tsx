@@ -74,7 +74,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   } = useTx({
     onSendFinish: () => {
       dispatchNotification('main.send.successNotification', NotificationTypes.SUCCESS);
-      navigation.goBack();
+      navigation.navigate(ScreenName.home);
     },
   });
 

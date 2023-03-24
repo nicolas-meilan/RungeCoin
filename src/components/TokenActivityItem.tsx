@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { BigNumber } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
@@ -11,6 +12,8 @@ import useBalances from '@hooks/useBalances';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import type { WalletTx } from '@http/wallet';
+import { ScreenName } from '@navigation/constants';
+import type { MainNavigatorType } from '@navigation/MainNavigator';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/tx';
@@ -79,6 +82,7 @@ const TokenActivityItem = ({
 }: TokenActivityItemProps) => {
   const theme = useTheme();
   const { walletPublicValues } = useWalletPublicValues();
+  const navigation = useNavigation<NavigationProp<MainNavigatorType>>();
 
   const {
     tokenBalancesLoading,
@@ -117,9 +121,11 @@ const TokenActivityItem = ({
   const balanceFormatted = numberToFormattedString(balance || 0, { decimals: token.decimals });
   const balanceConverted = numberToFiatBalance(convert(balance || 0, token), 'USD');
 
+  const goToTx = () => navigation.navigate(ScreenName.tx, { token, tx: activityItem });
+
   return (
     <WrapperItem firstItem={!firstItem}>
-      <Touchable onPress={() => { }}>
+      <Touchable onPress={goToTx}>
         <TxIcon name={txIcon} color={txIconColor} />
         <Data>
           <BalanceData>

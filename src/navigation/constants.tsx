@@ -14,4 +14,5 @@ export enum ScreenName {
   home = 'home',
   send = 'send',
   token = 'token',
+  tx = 'tx',
 }

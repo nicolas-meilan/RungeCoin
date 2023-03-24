@@ -149,14 +149,11 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   };
   const onTabChange = () => setIsOnActivity(!isOnActivity);
 
-  const contentContainerStyle = isOnActivity ? { flex: 1 } : {};
-
   return (
     <>
       <ScreenLayout
         title={token?.name || ''}
         bigTitle
-        contentContainerStyle={contentContainerStyle}
       >
         <ButtonsWrapper>
           {!tokenBalance.isZero() && (

@@ -62,7 +62,7 @@
     },
     "send": {
       "title": "Send cryptos",
-      "successNotification": "Transaction completed",
+      "successNotification": "Transaction sent",
       "notFoundsForFeeNotification": "You do not have funds to pay shipping fee",
       "gasDescription": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
       "gasFee": "Fees",

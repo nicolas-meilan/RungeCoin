@@ -6,7 +6,11 @@ import {
   ScrollViewProps,
 } from 'react-native';
 
-import { EventMapCore, useNavigation } from '@react-navigation/native';
+import {
+  EventMapCore,
+  NavigationProp,
+  useNavigation,
+} from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styled, { useTheme } from 'styled-components/native';
 
@@ -17,6 +21,8 @@ import Svg from './Svg';
 import Text from './Text';
 import Title from './Title';
 import logo from '@assets/logo.svg';
+import type { MainNavigatorType } from '@navigation/MainNavigator';
+import type { StartNavigatorType } from '@navigation/StartNavigator';
 
 type ScreenLayoutProps = {
   children: React.ReactNode;
@@ -128,7 +134,7 @@ const ScreenLayout = ({
   rightIconOnBigTitle = false,
 }: ScreenLayoutProps) => {
   const theme = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<MainNavigatorType | StartNavigatorType>>();
 
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [canRender, setCanRender] = useState(!waitUntilNavigationFinish);

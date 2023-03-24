@@ -6,17 +6,20 @@ import {
   ScreenName,
   screenOptions,
 } from './constants';
+import type { WalletTx } from '@http/wallet';
 import HomeScreen from '@screens/main/HomeScreen';
 import SendScreen from '@screens/main/SendScreen';
 import TokenScreen from '@screens/main/TokenScreen';
+import TxScreen from '@screens/main/TxScreen';
 import ValidateAccessScreen from '@screens/main/ValidateAccessScreen';
-import type { TokenSymbol } from '@web3/tokens';
+import type { TokenSymbol, TokenType } from '@web3/tokens';
 
 export type MainNavigatorType = {
   [ScreenName.validateAccess]: { comesFromBackground: boolean } | undefined;
   [ScreenName.home]: undefined;
   [ScreenName.send]: { tokenToSendSymbol?: TokenSymbol } | undefined;
   [ScreenName.token]: { tokenSymbol: TokenSymbol };
+  [ScreenName.tx]: { token: TokenType; tx: WalletTx };
 };
 
 type ScreenProps = {
@@ -38,6 +41,9 @@ const screens: ScreenProps[] = [{
 }, {
   name: ScreenName.token,
   component: TokenScreen,
+}, {
+  name: ScreenName.tx,
+  component: TxScreen,
 }];
 
 const StackNavigator = createNativeStackNavigator<MainNavigatorType>();
