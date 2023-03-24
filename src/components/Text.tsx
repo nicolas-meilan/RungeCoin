@@ -1,5 +1,9 @@
 import React from 'react';
-import type { StyleProp, TextStyle } from 'react-native';
+import type {
+  StyleProp,
+  TextStyle,
+  TextProps as TextPropsRN,
+} from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -13,7 +17,7 @@ export enum Weight {
   BOLD = 'bold',
 }
 
-export type TextProps = {
+export type TextProps = TextPropsRN & {
   text: string;
   style?: StyleProp<TextStyle>;
   boldTextStyle?: StyleProp<TextStyle>;
@@ -42,6 +46,7 @@ const Text = ({
   disabled = false,
   noI18n = false,
   usesFormat = true,
+  ...props
 }: TextProps) => {
   const { t } = useTranslation();
 
@@ -67,6 +72,7 @@ const Text = ({
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       disabled={disabled}
+      {...props}
     >
       {children}
     </StyledText>
@@ -86,6 +92,7 @@ const Text = ({
         onPressOut={onPressOut}
         onPress={onPress}
         disabled={disabled}
+        {...props}
       >
         {splittedText.map((currentText, index) => (
           <StyledText
@@ -94,6 +101,7 @@ const Text = ({
             onPressOut={onPressOut}
             onPress={onPress}
             style={[{ fontWeight: weightForIndex(index) }, style, getStyleForIndex(index), animatedStyle]}
+            {...props}
           >
             {currentText}
           </StyledText>
@@ -109,6 +117,7 @@ const Text = ({
       onPressOut={onPressOut}
       onPress={onPress}
       disabled={disabled}
+      {...props}
     >
       {text}
     </StyledText>

@@ -16,6 +16,7 @@ import TextInput from '@components/TextInput';
 import TokenIcon from '@components/TokenIcon';
 import TokenItem from '@components/TokenItem';
 import useBalances from '@hooks/useBalances';
+import useBiometrics from '@hooks/useBiometrics';
 import useNotifications, { NotificationTypes } from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
@@ -60,6 +61,10 @@ const TOKENS = Object.values(TOKENS_ETH);
 const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const theme = useTheme();
   const { dispatchNotification } = useNotifications();
+  const {
+    biometricsEnabled,
+    dispatchBiometrics,
+  } = useBiometrics();
   const {
     estimatedTxInfo,
     estimatedTxInfoLoading,
@@ -123,8 +128,13 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const openQrScanner = () => setShowQrScanner(true);
   const closeQrScanner = () => setShowQrScanner(false);
 
-  const onCalculatorEnd = (amount: string) => {
+  const onCalculatorEnd = async (amount: string) => {
     if (!tokenToSend) return;
+    
+    if (biometricsEnabled) {
+      const success = await dispatchBiometrics();
+      if (!success) return;
+    }
 
     closeCalculator();
     if (estimatedTxInfo?.totalFee.gt(tokenToSendBalance)) {

@@ -48,8 +48,8 @@ const Data = styled.View`
   justify-content: space-between;
 `;
 
-const Title = styled(Text)`
-  font-size: ${({ theme }) => theme.fonts.size[16]};
+const BalanceData = styled.View`
+  maxWidth: 60%;
 `;
 
 const Description = styled(Text) <{ alignRight?: boolean }>`
@@ -122,21 +122,29 @@ const TokenActivityItem = ({
       <Touchable onPress={() => { }}>
         <TxIcon name={txIcon} color={txIconColor} />
         <Data>
-          <View>
+          <BalanceData>
             <Skeleton
               isLoading={!tokenBalances && tokenBalancesLoading}
               height={15}
             >
-              <Title text={`${balanceFormatted} ${token.symbol}`} noI18n />
+              <Text
+                text={`${balanceFormatted} ${token.symbol}`}
+                noI18n
+                numberOfLines={1}
+              />
             </Skeleton>
             <StyledSkeleton
               isLoading={!tokenConversions}
               width="80%"
               height={15}
             >
-              <Description text={balanceConverted} noI18n />
+              <Description
+                text={balanceConverted}
+                noI18n
+                numberOfLines={1}
+              />
             </StyledSkeleton>
-          </View>
+          </BalanceData>
           <View>
             <StatusText
               text={`main.token.activity.status.${status}`}
