@@ -84,12 +84,23 @@
     },
     "token": {
       "info": "Information",
-      "activity": "Activity"
+      "activity": {
+        "title": "Activity",
+        "status": {
+          "error": "Error",
+          "warning": "Pending",
+          "success": "Finished"
+        }
+      }
     },
     "calculator": {
       "exceededBalance": "Exceeded balance",
       "gasFee": "Gas fee: ≈ {{fee}}"
     }
+  },
+  "dateformat": {
+    "date": "yyyy-MM-dd",
+    "datetime": "yyyy-MM-dd hh:mm aaa"
   },
   "number": {
     "thousandSeparator": ",",

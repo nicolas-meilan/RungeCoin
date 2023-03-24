@@ -88,8 +88,19 @@
     },
     "token": {
       "info": "Información",
-      "activity": "Actividad"
+      "activity": {
+        "title": "Actividad",
+        "status": {
+          "error": "Error",
+          "warning": "Pendiente",
+          "success": "Finalizada"
+        }
+      }
     }
+  },
+  "dateformat": {
+    "date": "dd/MM/yyyy",
+    "datetime": "dd/MM/yyyy hh:mm aaa"
   },
   "number": {
     "thousandSeparator": ".",

@@ -49,7 +49,6 @@ const WrapperItem = styled.TouchableOpacity<{
   )}
 `;
 
-
 const DataColumn = styled.View`
   flex: 1;
   margin-left: ${({ theme }) => theme.spacing(2)}

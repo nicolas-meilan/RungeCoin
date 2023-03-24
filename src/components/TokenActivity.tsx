@@ -59,7 +59,7 @@ const TokenActivity = ({
       <FlatList
         refreshControl={refreshControl}
         data={timeFinish ? tokenActivity : []}
-        renderItem={({ item }) => <TokenActivityItem activityItem={item} />}
+        renderItem={({ item, index }) => <TokenActivityItem activityItem={item} firstItem={!index} />}
         keyExtractor={(item) => item.hash}
         onEndReached={next}
         {...(renderListLoading

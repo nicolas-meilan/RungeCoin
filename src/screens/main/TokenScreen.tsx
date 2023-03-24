@@ -195,7 +195,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
           </BalanceWrapper>
         </TokenInfo>
         <ContentSwitcher
-          labels={['main.token.info', 'main.token.activity']}
+          labels={['main.token.info', 'main.token.activity.title']}
           onChange={onTabChange}
           components={[
             (

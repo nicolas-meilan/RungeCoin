@@ -10,6 +10,7 @@ import { EventMapCore, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styled, { useTheme } from 'styled-components/native';
 
+import BackgrounGradient from './BackgroundGradient';
 import Icon from './Icon';
 import KeyboardAvoidingView from './KeyboardAvoidingView';
 import Svg from './Svg';
@@ -34,11 +35,14 @@ type ScreenLayoutProps = {
   footer?: React.ReactNode;
   footerHeight?: number | string;
   contentContainerStyle?: ScrollViewProps['contentContainerStyle'];
+  gradientBackground?: boolean;
 };
 
-const ScreenWrapper = styled.View`
+const ScreenWrapper = styled.View<{ gradientBackground: boolean }>`
   flex: 1;
-  background-color: ${({ theme }) => theme.colors.background.primary};
+  background-color: ${({ gradientBackground, theme }) => (gradientBackground
+    ? 'transparent'
+    : theme.colors.background.primary)};
   padding: ${({ theme }) => theme.spacing(6)};
 `;
 
@@ -57,7 +61,7 @@ const Header = styled(StaticLayout)`
   align-items: center;
 `;
 
-const Footer = styled(StaticLayout)<{ footerHeight?: number | string }>`
+const Footer = styled(StaticLayout) <{ footerHeight?: number | string }>`
   align-items: flex-end;
   justify-content: center;
   ${({ footerHeight }) => (footerHeight
@@ -114,6 +118,7 @@ const ScreenLayout = ({
   footer,
   footerHeight,
   contentContainerStyle,
+  gradientBackground = false,
   scroll = false,
   hasBack = true,
   hasFooterBanner = false,
@@ -192,40 +197,43 @@ const ScreenLayout = ({
   const renderFooter = (!!footer || hasFooterBanner) && !isKeyboardOpen;
 
   return (
-    <ScreenWrapper>
-      <StyledSafeArea>
-        {hasHeader && (
-          <Header>
-            {hasBack && <Icon onPress={backAction} name="chevron-left" />}
-            {hasHeaderTitle && <HeaderTitle text={title} />}
-            {rightIcon && !rightIconOnBigTitle && (
-              <HeaderRightIconWrapper>
-                <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
-              </HeaderRightIconWrapper>)}
-          </Header>
-        )}
-        {hasBigTitle && (
-          <BigTitleWrapper>
-            <Title title={title} />
-            {rightIcon && rightIconOnBigTitle && (
-              <HeaderRightIconWrapper>
-                <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
-              </HeaderRightIconWrapper>)}
-          </BigTitleWrapper>
-        )}
-        {canRender ? content : loadingScreen}
-        {renderFooter && (
-          <Footer footerHeight={footerHeight}>
-            {footer || (
-              <>
-                <FooterText text="common.appName" />
-                <Svg svg={logo} size={24} />
-              </>
-            )}
-          </Footer>
-        )}
-      </StyledSafeArea>
-    </ScreenWrapper>
+    <>
+      {gradientBackground && <BackgrounGradient />}
+      <ScreenWrapper gradientBackground={gradientBackground}>
+        <StyledSafeArea>
+          {hasHeader && (
+            <Header>
+              {hasBack && <Icon onPress={backAction} name="chevron-left" />}
+              {hasHeaderTitle && <HeaderTitle text={title} />}
+              {rightIcon && !rightIconOnBigTitle && (
+                <HeaderRightIconWrapper>
+                  <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
+                </HeaderRightIconWrapper>)}
+            </Header>
+          )}
+          {hasBigTitle && (
+            <BigTitleWrapper>
+              <Title title={title} />
+              {rightIcon && rightIconOnBigTitle && (
+                <HeaderRightIconWrapper>
+                  <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
+                </HeaderRightIconWrapper>)}
+            </BigTitleWrapper>
+          )}
+          {canRender ? content : loadingScreen}
+          {renderFooter && (
+            <Footer footerHeight={footerHeight}>
+              {footer || (
+                <>
+                  <FooterText text="common.appName" />
+                  <Svg svg={logo} size={24} />
+                </>
+              )}
+            </Footer>
+          )}
+        </StyledSafeArea>
+      </ScreenWrapper>
+    </>
   );
 };
 

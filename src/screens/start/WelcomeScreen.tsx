@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled, { useTheme } from 'styled-components/native';
 
-import fullLogo from '@assets/images/fullLogo.png';
+import appIcon from '@assets/images/icon.png';
 import Button, { ButtonType } from '@components/Button';
 import Message from '@components/Message';
 import ScreenLayout from '@components/ScreenLayout';
@@ -34,8 +34,9 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
       hasBack={false}
       bigTitle
       hasFooterBanner
+      gradientBackground
     >
-      <Message text="access.welcome.welcomeText" image={fullLogo} svgColor={theme.colors.primary} />
+      <Message text="access.welcome.welcomeText" image={appIcon} svgColor={theme.colors.primary} />
       <StyledButton
         text="access.welcome.importWalletButton"
         onPress={goToImport}
