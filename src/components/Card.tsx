@@ -9,7 +9,7 @@ import styled from 'styled-components/native';
 
 type Children = false | JSX.Element;
 
-type CardProps = {
+export type CardProps = {
   children: Children | Children[];
   withSeparator?: boolean;
   style?: StyleProp<ViewStyle>;

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { WebView } from 'react-native-webview';
 import styled, { useTheme } from 'styled-components/native';
 
+import ErrorWrapper from './ErrorWrapper';
 import Skeleton from './Skeleton';
 import CandlesChartLayout from './Skeleton/CandlesChartLayout';
 import { FiatCurrencies } from '@utils/constants';
@@ -107,22 +108,27 @@ const TradingViewChart = ({ token }: TradingViewChartProps) => {
       {showSkeleton && (
         <ChartSkeletonWrapper>
           <Skeleton
-            isLoading
+            isLoading={!!token}
             Layout={CandlesChartLayout}
             height={size.height / 2}
             width={size.width}
           />
         </ChartSkeletonWrapper>
       )}
-      <StyledWebView
-        isLoading={loading || !token}
-        scalesPageToFit={false}
-        source={{ html }}
-        onMessage={(event) => {
-          const data = JSON.parse(event.nativeEvent.data);
-          if (data[READY_MESSAGE]) setLoading(false);
-        }}
-      />
+      <ErrorWrapper
+        requiredValuesToRender={[token]}
+        height={CHART_HEIGHT}
+      >
+        <StyledWebView
+          isLoading={loading}
+          scalesPageToFit={false}
+          source={{ html }}
+          onMessage={(event) => {
+            const data = JSON.parse(event.nativeEvent.data);
+            if (data[READY_MESSAGE]) setLoading(false);
+          }}
+        />
+      </ErrorWrapper>
     </Wrapper>
   );
 };

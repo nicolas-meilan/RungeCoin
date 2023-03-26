@@ -165,7 +165,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     data: token,
     label: token.name,
     leftComponent: <TokenIcon tokenSymbol={token.symbol} size={24} />,
-    disabled: tokenBalances?.[token.symbol].isZero(),
+    disabled: !tokenBalances || tokenBalances?.[token.symbol].isZero(),
   })), [tokenBalances]);
 
   return (

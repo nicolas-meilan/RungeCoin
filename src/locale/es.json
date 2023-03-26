@@ -90,6 +90,8 @@
       "info": "Información",
       "activity": {
         "title": "Actividad",
+        "emptyTitle": "No se han encontrado transacciones",
+        "emptyMessage": "Pruebe a refrescar",
         "tx": {
           "title": "Detalle de transacción",
           "rows": {
@@ -116,5 +118,9 @@
   "number": {
     "thousandSeparator": ".",
     "decimalSeparator": ","
+  },
+  "error": {
+    "title": "Error al cargar",
+    "message": "Inténtalo de nuevo"
   }
 }

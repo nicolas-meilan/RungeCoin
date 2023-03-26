@@ -7,6 +7,7 @@ import styled from 'styled-components/native';
 
 import Button from '@components/Button';
 import ContentSwitcher from '@components/ContentSwitcher';
+import ErrorWrapper from '@components/ErrorWrapper';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
@@ -173,23 +174,25 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
           />
         </ButtonsWrapper>
         <TokenInfo>
-          {token && <TokenIcon tokenSymbol={token.symbol} size={44} />}
-          <BalanceWrapper>
-            <BalanceSkeleton
-              isLoading={!tokenBalances}
-              height={30}
-            >
-              <Balance text={`${numberToFormattedString(tokenBalance, {
-                decimals: token?.decimals,
-              })} ${token?.symbol}`} />
-            </BalanceSkeleton>
-            <FiatBalanceSkeleton
-              isLoading={!tokenBalances || !tokenConversions}
-              height={25}
-            >
-              <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, FiatCurrencies.USD)} />
-            </FiatBalanceSkeleton>
-          </BalanceWrapper>
+          <ErrorWrapper requiredValuesToRender={[token]}>
+            {token && <TokenIcon tokenSymbol={token.symbol} size={44} />}
+            <BalanceWrapper>
+              <BalanceSkeleton
+                isLoading={!tokenBalances}
+                height={30}
+              >
+                <Balance text={`${numberToFormattedString(tokenBalance, {
+                  decimals: token?.decimals,
+                })} ${token?.symbol}`} />
+              </BalanceSkeleton>
+              <FiatBalanceSkeleton
+                isLoading={!tokenBalances || !tokenConversions}
+                height={25}
+              >
+                <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, FiatCurrencies.USD)} />
+              </FiatBalanceSkeleton>
+            </BalanceWrapper>
+          </ErrorWrapper>
         </TokenInfo>
         <ContentSwitcher
           labels={['main.token.info', 'main.token.activity.title']}
@@ -204,6 +207,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
               <TokenActivity
                 token={token}
                 refreshControl={refreshControl}
+                retry={refetchTokenActivity}
               />
             ),
           ]}

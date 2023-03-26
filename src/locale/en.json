@@ -86,6 +86,8 @@
       "info": "Information",
       "activity": {
         "title": "Activity",
+        "emptyTitle": "No transactions found",
+        "emptyMessage": "Try refreshing",
         "tx": {
           "title": "Transaction detail",
           "rows": {
@@ -116,5 +118,9 @@
   "number": {
     "thousandSeparator": ",",
     "decimalSeparator": "."
+  },
+  "error": {
+    "title": "Failed to load",
+    "message": "Try again"
   }
 }

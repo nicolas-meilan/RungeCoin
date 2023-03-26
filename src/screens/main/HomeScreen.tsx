@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
+import ErrorWrapper from '@components/ErrorWrapper';
 import Pill from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
@@ -139,13 +140,19 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         </ButtonsWrapper>
         <CenterWrapper>
           <Title title="main.home.balance" isSubtitle />
-          <BalanceSkeleton
-            isLoading={!tokenBalances || !tokenConversions}
-            width={200}
-            height={30}
+          <ErrorWrapper
+            requiredValuesToRender={[null, null]}
+            isLoading={tokenBalancesLoading || tokenConversionsLoading}
+            errorComponent={<Balance text={totalConvertedBalance} />}
           >
-            <Balance text={totalConvertedBalance} />
-          </BalanceSkeleton>
+            <BalanceSkeleton
+              isLoading={!tokenBalances || !tokenConversions}
+              width={200}
+              height={30}
+            >
+              <Balance text={totalConvertedBalance} />
+            </BalanceSkeleton>
+          </ErrorWrapper>
           <Pill
             text={formatAddress(walletPublicValues!.address)}
             type="info"
@@ -155,7 +162,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         </CenterWrapper>
         <TokenBalances
           onPressToken={onPressToken}
-          onRefresh={refetchTokenConversions}
+          retryError={refetch}
           refreshLoading={tokenConversionsLoading}
         />
       </ScreenLayout>
