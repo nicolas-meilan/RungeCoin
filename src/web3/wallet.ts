@@ -70,7 +70,7 @@ export type WalletPublicValues = {
 
 export const NO_LEDGER_CONNECTED_ERROR = 'No ledger connected';
 
-export const getBluetoothHw = async () => {
+const getBluetoothHw = async () => {
   const permissions = await requestBluetoothScanPermission();
 
   if (!permissions) throw new Error(NO_LEDGER_CONNECTED_ERROR);
@@ -101,6 +101,22 @@ export const getBluetoothHw = async () => {
   return ledgerList;
 };
 
+export const connectHw = async (bluetoothConnection: boolean = false): Promise<TransportBLE | TransportHID> => {
+  const transportToUse = bluetoothConnection ? TransportBLE : TransportHID;
+  const [firstLedger] = await (bluetoothConnection ? getBluetoothHw() : transportToUse.list());
+
+  if (!firstLedger) throw new Error(NO_LEDGER_CONNECTED_ERROR);
+  let transport = null;
+  try {
+    transport = await transportToUse.open(firstLedger);
+  } catch (error) { // Retry connection one time
+    transport = await transportToUse.open(firstLedger);
+  }
+  if (!transport) throw new Error(NO_LEDGER_CONNECTED_ERROR);
+
+  return transport;
+};
+
 export const getHwWalletAddress = async ({
   index,
   bluetoothConnection,
@@ -113,17 +129,7 @@ export const getHwWalletAddress = async ({
 }): Promise<WalletPublicValues> => {
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
   const derivationPath = `${ETH_DERIVATION_PATH}/${walletIndex}`;
-  const transportToUse = bluetoothConnection ? TransportBLE : TransportHID;
-  const [firstLedger] = await (bluetoothConnection ? getBluetoothHw() : transportToUse.list());
-
-  if (!firstLedger) throw new Error(NO_LEDGER_CONNECTED_ERROR);
-  let transport = null;
-  try {
-    transport = await transportToUse.open(firstLedger);
-  } catch (error) { // Retry connection one time
-    transport = await transportToUse.open(firstLedger);
-  }
-  if (!transport) throw new Error(NO_LEDGER_CONNECTED_ERROR);
+  const transport = await connectHw(bluetoothConnection);
 
   const eth = new AppEth(transport);
   const { address, publicKey } = await eth.getAddress(derivationPath, true);

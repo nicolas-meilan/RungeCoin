@@ -1,7 +1,5 @@
+import type { SignatureLike } from '@ethersproject/bytes';
 import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
-import TransportHID from '@ledgerhq/react-native-hid';
-import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { SignatureLike } from '@ethersproject/bytes';
 import {
   BigNumber,
   Contract,
@@ -15,10 +13,9 @@ import { ethereumProvider } from './providers';
 import { baseTokenTransferAbi } from './smartContracts';
 import { BASE_TOKEN_ADDRESS, TokenType } from './tokens';
 import {
+  connectHw,
   BASE_ADDRESS_INDEX,
   ETH_DERIVATION_PATH,
-  getBluetoothHw,
-  NO_LEDGER_CONNECTED_ERROR,
 } from './wallet';
 
 export type TxInfo = {
@@ -107,17 +104,7 @@ const signTxWithLedger = async ({
 
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
   const derivationPath = `${ETH_DERIVATION_PATH}/${walletIndex}`;
-  const transportToUse = bluetoothConnection ? TransportBLE : TransportHID;
-  const [firstLedger] = await (bluetoothConnection ? getBluetoothHw() : transportToUse.list());
-
-  if (!firstLedger) throw new Error(NO_LEDGER_CONNECTED_ERROR);
-  let transport = null;
-  try {
-    transport = await transportToUse.open(firstLedger);
-  } catch (error) { // Retry connection one time
-    transport = await transportToUse.open(firstLedger);
-  }
-  if (!transport) throw new Error(NO_LEDGER_CONNECTED_ERROR);
+  const transport = await connectHw(bluetoothConnection);
 
   const eth = new AppEth(transport);
   const resolution = await ledgerService.resolveTransaction(tx, {}, { erc20: true });
