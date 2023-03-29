@@ -40,7 +40,7 @@ type CreateSeedPhraseScreenProps = NativeStackScreenProps<StartNavigatorType, Sc
 const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => {
   const seedPhrase = useMemo(() => createSeedPhrase(true).split(' '), []);
 
-  const onPressContinue = () => navigation.navigate(ScreenName.obtainAccess);
+  const onPressContinue = () => navigation.navigate(ScreenName.obtainAccess, { comesFromSeedPhraseCreation: true });
 
   return (
     <ScreenLayout

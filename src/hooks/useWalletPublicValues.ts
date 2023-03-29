@@ -3,11 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import StorageKeys from '@system/storageKeys';
 import { ReactQueryKeys } from '@utils/constants';
-
-type WalletPublicValues = {
-  publicKey: string;
-  address: string;
-};
+import {
+  WalletPublicValues,
+  getHwWalletAddress,
+} from '@web3/wallet';
 
 type UseWalletPublicValuesProps = {
   refetchOnMount?: boolean;
@@ -16,6 +15,7 @@ type UseWalletPublicValuesProps = {
 type UseWalletPublicValuesReturn = {
   walletPublicValues?: WalletPublicValues | null;
   setWalletPublicValues: (wallet: WalletPublicValues) => void;
+  setWalletPublicValuesHw: (bluetoothConnection?: boolean) => void;
   removeWalletPublicValues: () => void;
   walletPublicValuesLoading: boolean;
 };
@@ -63,6 +63,14 @@ const useWalletPublicValues = ({
     onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
   });
 
+  const setWalletPublicValuesHw = async (bluetoothConnection: boolean = false) => {
+    console.log({ bluetoothConnection })
+    const newWalletPublicValues = await getHwWalletAddress({ bluetoothConnection });
+    return mutateSetWallet(newWalletPublicValues, {
+      onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
+    });
+  };
+
   const { mutate: mutateRemoveWallet } = useMutation({
     mutationKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     mutationFn: removeItem,
@@ -77,6 +85,7 @@ const useWalletPublicValues = ({
     walletPublicValuesLoading,
     setWalletPublicValues,
     removeWalletPublicValues,
+    setWalletPublicValuesHw,
   };
 };
 

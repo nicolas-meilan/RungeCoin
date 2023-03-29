@@ -8,6 +8,8 @@ export enum ScreenName {
   startGuide = 'startGuide',
   obtainAccess = 'obtainAccess',
   createSeedPhrase = 'createSeedPhrase',
+  passwordForHwConnection = 'passwordForHwConnection',
+  connectWithHw = 'connectWithHw',
 
   // Main Stack
   validateAccess = 'validateAccess',

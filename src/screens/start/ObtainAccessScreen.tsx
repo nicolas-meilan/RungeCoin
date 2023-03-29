@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { DEV_WALLET_SEED_PHRASE } from '@env';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
@@ -10,6 +11,8 @@ import Switch from '@components/Switch';
 import TextInput from '@components/TextInput';
 import useBiometrics from '@hooks/useBiometrics';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import { ScreenName } from '@navigation/constants';
+import { StartNavigatorType } from '@navigation/StartNavigator';
 import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/formatter';
@@ -30,12 +33,20 @@ const Form = styled.View`
   height: 350px;
 `;
 
-const BASE_PASS_ERR = 'access.obtainAccess.inputs.passwordError';
+const BASE_PASS_ERR = 'common.inputs.passwordError';
 const BASE_SEED_ERR = 'access.obtainAccess.inputs.seedPhraseError';
 
 const baseSeedPhrase = isDev() ? DEV_WALLET_SEED_PHRASE : '';
 
-const ObtainAccessScreen = () => {
+const HwButton = styled(Button)`
+  margin-top: ${({ theme }) => theme.spacing(4)};
+`;
+
+type ObtainAccessScreenProps = NativeStackScreenProps<StartNavigatorType, ScreenName.obtainAccess>;
+
+const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
+  const comesFromSeedPhraseCreation = route.params?.comesFromSeedPhraseCreation;
+
   const [loading, setLoading] = useState(false);
 
   const {
@@ -156,6 +167,8 @@ const ObtainAccessScreen = () => {
 
   const toggleBiometricsSwitch = () => setEnableBiometricsAuth(!enableBiometricsAuth);
 
+  const goToHw = () => navigation.navigate(ScreenName.passwordForHwConnection);
+
   const onPressContinue = async () => {
     const errors = !seedPhrase || seedPhraseError || !password || passwordError;
     if (errors) {
@@ -202,8 +215,8 @@ const ObtainAccessScreen = () => {
           errorMessage={seedPhraseErrorMessage}
         />
         <PasswordInput
-          label="access.obtainAccess.inputs.password"
-          placeholder="access.obtainAccess.inputs.passwordPH"
+          label="common.inputs.password"
+          placeholder="common.inputs.passwordPH"
           type="password"
           value={password}
           onChangeText={onPasswordChange}
@@ -213,7 +226,7 @@ const ObtainAccessScreen = () => {
           errorMessage={passwordErrorMessage}
         />
         <Switch
-          label="access.obtainAccess.useBiometrics"
+          label="access.biometrics.useBiometrics"
           value={enableBiometricsAuth}
           disabled={!canUseBiometrics}
           onChange={toggleBiometricsSwitch}
@@ -225,6 +238,13 @@ const ObtainAccessScreen = () => {
         onPress={onPressContinue}
         loading={loading}
       />
+      {!comesFromSeedPhraseCreation && (
+        <HwButton
+          text="access.connectHw.title"
+          type="tertiary"
+          onPress={goToHw}
+        />
+      )}
     </ScreenLayout>
   );
 };

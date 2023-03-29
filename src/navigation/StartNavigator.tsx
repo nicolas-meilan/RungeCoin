@@ -9,16 +9,20 @@ import {
   ScreenName,
   screenOptions,
 } from './constants';
+import ConnectWithHwScreen from '@screens/start/ConnectWithHwScreen';
 import CreateSeedPhraseScreen from '@screens/start/CreateSeedPhraseScreen';
 import ObtainAccessScreen from '@screens/start/ObtainAccessScreen';
+import PasswordForHwConnectionScreen from '@screens/start/PasswordForHwConnectionScreen';
 import StartGuideScreen from '@screens/start/StartGuideScreen';
 import WelcomeScreen from '@screens/start/WelcomeScreen';
 
 export type StartNavigatorType = {
   [ScreenName.welcome]: undefined;
   [ScreenName.startGuide]: undefined;
-  [ScreenName.obtainAccess]: undefined;
+  [ScreenName.obtainAccess]: { comesFromSeedPhraseCreation?: boolean } | undefined;
   [ScreenName.createSeedPhrase]: undefined;
+  [ScreenName.passwordForHwConnection]: undefined;
+  [ScreenName.connectWithHw]: undefined;
 };
 
 type ScreenProps = {
@@ -39,6 +43,12 @@ const screens: ScreenProps[] = [{
 }, {
   name: ScreenName.createSeedPhrase,
   component: CreateSeedPhraseScreen,
+}, {
+  name: ScreenName.passwordForHwConnection,
+  component: PasswordForHwConnectionScreen,
+}, {
+  name: ScreenName.connectWithHw,
+  component: ConnectWithHwScreen,
 }];
 
 const StackNavigator = createNativeStackNavigator<StartNavigatorType>();

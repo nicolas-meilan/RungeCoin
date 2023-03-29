@@ -5,7 +5,12 @@
     "cancel": "Cancelar",
     "next": "Siguiente",
     "send": "Enviar",
-    "receive": "Recibir"
+    "receive": "Recibir",
+    "inputs": {
+      "password": "Ingresa una contraseña",
+      "passwordPH": "Nueva contraseña",
+      "passwordError": "La contraseña debe tener 8 caracteres.\nAl menos 1 mayúscula.\nAl menos 1 número.\nNo se admiten caracteres especiales."
+    }
   },
   "notifications": {
     "addressCopied": "Dirección copiada correctamente"
@@ -30,18 +35,26 @@
     "obtainAccess": {
       "title": "Ingresa tus palabras secretas de recuperación",
       "continueButton": "Acceder a la billetera",
-      "useBiometrics": "Usar datos biométricos",
       "inputs": {
         "seedPhrase": "Palabras secretas de recuperación",
         "seedPhrasePH": "Ingresa tus palabras de recuperación",
-        "password": "Ingresa una contraseña",
-        "passwordPH": "Nueva contraseña",
-        "passwordError": "La contraseña debe tener 8 caracteres.\nAl menos 1 mayúscula.\nAl menos 1 número.\nNo se admiten caracteres especiales.",
         "seedPhraseError": "Las palabras secretas son incorrectas.",
         "seedPhraseErrorLength": "La cantidad de palabras secretas es incorrecta."
       }
     },
-    "biometricsTitle": "Usa tu huella digital"
+    "connectHw": {
+      "title": "Conectar con Ledger",
+      "message": "Conecta tu **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego desbloquealo y abre la **app de Ethereum**",
+      "usbConnectionButton": "Conexión USB",
+      "bluetoothConectionButton": "Conexión Bluetooth"
+    },
+    "hwPassword": {
+      "title": "Contraseña de acceso",
+    },
+    "biometrics": {
+      "title": "Usa tu huella digital",
+      "useBiometrics": "Usar datos biométricos"
+    }
   },
   "main": {
     "validateAccess": {

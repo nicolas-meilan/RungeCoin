@@ -9,6 +9,8 @@ import type {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 
 import styled from 'styled-components/native';
@@ -18,17 +20,18 @@ export type CarouselRef = {
   prev: () => number;
 };
 
-type CarouselItem = {
+export type CarouselItem = {
   key?: string;
   component: React.ReactNode;
 };
 
-type CarouselProps = {
+export type CarouselProps = {
   items: CarouselItem[];
   auto?: boolean;
   loop?: boolean;
   timePerItem?: number;
   onRenderLastItem?: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
 const DOT_SIZE = 12;
@@ -62,6 +65,7 @@ const Dot = styled.View<{ selected: boolean }>`
 const Carousel = React.forwardRef(({
   items,
   onRenderLastItem,
+  style,
   auto = false,
   loop = false,
   timePerItem = 3,
@@ -133,7 +137,7 @@ ref: React.Ref<CarouselRef>) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper style={style}>
       <CarouselList
         horizontal
         ref={listRef}

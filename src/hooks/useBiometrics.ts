@@ -53,7 +53,7 @@ const useBiometrics = ({
     if (!ignoreEnableFlag && !biometricsEnabled) return false;
 
     try {
-      const biometicsEnabled = await obtainBiometrics(t('access.biometricsTitle'), t('common.cancel'));
+      const biometicsEnabled = await obtainBiometrics(t('access.biometrics.title'), t('common.cancel'));
 
       return !!biometicsEnabled;
     } catch (_) {
