@@ -30,6 +30,7 @@ export type TextInputProps = TextInputPropsRN & {
   errorMessage?: string;
   leftSvg?: SvgProps['svg'];
   leftComponent?: React.ReactNode;
+  pressDisabled?: boolean;
 };
 
 const Wrapper = styled.TouchableOpacity``;
@@ -94,6 +95,7 @@ const TextInput = ({
   borderColor: borderColorProp,
   type = TextInputType.TEXT,
   error = false,
+  pressDisabled = false,
   ...props
 }: TextInputProps) => {
   const { t } = useTranslation();
@@ -135,7 +137,7 @@ const TextInput = ({
     <Wrapper
       style={style}
       onPress={onPress}
-      disabled={!onPress}
+      disabled={!onPress || pressDisabled}
     >
       {!!label && <Label text={label} />}
       <InputWrapper color={borderColor} multiline={multiline}>
@@ -154,7 +156,7 @@ const TextInput = ({
         {renderRightComponent && (
           <IconWrapper multiline={multiline}>
             {isPassword && <StyledIcon name={passwordIconName} onPress={toggleShowText} />}
-            {icon && !isPassword && <StyledIcon name={icon} onPress={onPressIcon} />}
+            {icon && !isPassword && <StyledIcon name={icon} onPress={onPressIcon} disabled={pressDisabled} />}
           </IconWrapper>
         )}
       </InputWrapper>

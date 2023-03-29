@@ -83,6 +83,7 @@
       "gasUnits": "Gas units: **{{units}}**",
       "gasPrice": "Gas price: **{{price}}**",
       "totalFee": "Total",
+      "sendError": "An error occurred while sending thetransaction",
       "qr": {
         "title": "Scan the QR code of the destination wallet",
         "message": "Remember that the wallet must be from the **Ethereum** network, otherwise you may lose your funds",

@@ -71,6 +71,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     fetchestimateTxInfo,
     sendTokenLoading,
     sendToken,
+    sendTokenError,
   } = useTx({
     onSendFinish: () => {
       dispatchNotification('main.send.successNotification');
@@ -115,6 +116,10 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
     return tokenBalances[tokenToSend.symbol];
   }, [tokenToSend]);
+
+  useEffect(() => {
+    if (sendTokenError) dispatchNotification('main.send.sendError', 'error');
+  }, [sendTokenError]);
 
   const onTokenChange = (newToken: Option<TokenType>) => setTokenToSend(newToken.data);
   const onAddressChange = (newAddress: string) => {
@@ -168,18 +173,26 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     disabled: !tokenBalances || tokenBalances?.[token.symbol].isZero(),
   })), [tokenBalances]);
 
+  const goBack = () => {
+    if (sendTokenLoading) return;
+
+    navigation.goBack();
+  };
+
   return (
     <>
       <ScreenLayout
         bigTitle
         scroll
         title="main.send.title"
+        goBack={goBack}
       >
         <Select
           selected={tokenToSend?.symbol}
           label="main.send.inputs.selectTokenLabel"
           placeholder="main.send.inputs.selectTokenPlaceholder"
           options={tokensList}
+          disabled={sendTokenLoading}
           optionComponent={(option: Option<TokenType>, selected: boolean) => (
             <TokenItem
               fullName
@@ -199,6 +212,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           placeholder="main.send.inputs.addressPlaceholder"
           errorMessage="main.send.inputs.addressError"
           value={addressToSend}
+          pressDisabled={sendTokenLoading}
+          editable={!sendTokenLoading}
           onChangeText={onAddressChange}
           error={addressToSendError}
           icon="qrcode-scan"

@@ -28,6 +28,7 @@ type SelectProps = {
   placeholder?: string;
   label?: string;
   fixScreenPadding?: boolean;
+  disabled?: boolean;
 };
 
 const OptionCard = styled(Card) <{ selected: boolean }>`
@@ -53,6 +54,7 @@ const Select = ({
   onOpen,
   onClose,
   options = [],
+  disabled = false,
   selected: selectedValue = '',
   placeholder = '',
   label = '',
@@ -98,6 +100,7 @@ const Select = ({
         leftSvg={selected?.svg}
         leftComponent={selected?.leftComponent}
         label={label}
+        pressDisabled={disabled}
       />
       <BottomSheet
         visible={showOptions}

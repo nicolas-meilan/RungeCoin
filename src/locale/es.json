@@ -83,6 +83,7 @@
       "gasUnits": "Unidades de gas: **{{units}}**",
       "gasPrice": "Precio de gas: ≈ **{{price}}**",
       "totalFee": "Total",
+      "sendError": "Ha ocurrido un error al enviar la transacción",
       "qr": {
         "title": "Escanea el código QR de la billetera destino",
         "message": "Recuerda que la billetera debe ser de la red **Ethereum**, de otra forma podrás perder tus fondos",
