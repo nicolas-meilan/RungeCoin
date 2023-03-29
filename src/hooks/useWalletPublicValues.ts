@@ -10,6 +10,7 @@ import {
 
 type UseWalletPublicValuesProps = {
   refetchOnMount?: boolean;
+  onSetWalletPublicValuesHwError?: () => void;
 };
 
 type UseWalletPublicValuesReturn = {
@@ -22,6 +23,7 @@ type UseWalletPublicValuesReturn = {
 
 const useWalletPublicValues = ({
   refetchOnMount,
+  onSetWalletPublicValuesHwError,
 }: UseWalletPublicValuesProps = {
   refetchOnMount: false,
 }): UseWalletPublicValuesReturn => {
@@ -64,11 +66,14 @@ const useWalletPublicValues = ({
   });
 
   const setWalletPublicValuesHw = async (bluetoothConnection: boolean = false) => {
-    console.log({ bluetoothConnection })
-    const newWalletPublicValues = await getHwWalletAddress({ bluetoothConnection });
-    return mutateSetWallet(newWalletPublicValues, {
-      onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
-    });
+    try {
+      const newWalletPublicValues = await getHwWalletAddress({ bluetoothConnection });
+      return mutateSetWallet(newWalletPublicValues, {
+        onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
+      });
+    } catch (error) {
+      onSetWalletPublicValuesHwError?.();
+    }
   };
 
   const { mutate: mutateRemoveWallet } = useMutation({
