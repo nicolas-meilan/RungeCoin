@@ -44,7 +44,7 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
     setEstimatedTxInfoError(false);
     try {
       const newTxinfo = await web3EstimateTxInfo(walletPublicValues.address, toAddress, tokenAddress);
-      setEstimatedTxInfo(newTxinfo); 
+      setEstimatedTxInfo(newTxinfo);
     } catch (error) {
       setEstimatedTxInfoError(true);
     }
@@ -57,11 +57,18 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
     try {
       const privateKey = await EncryptedStorage.getItem(StorageKeys.WALLET_PRIVATE_KEY);
 
-      if (!privateKey) {
+      if (!walletPublicValues) {
         setSendTokenLoading(false);
+        setSendTokenError(true);
         return;
       }
-      await send(privateKey, toAddress, token, amount);
+
+      await send(walletPublicValues.address, toAddress, token, amount, {
+        privateKey,
+        isHw: walletPublicValues.isHw,
+        hwBluetooth: walletPublicValues.hwConnectedByBluetooth,
+      });
+
       onSendFinish?.();
     } catch (error) {
       setSendTokenError(true);

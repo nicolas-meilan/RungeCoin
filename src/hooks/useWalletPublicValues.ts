@@ -13,8 +13,13 @@ type UseWalletPublicValuesProps = {
   onSetWalletPublicValuesHwError?: () => void;
 };
 
+export type StoredWallet = WalletPublicValues & {
+  isHw: boolean;
+  hwConnectedByBluetooth: boolean;
+};
+
 type UseWalletPublicValuesReturn = {
-  walletPublicValues?: WalletPublicValues | null;
+  walletPublicValues?: StoredWallet | null;
   setWalletPublicValues: (wallet: WalletPublicValues) => void;
   setWalletPublicValuesHw: (bluetoothConnection?: boolean) => void;
   removeWalletPublicValues: () => void;
@@ -32,7 +37,7 @@ const useWalletPublicValues = ({
 
   const getWalletFromStorage = async () => {
     const storedWalletStr = await getItem();
-    const storedWallet: WalletPublicValues = storedWalletStr ? JSON.parse(storedWalletStr) : null;
+    const storedWallet: StoredWallet = storedWalletStr ? JSON.parse(storedWalletStr) : null;
 
     return storedWallet;
   };
@@ -50,7 +55,7 @@ const useWalletPublicValues = ({
     cacheTime: Infinity,
   });
 
-  const setWallet = async (wallet: WalletPublicValues) => {
+  const setWallet = async (wallet: StoredWallet) => {
     await setItem(JSON.stringify(wallet));
 
     return wallet;
@@ -61,15 +66,25 @@ const useWalletPublicValues = ({
     mutationFn: setWallet,
   });
 
-  const setWalletPublicValues = (newWalletPublicValues: WalletPublicValues) => mutateSetWallet(newWalletPublicValues, {
+  const setWalletPublicValues = (newWalletPublicValues: WalletPublicValues) => mutateSetWallet({
+    ...newWalletPublicValues,
+    isHw: false,
+    hwConnectedByBluetooth: false,
+  }, {
     onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
   });
 
   const setWalletPublicValuesHw = async (bluetoothConnection: boolean = false) => {
     try {
       const newWalletPublicValues = await getHwWalletAddress({ bluetoothConnection });
-      return mutateSetWallet(newWalletPublicValues, {
-        onSuccess: (savedWalletPublicValues) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWalletPublicValues),
+      const walletToStore: StoredWallet = {
+        ...newWalletPublicValues,
+        isHw: true,
+        hwConnectedByBluetooth: bluetoothConnection,
+      };
+
+      return mutateSetWallet(walletToStore, {
+        onSuccess: (savedWallet) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWallet),
       });
     } catch (error) {
       onSetWalletPublicValuesHwError?.();
