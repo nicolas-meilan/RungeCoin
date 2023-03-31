@@ -41,7 +41,7 @@ const ConnectWithHwScreen = () => {
       <Message
         scroll
         svg={ledger}
-        text="access.connectHw.message"
+        text="common.hwGuide"
       />
       {hwWalletError && (
         <ErrorMessage text="access.connectHw.hwError" />

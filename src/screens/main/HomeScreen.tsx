@@ -141,7 +141,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         <CenterWrapper>
           <Title title="main.home.balance" isSubtitle />
           <ErrorWrapper
-            requiredValuesToRender={[null, null]}
+            requiredValuesToRender={[tokenBalances, tokenConversions]}
             isLoading={tokenBalancesLoading || tokenConversionsLoading}
             errorComponent={<Balance text={totalConvertedBalance} />}
           >

@@ -13,10 +13,12 @@ type ContentSwitcherProps = {
   rightComponent?: React.ReactNode;
   onChange?: (tabIndex: number) => void;
   scroll?: boolean;
+  unmountOnHide?: boolean;
   refreshControl?: ScrollViewProps['refreshControl'];
 };
 
 const SWITCHER_HEIGHT = 35;
+const ELEVATION_VISIBLE_COMPONENT = 10000;
 
 const SwitcherButtonsWrapper = styled.View`
   flex-direction: row;
@@ -26,7 +28,7 @@ const SwitcherButtonsWrapper = styled.View`
   background-color: ${({ theme }) => theme.colors.background.secondary};
 `;
 
-const PillItem = styled(Pill)<{ selected: boolean }>`
+const PillItem = styled(Pill) <{ selected: boolean }>`
   height: ${SWITCHER_HEIGHT}px;
   padding: ${({ theme }) => theme.spacing(1)} ${({ theme }) => theme.spacing(2)};
   ${({ selected, theme }) => (!selected ? `
@@ -49,13 +51,27 @@ const StyledScrollView = styled.ScrollView`
   flex: 1;
 `;
 
+const Content = styled.View`
+  flex: 1;
+`;
+
+const ContentItemWrapper = styled.View<{ visible?: boolean }>`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: ${({ visible }) => (visible ? 1 : 0)};
+  z-index: ${({ visible }) => (visible ? ELEVATION_VISIBLE_COMPONENT : -ELEVATION_VISIBLE_COMPONENT)};
+  elevation :${({ visible }) => (visible ? ELEVATION_VISIBLE_COMPONENT : -ELEVATION_VISIBLE_COMPONENT)};
+`;
+
 const ContentSwitcher = ({
   labels,
   components,
   rightComponent,
   onChange,
-  scroll = false,
   refreshControl,
+  unmountOnHide = false,
+  scroll = false,
   initialIndex = 0,
 }: ContentSwitcherProps) => {
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
@@ -86,13 +102,37 @@ const ContentSwitcher = ({
     );
   }), [labels, selectedIndex]);
 
-  if (!switcherItems.length) return <></>;
+  const cachedComponent = useMemo(() => ({ // cache the first rendered component
+    component: components[selectedIndex],
+    index: selectedIndex,
+  }), [components]);
 
-  const switcherComponent = scroll ? (
+  const contentToRender = useMemo(() => {
+    components[cachedComponent.index] = cachedComponent.component;
+
+    return unmountOnHide || neverChange
+      ? components[selectedIndex]
+      : (
+        <Content>
+          {components.map((component, index) => (
+            <ContentItemWrapper
+              visible={index === selectedIndex}
+              key={`CONTENT_SHITCHER_COMPONENT${index}`}
+            >
+              {component}
+            </ContentItemWrapper>
+          ))}
+        </Content>
+      );
+  }, [unmountOnHide, neverChange, selectedIndex]);
+
+  const switcherContent = scroll ? (
     <StyledScrollView refreshControl={refreshControl}>
-      {components[selectedIndex]}
+      {contentToRender}
     </StyledScrollView>
-  ) : components[selectedIndex];
+  ) : contentToRender;
+
+  if (!switcherItems.length) return <></>;
 
   return (
     <>
@@ -102,7 +142,7 @@ const ContentSwitcher = ({
         </SwitcherButtonsWrapper>
         {rightComponent}
       </Top>
-      {switcherComponent}
+      {switcherContent}
     </>
   );
 };

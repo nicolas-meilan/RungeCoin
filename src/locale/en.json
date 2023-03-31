@@ -6,6 +6,7 @@
     "next": "Next",
     "send": "Send",
     "receive": "Receive",
+    "hwGuide": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
     "inputs": {
       "password": "Enter a password",
       "passwordPH": "New password",
@@ -44,7 +45,6 @@
     },
     "connectHw": {
       "title": "Connect with Ledger",
-      "message": "Connect your **Ledger** to your smartphone via **USB or Bluetooth**, then unlock it and open the **Ethereum app**",
       "usbConnectionButton": "USB conection",
       "hwError": "Failed to connect to the ledger, please follow the steps and try again",
       "bluetoothConectionButton": "Bluetooth conection"

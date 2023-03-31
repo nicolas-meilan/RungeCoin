@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { LayoutChangeEvent, StyleProp, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, ScrollView, StyleProp, View, ViewStyle } from 'react-native';
 
 import ContentLoader from 'react-content-loader/native';
 import styled, { useTheme } from 'styled-components/native';
@@ -25,6 +25,7 @@ export type SkeletonProps = Omit<SkeletonBaseProps, 'areMultiples' | 'isFirst'> 
   isLoading: boolean;
   requiredValuesToRender?: Deps;
   quantity?: number;
+  withScroll?: boolean;
   keyExtractor?: (index: number) => string;
   onLayout?: (event: LayoutChangeEvent) => void;
 };
@@ -87,6 +88,7 @@ const Skeleton = ({
   requiredValuesToRender,
   style,
   onLayout,
+  withScroll = false,
   ...props
 }: SkeletonProps) => {
   const skeletons = useMemo(() => [...new Array(quantity)], [quantity]);
@@ -100,16 +102,30 @@ const Skeleton = ({
 
   if (!loading) return <>{children}</>;
 
+  const content = skeletons.map((_, index) => (
+    <SkeletonBase
+      areMultiples={quantity > 1}
+      isFirst={!index}
+      key={keyExtractor?.(index) || `SKELETON_ITEM_${index}`}
+      {...props}
+    />
+  ));
+
+  if (withScroll) {
+    return (
+      <ScrollView
+        nestedScrollEnabled
+        style={style}
+        onLayout={onLayout}
+      >
+        {content}
+      </ScrollView>
+    );
+  }
+
   return (
     <View style={style} onLayout={onLayout}>
-      {skeletons.map((_, index) => (
-        <SkeletonBase
-          areMultiples={quantity > 1}
-          isFirst={!index}
-          key={keyExtractor?.(index) || `SKELETON_ITEM_${index}`}
-          {...props}
-        />
-      ))}
+      {content}
     </View>
   );
 };

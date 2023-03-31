@@ -48,6 +48,7 @@ const TokenBalances = ({
         isLoading={!tokenBalances}
         quantity={TOKENS.length}
         height={35}
+        withScroll
       >
         <ScrollView
           nestedScrollEnabled

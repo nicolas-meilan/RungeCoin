@@ -20,6 +20,7 @@ import useBiometrics from '@hooks/useBiometrics';
 import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
+import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
@@ -46,6 +47,10 @@ const GasTitle = styled(Text).attrs({
   font-size: ${({ theme }) => theme.fonts.size[18]};
   margin-bottom: ${({ theme }) => theme.spacing(2)};
   margin-top: ${({ avoidTopMargin, theme }) => (avoidTopMargin ? 0 : theme.spacing(2))};
+`;
+
+const HwMessage = styled(Text)`
+  margin-top: ${({ theme }) => theme.spacing(6)};
 `;
 
 const TotalFeeText = styled(Text)<{ error: boolean }>`
@@ -78,6 +83,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
       navigation.navigate(ScreenName.home);
     },
   });
+
+  const { walletPublicValues } = useWalletPublicValues();
 
   const { convert } = useTokenConversions({
     refetchOnMount: false,
@@ -267,6 +274,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
             </Card>
           </>
         )}
+        {!!walletPublicValues?.isHw && (<HwMessage text="common.hwGuide" />)}
         <StyledButton
           text="common.continue"
           disabled={!allDataSetted || hasNotBalanceForGas}
