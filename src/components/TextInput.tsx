@@ -64,7 +64,7 @@ const IconWrapper = styled.View<{ multiline?: boolean }>`
 const StyledTextInput = styled.TextInput<{
   hasSvg?: boolean;
 }>`
-  margin-left: ${({ hasSvg, theme }) => hasSvg ? theme.spacing(1) : '0px'};
+  margin-left: ${({ hasSvg, theme }) => hasSvg ? theme.spacing(2) : '0px'};
   vertical-align: ${({ multiline }) => (multiline ? 'top' : 'middle')};
   font-size: ${({ multiline, theme }) => theme.fonts.size[multiline ? 20 : 16]};
   color: ${({ theme }) => theme.colors.text.primary};

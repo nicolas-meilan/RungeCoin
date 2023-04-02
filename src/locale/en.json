@@ -90,6 +90,7 @@
         "invalidNotification": "Invalid QR"
       },
       "inputs": {
+        "blockchainSelectorLabel": "Blockchain to use",
         "selectTokenLabel": "Token to send",
         "selectTokenPlaceholder": "Select a token",
         "addressLabel": "Shipping address",

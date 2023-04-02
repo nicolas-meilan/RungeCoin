@@ -17,7 +17,7 @@ export type Option<DataType = undefined> = {
   leftComponent?: TextInputProps['leftComponent'];
 };
 
-type SelectProps = {
+export type SelectProps = {
   options: Option<any>[];
   optionComponent?: (option: Option<any>, selected: boolean) => React.ReactNode;
   selectedComponent?: (option: Option<any>) => React.ReactNode;

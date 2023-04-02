@@ -300,9 +300,10 @@ const Calculator = ({
             >
               {!!tokenBalances && (
                 <TokenText
-                  text={`${numberToFormattedString(tokenBalances[token.symbol], {
-                    decimals: token.decimals,
-                  })} ${token.symbol}`}
+                  text={`${numberToFormattedString(
+                    tokenBalances[token.symbol] || 0, {
+                      decimals: token.decimals,
+                    })} ${token.symbol}`}
                   noI18n
                 />
               )}

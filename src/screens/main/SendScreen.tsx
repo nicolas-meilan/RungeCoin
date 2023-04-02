@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BigNumber, ethers } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
+import BlockchainSelector from '@components/BlockchainSelector';
 import Button from '@components/Button';
 import Calculator from '@components/Calculator';
 import Card from '@components/Card';
@@ -31,6 +32,10 @@ import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
 
 const StyledButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing(10)};
+`;
+
+const StyledSelector = styled(Select)`
+  margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
 const AddressToSendInput = styled(TextInput)`
@@ -85,6 +90,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
   const { walletPublicValues } = useWalletPublicValues();
   const {
+    blockchain,
+    isBlockchainInitialLoading,
     tokens: tokensObj,
     blockchainBaseToken,
   } = useBlockchainData();
@@ -118,6 +125,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   ), [estimatedTxInfo, tokenBalances]);
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
+
+  useEffect(() => setTokenToSend(null), [blockchain]);
 
   useEffect(() => {
     if (allDataSetted) fetchestimateTxInfo(addressToSend, tokenToSend.address);
@@ -199,7 +208,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         title="main.send.title"
         goBack={goBack}
       >
-        <Select
+        <BlockchainSelector
+          label="main.send.inputs.blockchainSelectorLabel"
+          disabled={sendTokenLoading}
+        />
+        <StyledSelector
           selected={tokenToSend?.symbol}
           label="main.send.inputs.selectTokenLabel"
           placeholder="main.send.inputs.selectTokenPlaceholder"
@@ -286,7 +299,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         <StyledButton
           text="common.continue"
           disabled={!allDataSetted || hasNotBalanceForGas}
-          loading={estimatedTxInfoLoading || sendTokenLoading}
+          loading={estimatedTxInfoLoading || sendTokenLoading || isBlockchainInitialLoading}
           onPress={openCalculator}
         />
       </ScreenLayout>
