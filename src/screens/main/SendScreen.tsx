@@ -8,6 +8,7 @@ import BlockchainSelector from '@components/BlockchainSelector';
 import Button from '@components/Button';
 import Calculator from '@components/Calculator';
 import Card from '@components/Card';
+import HwConnectionSelector from '@components/HwConnectionSelector';
 import QrScanner from '@components/QrScanner';
 import ScreenLayout from '@components/ScreenLayout';
 import Select, { Option } from '@components/Select';
@@ -56,7 +57,7 @@ const GasTitle = styled(Text).attrs({
 `;
 
 const HwMessage = styled(Text)`
-  margin-top: ${({ theme }) => theme.spacing(6)};
+  margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(4)} 0;
 `;
 
 const TotalFeeText = styled(Text)<{ error: boolean }>`
@@ -88,7 +89,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     },
   });
 
-  const { walletPublicValues } = useWalletPublicValues();
+  const {
+    walletPublicValues,
+    walletPublicValuesLoading,
+  } = useWalletPublicValues();
+
   const {
     blockchain,
     isBlockchainInitialLoading,
@@ -295,11 +300,20 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
             </Card>
           </>
         )}
-        {!!walletPublicValues?.isHw && (<HwMessage text="common.hwGuide" />)}
+        {!!walletPublicValues?.isHw && (
+          <>
+            <HwMessage text="hw.guide" />
+            <HwConnectionSelector disabled={sendTokenLoading} />
+          </>
+        )}
         <StyledButton
           text="common.continue"
           disabled={!allDataSetted || hasNotBalanceForGas}
-          loading={estimatedTxInfoLoading || sendTokenLoading || isBlockchainInitialLoading}
+          loading={estimatedTxInfoLoading
+            || sendTokenLoading
+            || isBlockchainInitialLoading
+            || walletPublicValuesLoading
+          }
           onPress={openCalculator}
         />
       </ScreenLayout>

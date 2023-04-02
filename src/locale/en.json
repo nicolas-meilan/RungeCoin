@@ -6,7 +6,6 @@
     "next": "Next",
     "send": "Send",
     "receive": "Receive",
-    "hwGuide": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
     "inputs": {
       "password": "Enter a password",
       "passwordPH": "New password",
@@ -45,9 +44,8 @@
     },
     "connectHw": {
       "title": "Connect with Ledger",
-      "usbConnectionButton": "USB conection",
       "hwError": "Failed to connect to the ledger, please follow the steps and try again",
-      "bluetoothConectionButton": "Bluetooth conection"
+      "connectButton": "Connect"
     },
     "hwPassword": {
       "title": "Contraseña de acceso"
@@ -126,6 +124,11 @@
       "exceededBalance": "Exceeded balance",
       "gasFee": "Gas fee: ≈ {{fee}}"
     }
+  },
+  "hw": {
+    "guide": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
+    "USB": "Connect **Ledger** via **USB**",
+    "BLUETOOTH": "Connect **Ledger** via **Bluetooth**"
   },
   "blockchain": {
     "ETHEREUM": "Ethereum blockchain",

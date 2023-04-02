@@ -87,10 +87,7 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
       EncryptedStorage.setItem(StorageKeys.PASSWORD, await hashFrom(password)),
     ]);
 
-    setWalletPublicValues({
-      address: wallet.getAddressString(),
-      publicKey: wallet.getPublicKeyString(),
-    });
+    setWalletPublicValues(wallet.getAddressString());
   };
 
   useEffect(() => {

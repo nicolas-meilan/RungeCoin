@@ -35,7 +35,7 @@ const Navigator = () => {
     : ScreenName.validateAccess
   ), [comesFromStartFlow]);
 
-  const hasWallet = useMemo(() => !!walletPublicValues, [walletPublicValues]);
+  const hasWallet = useMemo(() => !!walletPublicValues?.address, [walletPublicValues]);
 
   useLockScreen(navigatorRef, hasWallet);
 

@@ -19,6 +19,7 @@ const BlockchainSelector = ({
   style,
 }: BlockchainSelectorProps) => {
   const { t } = useTranslation();
+
   const {
     blockchain,
     blockchainsBaseTokenSymbols,

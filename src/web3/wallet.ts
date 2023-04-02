@@ -70,11 +70,6 @@ export const getWalletBalance = async (blockchain: Blockchains, walletAddress: s
   return zipObject(Object.keys(tokens), balances.map((balance: BigNumber) => balance)) as TokensBalance;
 };
 
-export type WalletPublicValues = {
-  publicKey: string;
-  address: string;
-};
-
 export const NO_LEDGER_CONNECTED_ERROR = 'No ledger connected';
 
 const getBluetoothHw = async () => {
@@ -133,17 +128,14 @@ export const getHwWalletAddress = async ({
 } = {
   index: BASE_ADDRESS_INDEX,
   bluetoothConnection: false,
-}): Promise<WalletPublicValues> => {
+}): Promise<string> => {
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
   const derivationPath = `${ETH_DERIVATION_PATH}/${walletIndex}`;
   const transport = await connectHw(bluetoothConnection);
 
   const eth = new AppEth(transport);
-  const { address, publicKey } = await eth.getAddress(derivationPath, true);
+  const { address } = await eth.getAddress(derivationPath, true);
   transport.close();
 
-  return {
-    address,
-    publicKey,
-  };
+  return address;
 };

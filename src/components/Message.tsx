@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ImageProps } from 'react-native';
+import type { ImageProps, StyleProp, ViewStyle } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -13,17 +13,19 @@ type MessageProps = {
   svgColor?: SvgProps['color'];
   i18nArgs?: TextProps['i18nArgs'];
   image?: ImageProps['source'];
+  style?: StyleProp<ViewStyle>;
+  noFlex?: boolean;
 };
 
 const MessageWrapperScrollView = styled.ScrollView.attrs({
   showsVerticalScrollIndicator: false,
   nestedScrollEnabled: true,
-})`
-  flex: 1;
+})<{ noFlex?: boolean }>`
+  ${({ noFlex }) => (noFlex ? '' : 'flex: 1;')}
 `;
 
-const MessageWrapper = styled.View`
-  flex: 1;
+const MessageWrapper = styled.View<{ noFlex?: boolean }>`
+  ${({ noFlex }) => (noFlex ? '' : 'flex: 1;')}
 `;
 
 const MessageText = styled(Text)`
@@ -49,6 +51,8 @@ const Message = ({
   svg,
   svgColor,
   image,
+  style,
+  noFlex = false,
   scroll = false,
 }: MessageProps) => {
   const media = svg
@@ -64,14 +68,14 @@ const Message = ({
 
   if (scroll) {
     return (
-      <MessageWrapperScrollView>
+      <MessageWrapperScrollView noFlex={noFlex} style={style}>
         {content}
       </MessageWrapperScrollView>
     );
   }
 
   return (
-    <MessageWrapper>
+    <MessageWrapper noFlex={noFlex} style={style}>
       {content}
     </MessageWrapper>
   );

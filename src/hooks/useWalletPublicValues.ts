@@ -3,25 +3,24 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import StorageKeys from '@system/storageKeys';
 import { ReactQueryKeys } from '@utils/constants';
-import {
-  WalletPublicValues,
-  getHwWalletAddress,
-} from '@web3/wallet';
+import { getHwWalletAddress } from '@web3/wallet';
 
 type UseWalletPublicValuesProps = {
   refetchOnMount?: boolean;
   onSetWalletPublicValuesHwError?: () => void;
 };
 
-export type StoredWallet = WalletPublicValues & {
+export type StoredWallet = {
+  address: string;
   isHw: boolean;
   hwConnectedByBluetooth: boolean;
 };
 
 type UseWalletPublicValuesReturn = {
   walletPublicValues?: StoredWallet | null;
-  setWalletPublicValues: (wallet: WalletPublicValues) => void;
+  setWalletPublicValues: (address: string) => void;
   setWalletPublicValuesHw: (bluetoothConnection?: boolean) => void;
+  setHwConnection: (hwConnectedByBluetooth: boolean) => void;
   removeWalletPublicValues: () => void;
   walletPublicValuesLoading: boolean;
 };
@@ -44,7 +43,8 @@ const useWalletPublicValues = ({
 
   const {
     data: walletPublicValues,
-    isLoading: walletPublicValuesLoading,
+    isLoading,
+    isRefetching,
   } = useQuery({
     queryKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     queryFn: getWalletFromStorage,
@@ -66,8 +66,8 @@ const useWalletPublicValues = ({
     mutationFn: setWallet,
   });
 
-  const setWalletPublicValues = (newWalletPublicValues: WalletPublicValues) => mutateSetWallet({
-    ...newWalletPublicValues,
+  const setWalletPublicValues = (address: string) => mutateSetWallet({
+    address,
     isHw: false,
     hwConnectedByBluetooth: false,
   }, {
@@ -76,9 +76,9 @@ const useWalletPublicValues = ({
 
   const setWalletPublicValuesHw = async (bluetoothConnection: boolean = false) => {
     try {
-      const newWalletPublicValues = await getHwWalletAddress({ bluetoothConnection });
+      const address = await getHwWalletAddress({ bluetoothConnection });
       const walletToStore: StoredWallet = {
-        ...newWalletPublicValues,
+        address,
         isHw: true,
         hwConnectedByBluetooth: bluetoothConnection,
       };
@@ -89,6 +89,23 @@ const useWalletPublicValues = ({
     } catch (error) {
       onSetWalletPublicValuesHwError?.();
     }
+  };
+
+  const setHwConnection = async (hwConnectedByBluetooth: boolean) => {
+    const voidWalletPublicValuesHw: StoredWallet = {
+      address: '',
+      isHw: true,
+      hwConnectedByBluetooth,
+    };
+
+    const walletToStore: StoredWallet = {
+      ...(walletPublicValues || voidWalletPublicValuesHw),
+      hwConnectedByBluetooth,
+    };
+
+    return mutateSetWallet(walletToStore, {
+      onSuccess: (savedWallet) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWallet),
+    });
   };
 
   const { mutate: mutateRemoveWallet } = useMutation({
@@ -102,10 +119,11 @@ const useWalletPublicValues = ({
 
   return {
     walletPublicValues,
-    walletPublicValuesLoading,
+    walletPublicValuesLoading: isLoading || isRefetching,
     setWalletPublicValues,
     removeWalletPublicValues,
     setWalletPublicValuesHw,
+    setHwConnection,
   };
 };
 
