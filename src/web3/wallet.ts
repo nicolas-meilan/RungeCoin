@@ -11,9 +11,13 @@ import Wallet, { hdkey } from 'ethereumjs-wallet';
 import { BigNumber, Contract } from 'ethers';
 import { zipObject } from 'lodash';
 
-import { ethereumProvider } from './providers';
-import { BALANCE_CHECKER } from './smartContracts';
-import { TokensBalance, TOKENS_ETH } from './tokens';
+import { Blockchains } from './constants';
+import getProvider from './providers';
+import {
+  BALANCE_CHECKER_ADDRESS,
+  BALANCE_CHECKER_ABI,
+} from './smartContracts';
+import getTokens, { TokensBalance } from './tokens';
 import { requestBluetoothScanPermission } from '@system/bluetooth';
 
 export const WALLET_ADRESS_LENGTH = 42;
@@ -53,14 +57,17 @@ export const createWalletFromKey = (key: string, isPrivate: boolean = true) => {
   return wallet;
 };
 
-export const getBalanceFromWallet = async (walletAddress: string): Promise<TokensBalance> => {
-  const tokenAddresses = Object.values(TOKENS_ETH).map(({ address }) => address);
+export const getWalletBalance = async (blockchain: Blockchains, walletAddress: string): Promise<TokensBalance> => {
+  const tokens = getTokens(blockchain);
+  const provider = getProvider(blockchain);
 
-  const balanceChecker = new Contract(BALANCE_CHECKER.ethereum.address, BALANCE_CHECKER.ethereum.abi, ethereumProvider);
+  const tokenAddresses = Object.values(tokens).map(({ address }) => address);
+
+  const balanceChecker = new Contract(BALANCE_CHECKER_ADDRESS[blockchain], BALANCE_CHECKER_ABI, provider);
 
   const balances: BigNumber[] = await balanceChecker.balances([walletAddress], tokenAddresses);
 
-  return zipObject(Object.keys(TOKENS_ETH), balances.map((balance: BigNumber) => balance)) as TokensBalance;
+  return zipObject(Object.keys(tokens), balances.map((balance: BigNumber) => balance)) as TokensBalance;
 };
 
 export type WalletPublicValues = {

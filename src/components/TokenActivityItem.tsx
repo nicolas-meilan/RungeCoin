@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -8,6 +8,7 @@ import styled, { useTheme } from 'styled-components/native';
 import Icon from './Icon';
 import Skeleton from './Skeleton';
 import Text from './Text';
+import useBlockchainData from '@hooks/useBlockchainData';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import type { WalletTx } from '@http/tx';
@@ -17,9 +18,6 @@ import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/tx';
-import { TOKENS_ETH } from '@web3/tokens';
-
-const TOKENS = Object.values(TOKENS_ETH);
 
 type TokenActivityItemProps = {
   activityItem: WalletTx;
@@ -81,8 +79,13 @@ const TokenActivityItem = ({
   firstItem,
 }: TokenActivityItemProps) => {
   const theme = useTheme();
-  const { walletPublicValues } = useWalletPublicValues();
   const navigation = useNavigation<NavigationProp<MainNavigatorType>>();
+
+  const {
+    tokens: tokensObj,
+    blockchainBaseToken,
+  } = useBlockchainData();
+  const { walletPublicValues } = useWalletPublicValues();
 
   const {
     convert,
@@ -93,11 +96,13 @@ const TokenActivityItem = ({
     refetchOnWindowFocus: false,
   });
 
+  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
+
   const token = activityItem.contractAddress
-    ? TOKENS.find((item) => (
+    ? Object.values(tokens).find((item) => (
       item.address.toUpperCase() === activityItem.contractAddress.toUpperCase()
     ))
-    : TOKENS_ETH.ETH;
+    : blockchainBaseToken;
 
   const balance = BigNumber.from(activityItem.value);
   const isSending = isSendTx(activityItem, walletPublicValues?.address);

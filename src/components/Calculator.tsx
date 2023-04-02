@@ -12,8 +12,9 @@ import Text from '@components/Text';
 import TokenIcon from '@components/TokenIcon';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
+import useBlockchainData from '@hooks/useBlockchainData';
 import { INPUT_NUMBER, localizeNumber, numberToFormattedString } from '@utils/formatter';
-import { BASE_TOKEN_ADDRESS, TokenSymbol, TOKENS_ETH } from '@web3/tokens';
+import type { TokenSymbol } from '@web3/tokens';
 
 type CalculatorProps = {
   onEnd: (amount: string) => void;
@@ -133,8 +134,6 @@ const GasFee = styled(Text)`
   vertical-align: middle;
 `;
 
-const TOKENS = TOKENS_ETH;
-
 const Calculator = ({
   onEnd,
   onClose,
@@ -145,6 +144,11 @@ const Calculator = ({
   transactionFee = BigNumber.from(0),
 }: CalculatorProps) => {
   const { t } = useTranslation();
+
+  const {
+    tokens,
+    blockchainBaseToken,
+  } = useBlockchainData();
   const {
     tokenBalances,
     refetchBalances,
@@ -154,16 +158,17 @@ const Calculator = ({
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   });
+
   const intervalRef = useRef<NodeJS.Timer | null>(null);
   const [amount, setAmount] = useState('0');
   const [balanceExceeded, setBalanceExceeded] = useState(false);
 
-  const token = useMemo(() => (tokenSymbol ? TOKENS[tokenSymbol] : null), [tokenSymbol]);
+  const token = useMemo(() => (tokenSymbol ? tokens[tokenSymbol] : null), [tokenSymbol]);
 
   const maxAmount = useMemo(() => {
     const balance = token ? tokenBalances?.[token.symbol] : null;
 
-    if (token?.address !== BASE_TOKEN_ADDRESS) return balance || BigNumber.from(0);
+    if (token?.symbol !== blockchainBaseToken.symbol) return balance || BigNumber.from(0);
 
     const max = balance?.sub(transactionFee) || BigNumber.from(0);
 
@@ -316,7 +321,9 @@ const Calculator = ({
         <GasFee
           text="main.calculator.gasFee"
           i18nArgs={{
-            fee: `${numberToFormattedString(transactionFee, { decimals: TOKENS_ETH.ETH?.decimals })} ${TOKENS_ETH.ETH?.symbol}`,
+            fee: `${numberToFormattedString(transactionFee, {
+              decimals: blockchainBaseToken.decimals,
+            })} ${blockchainBaseToken.symbol}`,
           }}
         />
       )}

@@ -126,6 +126,11 @@
       "gasFee": "Gas fee: ≈ {{fee}}"
     }
   },
+  "blockchain": {
+    "ETHEREUM": "Ethereum blockchain",
+    "POLYGON": "Polygon blockchain",
+    "BSC": "BSC blockchain"
+  },
   "dateformat": {
     "date": "yyyy-MM-dd",
     "datetime": "yyyy-MM-dd hh:mm aaa"

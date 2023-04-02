@@ -33,9 +33,8 @@ type ScreenLayoutProps = {
   hasFooterBanner?: boolean;
   keyboardAvoidingView?: boolean;
   waitUntilNavigationFinish?: boolean;
-  rightIcon?: string;
-  rightIconOnBigTitle?: boolean;
-  onPressRightIcon?: () => void;
+  headerRightComponent?: React.ReactNode;
+  headerRightComponentOnBigTitle?: boolean;
   goBack?: () => void;
   refreshControl?: ScrollViewProps['refreshControl'];
   footer?: React.ReactNode;
@@ -100,14 +99,10 @@ const LoadingWrapper = styled.View`
   justify-content: center;
 `;
 
-const HeaderRightIconWrapper = styled.View`
+const HeaderRightComponentWrapper = styled.View`
   flex: 1;
   align-items: flex-end;
   justify-content: center;
-`;
-
-const HeaderRightIcon = styled(Icon)`
-  color: ${({ theme }) => theme.colors.info};
 `;
 
 const BigTitleWrapper = styled.View`
@@ -118,8 +113,7 @@ const ScreenLayout = ({
   children,
   title,
   goBack,
-  onPressRightIcon,
-  rightIcon,
+  headerRightComponent,
   refreshControl,
   footer,
   footerHeight,
@@ -131,7 +125,7 @@ const ScreenLayout = ({
   bigTitle = false,
   keyboardAvoidingView = false,
   waitUntilNavigationFinish = false,
-  rightIconOnBigTitle = false,
+  headerRightComponentOnBigTitle = false,
 }: ScreenLayoutProps) => {
   const theme = useTheme();
   const navigation = useNavigation<NavigationProp<MainNavigatorType | StartNavigatorType>>();
@@ -174,7 +168,7 @@ const ScreenLayout = ({
 
   const hasHeaderTitle = !bigTitle && !!title;
   const hasBigTitle = bigTitle && !!title;
-  const hasHeader = hasHeaderTitle || hasBack || (!rightIconOnBigTitle && rightIcon);
+  const hasHeader = hasHeaderTitle || hasBack || (!headerRightComponentOnBigTitle && headerRightComponent);
 
   const contentScrollCondition = scroll
     ? (
@@ -211,19 +205,19 @@ const ScreenLayout = ({
             <Header>
               {hasBack && <Icon onPress={backAction} name="chevron-left" />}
               {hasHeaderTitle && <HeaderTitle text={title} />}
-              {rightIcon && !rightIconOnBigTitle && (
-                <HeaderRightIconWrapper>
-                  <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
-                </HeaderRightIconWrapper>)}
+              {headerRightComponent && !headerRightComponentOnBigTitle && (
+                <HeaderRightComponentWrapper>
+                  {headerRightComponent}
+                </HeaderRightComponentWrapper>)}
             </Header>
           )}
           {hasBigTitle && (
             <BigTitleWrapper>
               <Title title={title} />
-              {rightIcon && rightIconOnBigTitle && (
-                <HeaderRightIconWrapper>
-                  <HeaderRightIcon onPress={onPressRightIcon} name={rightIcon} />
-                </HeaderRightIconWrapper>)}
+              {headerRightComponent && headerRightComponentOnBigTitle && (
+                <HeaderRightComponentWrapper>
+                  {headerRightComponent}
+                </HeaderRightComponentWrapper>)}
             </BigTitleWrapper>
           )}
           {canRender ? content : loadingScreen}

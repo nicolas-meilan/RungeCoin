@@ -4,11 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { WebView } from 'react-native-webview';
 import styled, { useTheme } from 'styled-components/native';
 
+import useBlockchainData from '@hooks/useBlockchainData';
 import { FiatCurrencies } from '@utils/constants';
-import { TOKENS_ETH } from '@web3/tokens';
-
-
-const TOKENS = Object.values(TOKENS_ETH);
 
 const THEME = '{{THEME}}';
 const LOCALE = '{{LOCALE}}';
@@ -49,10 +46,14 @@ const TokenPrices = () => {
   const theme = useTheme();
   const { i18n } = useTranslation();
 
-  const tokensWidget = useMemo(() => TOKENS.map((token) => `{
+  const { tokens: tokensObj } = useBlockchainData();
+
+  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
+
+  const tokensWidget = useMemo(() => tokens.map((token) => `{
     "proName": "${token.symbol}${FiatCurrencies.USD}",
     "title": "${token.name}"
-  }`).join(','), [TOKENS, FiatCurrencies]);
+  }`).join(','), [tokens, FiatCurrencies]);
 
   const html = HTML
     .replace(TOKENS_WIDGET, tokensWidget)

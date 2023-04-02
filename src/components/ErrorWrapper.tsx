@@ -51,10 +51,9 @@ const ErrorWrapper = ({
   message = '',
   isLoading = false,
 }: ErrorWrapperProps) => {
-  const hasErrorRequiredValues = useMemo(
-    () => requiredValuesToRender.some((x) => x === null || x === undefined),
-    [requiredValuesToRender],
-  );
+  const hasErrorRequiredValues = useMemo(() => (
+    requiredValuesToRender.some((item) => item === null || item === undefined)
+  ), [requiredValuesToRender]);
 
   const renderMessage = !!retryCallback || !!message;
 

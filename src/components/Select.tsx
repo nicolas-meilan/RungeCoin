@@ -3,18 +3,19 @@ import React, { useMemo, useState } from 'react';
 import styled, { useTheme } from 'styled-components/native';
 
 import Card from './Card';
+import Svg from './Svg';
 import Text from './Text';
 import TextInput, { TextInputProps } from './TextInput';
 import BottomSheet from '@containers/Bottomsheet';
 
-export interface Option<DataType = undefined> {
+export type Option<DataType = undefined> = {
   data: DataType;
   value: string;
   label?: string;
   disabled?: boolean;
   svg?: TextInputProps['leftSvg'];
   leftComponent?: TextInputProps['leftComponent'];
-}
+};
 
 type SelectProps = {
   options: Option<any>[];
@@ -25,6 +26,7 @@ type SelectProps = {
   onOpen?: () => void;
   onClose?: () => void;
   selected?: Option['value'];
+  style?: TextInputProps['style'];
   placeholder?: string;
   label?: string;
   fixScreenPadding?: boolean;
@@ -32,12 +34,14 @@ type SelectProps = {
 };
 
 const OptionCard = styled(Card) <{ selected: boolean }>`
+  flex-direction: row;
   ${({ selected, theme }) => (selected ? `
-    border-color; ${theme.colors.success};
-  ` : '')}
+    border: ${theme.colors.success};
+  ` : 'border: 0px')}
 `;
 
 const OptionText = styled(Text)`
+  margin-left: ${({ theme }) => theme.spacing(2)};
   font-size: ${({ theme }) => theme.fonts.size[16]};
 `;
 
@@ -53,6 +57,7 @@ const Select = ({
   onChange,
   onOpen,
   onClose,
+  style,
   options = [],
   disabled = false,
   selected: selectedValue = '',
@@ -64,10 +69,16 @@ const Select = ({
   const [showOptions, setShowOptions] = useState(false);
 
   const selected = useMemo(() => (
-    options.find(({ value }) => value === selectedValue)
-  ), [selectedValue]);
+    options.length === 1
+      ? options[0]
+      : options.find(({ value }) => value === selectedValue)
+  ), [selectedValue, options]);
+
+  const selectWithoutOptions = options.length <= 1;
 
   const onPressField = () => {
+    if (selectWithoutOptions) return;
+
     onOpen?.();
     setShowOptions(true);
   };
@@ -84,10 +95,13 @@ const Select = ({
   const optionComponent = optionComponentProp || (
     (currentOption: typeof options[0], currentSelected: boolean): React.ReactNode => (
       <OptionCard selected={currentSelected}>
+        {currentOption.leftComponent}
+        {!currentOption.leftComponent && <Svg svg={currentOption.svg} size={24} />}
         <OptionText text={currentOption.label || currentOption.value} />
       </OptionCard>
     ));
 
+  const inputIcon = showOptions ? 'chevron-up' : 'chevron-down';
   return (
     <>
       <TextInput
@@ -95,12 +109,13 @@ const Select = ({
         editable={false}
         value={selected?.label || ''}
         borderColor={showOptions ? theme.colors.primary : ''}
-        icon={showOptions ? 'chevron-up' : 'chevron-down'}
+        icon={selectWithoutOptions ? '' : inputIcon}
         placeholder={placeholder}
         leftSvg={selected?.svg}
         leftComponent={selected?.leftComponent}
         label={label}
-        pressDisabled={disabled}
+        pressDisabled={disabled || selectWithoutOptions}
+        style={style}
       />
       <BottomSheet
         visible={showOptions}

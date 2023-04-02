@@ -8,6 +8,7 @@ export enum ReactQueryKeys {
   TOKEN_CONVERSIONS = 'tokenConversions',
   NOTIFICATIONS = 'notifications',
   TOKEN_ACTIVITY = 'tokenActivity',
+  BLOCKCHAIN = 'blockchain',
 }
 
 export enum FiatCurrencies {

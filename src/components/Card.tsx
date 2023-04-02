@@ -7,10 +7,8 @@ import {
 
 import styled from 'styled-components/native';
 
-type Children = false | JSX.Element;
-
 export type CardProps = {
-  children: Children | Children[];
+  children: React.ReactNode;
   withSeparator?: boolean;
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -74,7 +72,7 @@ const Card = ({
   const content = withoutSeparations
     ? children : (
       <>
-        {children.map((item: Children, index: number) => (
+        {children.map((item: React.ReactNode, index: number) => (
           <Item
             key={`CARD_${item
               ? `CARD_ITEM_${index}`

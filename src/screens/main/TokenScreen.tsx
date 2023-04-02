@@ -17,6 +17,7 @@ import TokenIcon from '@components/TokenIcon';
 import TradingViewChart from '@components/TradingViewChart';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
+import useBlockchainData from '@hooks/useBlockchainData';
 import useNotifications from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
@@ -26,9 +27,6 @@ import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
-import { TOKENS_ETH } from '@web3/tokens';
-
-const TOKENS = TOKENS_ETH;
 
 const TokenInfo = styled.View`
   flex-direction: row;
@@ -82,6 +80,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   const { dispatchNotification } = useNotifications();
 
   const { walletPublicValues } = useWalletPublicValues();
+  const { tokens } = useBlockchainData();
 
   const {
     tokenBalances,
@@ -98,7 +97,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   } = useTokenConversions();
 
   const token = useMemo(() => (
-    tokenSymbol ? TOKENS[tokenSymbol] : null
+    tokenSymbol ? tokens[tokenSymbol] : null
   ), [tokenSymbol]);
 
   const {

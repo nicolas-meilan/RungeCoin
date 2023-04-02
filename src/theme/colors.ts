@@ -20,6 +20,7 @@ export type Colors = {
   transparent: string;
   statics: {
     white: string;
+    black: string;
   };
 };
 
@@ -45,6 +46,7 @@ export const light: Colors = {
   transparent: 'transparent',
   statics: {
     white: '#FFFFFF',
+    black: '#000000',
   },
 };
 
@@ -70,5 +72,6 @@ export const dark: Colors = {
   transparent: 'transparent',
   statics: {
     white: '#FFFFFF',
+    black: '#000000',
   },
 };

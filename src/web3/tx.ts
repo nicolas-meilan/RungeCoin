@@ -9,8 +9,9 @@ import {
   providers,
 } from 'ethers';
 
-import { ethereumProvider } from './providers';
-import { baseTokenTransferAbi } from './smartContracts';
+import { Blockchains } from './constants';
+import getProvider from './providers';
+import { BASE_TOKENS_TRANSFER_ABI } from './smartContracts';
 import { BASE_TOKEN_ADDRESS, TokenType } from './tokens';
 import {
   connectHw,
@@ -29,21 +30,24 @@ export type TxInfo = {
 };
 
 export const estimateTxInfo = async (
+  blockchain: Blockchains,
   fromAddress: string,
   toAddress: string,
   tokenAddress: string,
 ): Promise<TxInfo> => {
+  const provider = getProvider(blockchain);
+
   const [
     feeData,
     nonce,
     { chainId },
   ] = await Promise.all([
-    ethereumProvider.getFeeData(),
-    ethereumProvider.getTransactionCount(fromAddress, 'latest'),
-    ethereumProvider.getNetwork(),
+    provider.getFeeData(),
+    provider.getTransactionCount(fromAddress, 'latest'),
+    provider.getNetwork(),
   ]);
 
-  const voidSigner = new VoidSigner(fromAddress, ethereumProvider);
+  const voidSigner = new VoidSigner(fromAddress, provider);
 
   const tx: utils.Deferrable<providers.TransactionRequest> = {
     from: fromAddress,
@@ -58,7 +62,7 @@ export const estimateTxInfo = async (
 
   let gasLimitTolerance = 1;
   if (tokenAddress !== BASE_TOKEN_ADDRESS) { // is not ETH
-    const txContract = new Contract(tokenAddress, baseTokenTransferAbi, voidSigner);
+    const txContract = new Contract(tokenAddress, BASE_TOKENS_TRANSFER_ABI, voidSigner);
     tx.data = txContract.interface.encodeFunctionData('transferFrom', [fromAddress, toAddress, 0]);
     tx.to = tokenAddress;
     gasLimitTolerance = 2; // the gas limit estimated for a smart contract can be unexacted.
@@ -125,6 +129,7 @@ type SignOptions = {
 };
 
 export const send = async (
+  blockchain: Blockchains,
   fromAddress: string,
   toAddress: string,
   token: TokenType,
@@ -139,9 +144,11 @@ export const send = async (
     privateKey: '',
   },
 ): Promise<void> => {
+  const provider = getProvider(blockchain);
+
   if (!privateKey && !isHw) throw new Error(INVALID_SIGN_INFORMATION);
 
-  const txEstimations = await estimateTxInfo(fromAddress, toAddress, token.address);
+  const txEstimations = await estimateTxInfo(blockchain, fromAddress, toAddress, token.address);
 
   const gasLimit = txEstimations.gasUnits.toNumber();
   const amount = BigNumber.isBigNumber(quantity)
@@ -163,7 +170,7 @@ export const send = async (
   };
 
   if (token.address !== BASE_TOKEN_ADDRESS) { // is not ETH
-    const txContract = new Contract(token.address, baseTokenTransferAbi);
+    const txContract = new Contract(token.address, BASE_TOKENS_TRANSFER_ABI);
     tx.to = token.address;
     tx.value = 0;
     tx.data = txContract.interface.encodeFunctionData('transferFrom', [fromAddress, toAddress, amount]);
@@ -178,9 +185,9 @@ export const send = async (
       tx: unsignedTx,
     });
 
-    await ethereumProvider.sendTransaction(utils.serializeTransaction(txToSerialize, signedTx));
+    await provider.sendTransaction(utils.serializeTransaction(txToSerialize, signedTx));
     return;
   }
-  const wallet = new Wallet(privateKey!, ethereumProvider);
+  const wallet = new Wallet(privateKey!, provider);
   wallet.sendTransaction(tx);
 };

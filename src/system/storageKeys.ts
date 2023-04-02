@@ -6,6 +6,7 @@ enum StorageKeys {
   PASSWORD = 'password',
   BIOMETRICS = 'biometrics',
   PASSWORD_ATTEMPS = 'passwordAttemps',
+  BLOCKCHAIN = 'blockchain',
 }
 
 export default StorageKeys;

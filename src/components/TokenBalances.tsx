@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView } from 'react-native';
 
 import styled from 'styled-components/native';
@@ -7,12 +7,8 @@ import ErrorWrapper from './ErrorWrapper';
 import Skeleton from './Skeleton';
 import TokenItem from './TokenItem';
 import useBalances from '@hooks/useBalances';
-import {
-  TOKENS_ETH,
-  TokenType,
-} from '@web3/tokens';
-
-const TOKENS = Object.values(TOKENS_ETH);
+import useBlockchainData from '@hooks/useBlockchainData';
+import type { TokenType } from '@web3/tokens';
 
 type TokenBalancesProps = {
   onPressToken: (token: TokenType) => void;
@@ -28,6 +24,8 @@ const TokenBalances = ({
   onPressToken,
   retryError,
 }: TokenBalancesProps) => {
+  const { tokens: tokensObj } = useBlockchainData();
+
   const {
     tokenBalances,
     tokenBalancesLoading,
@@ -37,16 +35,18 @@ const TokenBalances = ({
     refetchOnWindowFocus: false,
   });
 
+  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
+
   return (
     <ErrorWrapper
-      requiredValuesToRender={[!tokenBalances]}
+      requiredValuesToRender={[tokenBalances]}
       isLoading={tokenBalancesLoading}
       height={350}
       retryCallback={retryError}
     >
       <StyledSkeleton
         isLoading={!tokenBalances}
-        quantity={TOKENS.length}
+        quantity={tokens.length}
         height={35}
         withScroll
       >
@@ -54,7 +54,7 @@ const TokenBalances = ({
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
         >
-          {tokenBalances && TOKENS.map((token: TokenType, index: number) => (
+          {tokenBalances && tokens.map((token: TokenType, index: number) => (
             <TokenItem
               key={`BALANCE_${token.name}`}
               withoutMargin={!index}

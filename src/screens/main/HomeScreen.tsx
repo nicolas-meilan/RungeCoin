@@ -6,6 +6,7 @@ import styled from 'styled-components/native';
 
 import Button from '@components/Button';
 import ErrorWrapper from '@components/ErrorWrapper';
+import HomeHeader from '@components/HomeHeader';
 import Pill from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
@@ -16,19 +17,16 @@ import TokenBalances from '@components/TokenBalances';
 import TokenPrices from '@components/TokenPrices';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
+import useBlockchainData from '@hooks/useBlockchainData';
 import useNotifications from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
+import { FiatCurrencies } from '@utils/constants';
 import { formatAddress, numberToFiatBalance } from '@utils/formatter';
-import {
-  TOKENS_ETH,
-  TokenType,
-} from '@web3/tokens';
-
-const TOKENS = Object.values(TOKENS_ETH);
+import type { TokenType } from '@web3/tokens';
 
 const Balance = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[28]};
@@ -42,7 +40,6 @@ const CenterWrapper = styled.View`
 
 const ButtonsWrapper = styled.View`
   flex-direction: row;
-  margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
 const BalanceSkeleton = styled(Skeleton)`
@@ -60,7 +57,12 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
 
   const { dispatchNotification } = useNotifications();
+
+
   const { walletPublicValues } = useWalletPublicValues();
+  const {
+    tokens: tokensObj,
+  } = useBlockchainData();
 
   const {
     convert,
@@ -85,10 +87,12 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     fetch: refetch,
   });
 
-  const totalConvertedBalance = useMemo(() => {
-    if (!tokenBalances) return '0 USD'; // TODO
+  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
 
-    const total = TOKENS.reduce((
+  const totalConvertedBalance = useMemo(() => {
+    if (!tokenBalances) return `0 ${FiatCurrencies.USD}`;
+
+    const total = tokens.reduce((
       acc: number,
       { symbol, decimals }: TokenType,
     ) => {
@@ -96,7 +100,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       return acc + currentBalance;
     }, 0);
 
-    return numberToFiatBalance(total, 'USD'); // TODO
+    return numberToFiatBalance(total, FiatCurrencies.USD);
   }, [tokenBalances, tokenConversions]);
 
   const onPressAdress = () => {
@@ -114,8 +118,6 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   return (
     <>
       <ScreenLayout
-        title="main.home.title"
-        bigTitle
         hasBack={false}
         keyboardAvoidingView
         scroll
@@ -123,6 +125,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         footerHeight={70}
         footer={<TokenPrices />}
       >
+        <HomeHeader />
         <ButtonsWrapper>
           <ActionButton
             margin

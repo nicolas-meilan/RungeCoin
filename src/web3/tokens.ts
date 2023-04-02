@@ -1,5 +1,6 @@
 import type { BigNumber } from 'ethers';
 
+import { Blockchains, DEFAULT_BLOCKCHAIN } from './constants';
 import { isDev } from '@utils/config';
 
 export const BASE_TOKEN_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -101,8 +102,59 @@ const TOKENS_ETH_GOERLI: TokensStruct = {
   },
 };
 
-const TOKENS_ETH = isDev() ? TOKENS_ETH_GOERLI : TOKENS_ETH_MAINNET;
+export const TOKENS_ETH = isDev() ? TOKENS_ETH_GOERLI : TOKENS_ETH_MAINNET;
 
-export {
-  TOKENS_ETH,
+export const TOKENS_POLYGON: TokensStruct = {
+  [TokenSymbol.MATIC]: {
+    name: 'Matic',
+    symbol: TokenSymbol.MATIC,
+    address: BASE_TOKEN_ADDRESS,
+    decimals: 18,
+  },
+  [TokenSymbol.ETH]: {
+    name: 'Ether',
+    symbol: TokenSymbol.ETH,
+    address: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+    decimals: 18,
+  },
+  [TokenSymbol.BNB]: {
+    name: 'Token BNB',
+    symbol: TokenSymbol.BNB,
+    address: '0x3BA4c387f786bFEE076A58914F5Bd38d668B42c3',
+    decimals: 18,
+  },
+  [TokenSymbol.USDT]: {
+    name: 'Tether USD',
+    symbol: TokenSymbol.USDT,
+    address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+    decimals: 6,
+  },
+  [TokenSymbol.DAI]: {
+    name: 'Dai Stablecoin',
+    symbol: TokenSymbol.DAI,
+    address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+    decimals: 18,
+  },
 };
+
+export const TOKENS_BSC: TokensStruct = {
+  [TokenSymbol.BNB]: {
+    name: 'Token BNB',
+    symbol: TokenSymbol.BNB,
+    address: BASE_TOKEN_ADDRESS,
+    decimals: 18,
+  },
+};
+
+const TOKENS_BY_BLOCKCHAIN = {
+  [Blockchains.ETHEREUM]: TOKENS_ETH,
+  [Blockchains.POLYGON]: TOKENS_POLYGON,
+  [Blockchains.BSC]: TOKENS_BSC,
+};
+
+const getTokens = (blockchain?: Blockchains) => (blockchain
+  ? TOKENS_BY_BLOCKCHAIN[blockchain]
+  : TOKENS_BY_BLOCKCHAIN[DEFAULT_BLOCKCHAIN]
+);
+
+export default getTokens;

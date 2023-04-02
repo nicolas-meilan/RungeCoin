@@ -13,6 +13,7 @@ import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import TokenIcon from '@components/TokenIcon';
+import useBlockchainData from '@hooks/useBlockchainData';
 import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
@@ -23,7 +24,7 @@ import { FiatCurrencies } from '@utils/constants';
 import { formatAddress, numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/tx';
-import { GWEI, TOKENS_ETH } from '@web3/tokens';
+import { GWEI } from '@web3/tokens';
 
 type TxScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.tx>;
 
@@ -91,7 +92,12 @@ const Footer = styled.View`
 const TxScreen = ({ route }: TxScreenProps) => {
   const theme = useTheme();
   const { dispatchNotification } = useNotifications();
+
   const { walletPublicValues } = useWalletPublicValues();
+  const {
+    blockchain,
+    blockchainBaseToken,
+  } = useBlockchainData();
 
   const {
     convert,
@@ -123,7 +129,7 @@ const TxScreen = ({ route }: TxScreenProps) => {
     dispatchNotification('notifications.addressCopied');
   };
 
-  const onPressHash = () => Linking.openURL(`${TX_URL}${tx.hash}`);
+  const onPressHash = () => Linking.openURL(`${TX_URL[blockchain]}${tx.hash}`);
 
   return (
     <ScreenLayout
@@ -173,8 +179,8 @@ const TxScreen = ({ route }: TxScreenProps) => {
           }} />
           <RowData text="main.token.activity.tx.rows.gasTotal" i18nArgs={{
             gasTotal: `${numberToFormattedString(txGasTotal, {
-              decimals: TOKENS_ETH.ETH?.decimals,
-            })} ${TOKENS_ETH.ETH?.symbol}`,
+              decimals: blockchainBaseToken.decimals,
+            })} ${blockchainBaseToken.symbol}`,
           }} />
         </Gas>
         <Subtitle text="main.token.activity.tx.rows.hash" />

@@ -2,9 +2,11 @@ import { useMemo } from 'react';
 
 import { useInfiniteQuery, UseInfiniteQueryOptions, useQueryClient } from '@tanstack/react-query';
 
+import useBlockchainData from './useBlockchainData';
 import useWalletPublicValues from './useWalletPublicValues';
 import { WalletTx, getWalletTxs } from '@http/tx';
 import { ReactQueryKeys } from '@utils/constants';
+import { Blockchains } from '@web3/constants';
 
 
 type UseWalletActivityReturn = {
@@ -14,7 +16,8 @@ type UseWalletActivityReturn = {
   next: () => Promise<void>;
 };
 
-type QueryOptions = UseInfiniteQueryOptions<WalletTx[], unknown, WalletTx[], WalletTx[], [ReactQueryKeys, string]>;
+type QueryKey = [ReactQueryKeys, string, Blockchains];
+type QueryOptions = UseInfiniteQueryOptions<WalletTx[], unknown, WalletTx[], WalletTx[], QueryKey>;
 
 type UseWalletActivityProps = {
   tokenAddress: string;
@@ -28,15 +31,23 @@ const useWalletActivity = ({
 }: UseWalletActivityProps): UseWalletActivityReturn => {
   const queryClient = useQueryClient();
 
+  const { blockchain } = useBlockchainData();
   const { walletPublicValues } = useWalletPublicValues();
 
   const fetchTokenActivity = async (page: number) => {
     if (!walletPublicValues || !tokenAddress) return [];
 
-    return getWalletTxs(walletPublicValues.address, tokenAddress, { page, offset: PAGE_OFFSET });
+    return getWalletTxs(walletPublicValues.address, tokenAddress, blockchain, {
+      page,
+      offset: PAGE_OFFSET,
+    });
   };
 
-  const queryKey: [ReactQueryKeys, string] = [ReactQueryKeys.TOKEN_ACTIVITY, tokenAddress];
+  const queryKey: QueryKey = [
+    ReactQueryKeys.TOKEN_ACTIVITY,
+    tokenAddress,
+    blockchain,
+  ];
 
   const {
     data,
@@ -45,7 +56,7 @@ const useWalletActivity = ({
     isRefetching,
     fetchNextPage,
     refetch,
-  } = useInfiniteQuery<WalletTx[], unknown, WalletTx[], [ReactQueryKeys, string]>({
+  } = useInfiniteQuery<WalletTx[], unknown, WalletTx[], QueryKey>({
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

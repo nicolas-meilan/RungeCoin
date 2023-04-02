@@ -1,16 +1,37 @@
-import { HTTP_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY } from '@env';
+import {
+  HTTP_ETH_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY,
+  HTTP_POLYGON_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY,
+  HTTP_BSC_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY,
+} from '@env';
 import axios from 'axios';
 
 import { isDev } from '@utils/config';
+import { Blockchains } from '@web3/constants';
 import { BASE_TOKEN_ADDRESS } from '@web3/tokens';
 
-const ETH_URL = isDev()
-  ? 'https://api-goerli.etherscan.io/api'
-  : 'https://api.etherscan.io/api';
 
-export const TX_URL = isDev()
-  ? 'https://goerli.etherscan.io/tx/'
-  : 'https://etherscan.io/tx/';
+const API_CONFIG = {
+  [Blockchains.ETHEREUM]: {
+    url: isDev()
+      ? 'https://api-goerli.etherscan.io/api'
+      : 'https://api.etherscan.io/api',
+    apiKey: HTTP_ETH_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY,
+  }, [Blockchains.POLYGON]: {
+    url: 'https://api.polygonscan.com/api',
+    apiKey: HTTP_POLYGON_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY,
+  }, [Blockchains.BSC]: {
+    url: 'https://api.bscscan.com/api',
+    apiKey: HTTP_BSC_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY,
+  },
+};
+
+export const TX_URL = {
+  [Blockchains.ETHEREUM]: isDev()
+    ? 'https://api-goerli.etherscan.io/api'
+    : 'https://api.etherscan.io/api',
+  [Blockchains.POLYGON]: 'https://api.polygonscan.com/api',
+  [Blockchains.BSC]: 'https://api.bscscan.com/api',
+};
 
 export type WalletTx = {
   confirmations: number;
@@ -34,6 +55,7 @@ export type WalletTxResponse = Omit<WalletTx, 'isError' | 'confirmations' | 'gas
 export const getWalletTxs = async (
   address: string,
   tokenAddress: string,
+  blockchain: Blockchains,
   {
     page,
     offset,
@@ -48,14 +70,16 @@ export const getWalletTxs = async (
   const isBaseToken = tokenAddress === BASE_TOKEN_ADDRESS;
   const action = isBaseToken ? 'txlist' : 'tokentx';
   const contractAddress = isBaseToken ? '' : `&contractAddress=${tokenAddress}`;
-  const url = `${ETH_URL}\
+  const apiConfig = API_CONFIG[blockchain];
+
+  const url = `${apiConfig.url}\
 ?module=account\
 &action=${action}\
 ${contractAddress}\
 &sort=desc&address=${address}\
 &page=${page}\
 &offset=${offset}\
-&apikey=${HTTP_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY}`;
+&apikey=${apiConfig.apiKey}`;
 
   const response = await axios.get<{ result: WalletTxResponse[] }>(url);
 

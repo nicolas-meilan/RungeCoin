@@ -1,9 +1,11 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 
+import useBlockchainData from './useBlockchainData';
 import useWalletPublicValues from './useWalletPublicValues';
 import { ReactQueryKeys } from '@utils/constants';
+import { Blockchains } from '@web3/constants';
 import { TokensBalance } from '@web3/tokens';
-import { getBalanceFromWallet } from '@web3/wallet';
+import { getWalletBalance } from '@web3/wallet';
 
 type UseBalancesReturn = {
   tokenBalances?: TokensBalance | null;
@@ -11,19 +13,23 @@ type UseBalancesReturn = {
   refetchBalances: () => Promise<void>;
 };
 
-type QueryOptions = UseQueryOptions<TokensBalance | null, unknown, TokensBalance | null, ReactQueryKeys[]>;
+type QueryClient = [ReactQueryKeys, Blockchains];
+type QueryOptions = UseQueryOptions<TokensBalance | null, unknown, TokensBalance | null, QueryClient>;
 type UseBalancesProps = Omit<QueryOptions, 'queryKey' | 'queryFn' | 'initialData'>;
 
 const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
   const queryClient = useQueryClient();
 
   const { walletPublicValues } = useWalletPublicValues();
+  const { blockchain } = useBlockchainData();
 
   const fetchBalances = async () => {
     if (!walletPublicValues) return null;
 
-    return getBalanceFromWallet(walletPublicValues.address);
+    return getWalletBalance(blockchain, walletPublicValues.address);
   };
+
+  const queryKey: QueryClient = [ReactQueryKeys.BALANCES, blockchain];
 
   const {
     data: tokenBalances,
@@ -31,14 +37,14 @@ const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
     isRefetching,
     refetch,
   } = useQuery({
-    queryKey: [ReactQueryKeys.BALANCES],
+    queryKey,
     queryFn: fetchBalances,
     initialData: null,
     ...(options || {}),
   });
 
   const refetchBalances = async () => {
-    await refetch().then(({ data }) => queryClient.setQueryData([ReactQueryKeys.BALANCES], data));
+    await refetch().then(({ data }) => queryClient.setQueryData(queryKey, data));
   };
 
   return {

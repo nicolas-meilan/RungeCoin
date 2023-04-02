@@ -17,6 +17,7 @@ import TokenIcon from '@components/TokenIcon';
 import TokenItem from '@components/TokenItem';
 import useBalances from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
+import useBlockchainData from '@hooks/useBlockchainData';
 import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
@@ -25,7 +26,7 @@ import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
-import { GWEI, TOKENS_ETH, TokenType } from '@web3/tokens';
+import { GWEI, TokenType } from '@web3/tokens';
 import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
 
 const StyledButton = styled(Button)`
@@ -61,8 +62,6 @@ const TotalFeeText = styled(Text)<{ error: boolean }>`
 
 type SendScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.send>;
 
-const TOKENS = Object.values(TOKENS_ETH);
-
 const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const theme = useTheme();
   const { dispatchNotification } = useNotifications();
@@ -85,6 +84,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   });
 
   const { walletPublicValues } = useWalletPublicValues();
+  const {
+    tokens: tokensObj,
+    blockchainBaseToken,
+  } = useBlockchainData();
+
+  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
 
   const { convert } = useTokenConversions({
     refetchOnMount: false,
@@ -99,7 +104,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   });
 
   const [tokenToSend, setTokenToSend] = useState<TokenType | null>(
-    TOKENS.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
+    tokens.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
   );
 
   const [showCalculator, setShowCalculator] = useState(false);
@@ -109,7 +114,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const [addressToSendError, setAddressToSendError] = useState(false);
 
   const hasNotBalanceForGas = useMemo(() => (
-    estimatedTxInfo?.totalFee.gt(tokenBalances?.ETH || 0) || false
+    estimatedTxInfo?.totalFee.gt(tokenBalances?.[blockchainBaseToken.symbol] || 0) || false
   ), [estimatedTxInfo, tokenBalances]);
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
@@ -172,7 +177,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     closeQrScanner();
   };
 
-  const tokensList = useMemo(() => TOKENS.map((token: TokenType) => ({
+  const tokensList = useMemo(() => tokens.map((token: TokenType) => ({
     value: token.symbol as string,
     data: token,
     label: token.name,
@@ -264,11 +269,14 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
                 <TotalFeeText
                   error={hasNotBalanceForGas}
                   text={`≈ ${numberToFormattedString(estimatedTxInfo?.totalFee || 0, {
-                    decimals: TOKENS_ETH.ETH?.decimals,
-                  })} ${TOKENS_ETH.ETH?.symbol}`}
+                    decimals: blockchainBaseToken.decimals,
+                  })} ${blockchainBaseToken.symbol}`}
                 />
                 <Text
-                  text={numberToFiatBalance(convert(estimatedTxInfo?.totalFee || 0, TOKENS_ETH.ETH!), FiatCurrencies.USD)}
+                  text={numberToFiatBalance(
+                    convert(estimatedTxInfo?.totalFee || 0, blockchainBaseToken),
+                    FiatCurrencies.USD,
+                  )}
                 />
               </Skeleton>
             </Card>

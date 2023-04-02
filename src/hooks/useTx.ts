@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { BigNumber } from 'ethers';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
+import useBlockchainData from './useBlockchainData';
 import useWalletPublicValues from './useWalletPublicValues';
 import StorageKeys from '@system/storageKeys';
 import type { TokenType } from '@web3/tokens';
@@ -30,6 +31,7 @@ type UseTxProps = {
 
 const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
   const { walletPublicValues } = useWalletPublicValues();
+  const { blockchain } = useBlockchainData();
 
   const [estimatedTxInfo, setEstimatedTxInfo] = useState<TxInfo | null>(null);
   const [estimatedTxInfoLoading, setEstimatedTxInfoLoading] = useState(false);
@@ -43,7 +45,7 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
     setEstimatedTxInfoLoading(true);
     setEstimatedTxInfoError(false);
     try {
-      const newTxinfo = await web3EstimateTxInfo(walletPublicValues.address, toAddress, tokenAddress);
+      const newTxinfo = await web3EstimateTxInfo(blockchain, walletPublicValues.address, toAddress, tokenAddress);
       setEstimatedTxInfo(newTxinfo);
     } catch (error) {
       setEstimatedTxInfoError(true);
@@ -63,7 +65,7 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
         return;
       }
 
-      await send(walletPublicValues.address, toAddress, token, amount, {
+      await send(blockchain, walletPublicValues.address, toAddress, token, amount, {
         privateKey,
         isHw: walletPublicValues.isHw,
         hwBluetooth: walletPublicValues.hwConnectedByBluetooth,
