@@ -40,8 +40,10 @@ const OptionCard = styled(Card) <{ selected: boolean }>`
   ` : 'border: 0px')}
 `;
 
-const OptionText = styled(Text)`
-  margin-left: ${({ theme }) => theme.spacing(2)};
+const OptionText = styled(Text)<{ hasLeftComponent: boolean }>`
+  margin-left: ${({ hasLeftComponent, theme }) => (hasLeftComponent
+    ? theme.spacing(2)
+    : '0px')};
   font-size: ${({ theme }) => theme.fonts.size[16]};
 `;
 
@@ -96,8 +98,13 @@ const Select = ({
     (currentOption: typeof options[0], currentSelected: boolean): React.ReactNode => (
       <OptionCard selected={currentSelected}>
         {currentOption.leftComponent}
-        {!currentOption.leftComponent && <Svg svg={currentOption.svg} size={24} />}
-        <OptionText text={currentOption.label || currentOption.value} />
+        {!currentOption.leftComponent
+          && currentOption.svg
+          && <Svg svg={currentOption.svg} size={24} />}
+        <OptionText
+          hasLeftComponent={!!(currentOption.leftComponent || currentOption.svg)}
+          text={currentOption.label || currentOption.value}
+        />
       </OptionCard>
     ));
 

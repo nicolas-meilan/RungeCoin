@@ -6,7 +6,7 @@ import styled, { useTheme } from 'styled-components/native';
 import Icon from './Icon';
 import Text, { TextProps } from './Text';
 
-type ButtonType = 'primary' | 'secondary' | 'tertiary';
+type ButtonType = 'primary' | 'secondary' | 'tertiary' | 'error';
 
 type ButtonProps = {
   text: string;
@@ -86,6 +86,16 @@ const Button = ({
       },
       text: {
         color: theme.colors.info,
+      },
+    },
+    error: {
+      button: {
+        borderColor: theme.colors.error,
+        borderStyle: 'solid',
+        borderWidth: 1,
+      },
+      text: {
+        color: theme.colors.error,
       },
     },
   };

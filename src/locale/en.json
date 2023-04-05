@@ -56,6 +56,23 @@
     }
   },
   "main": {
+    "configuration": {
+      "title": "Configuration",
+      "WalletSectionTitle": "Wallet",
+      "appSectionTitle": "Application settings",
+      "appVersion": "App version: **{{version}}**",
+      "derivationPath": "Wallet derivation path: **{{- derivationPath}}**",
+      "closeWallet": {
+        "title": "Close wallet",
+        "message": "To reopen the wallet you will have to enter the **secret words**, if you do not remember them, **you will lose access**"
+      },
+      "labels": {
+        "blockchainSelector": "Change Blockchain",
+        "hwConnectionSelector": "Change **Ledger** connection method",
+        "themeSwitcher": "Dark mode",
+        "languageSelector": "Change language"
+      }
+    },
     "validateAccess": {
       "title": "Enter your password to access the wallet",
       "inputs": {
@@ -127,8 +144,10 @@
   },
   "hw": {
     "guide": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
+    "connectionOptions": {
     "USB": "Connect **Ledger** via **USB**",
     "BLUETOOTH": "Connect **Ledger** via **Bluetooth**"
+    }
   },
   "blockchain": {
     "ETHEREUM": "Ethereum blockchain",
@@ -142,6 +161,10 @@
   "number": {
     "thousandSeparator": ",",
     "decimalSeparator": "."
+  },
+  "languages": {
+    "en": "English",
+    "es": "Spanish"
   },
   "error": {
     "title": "Failed to load",

@@ -9,22 +9,26 @@ import es from './es.json';
 import { getDeviceLocale } from '@system/deviceInfo';
 import StorageKeys from '@system/storageKeys';
 
-export enum LanguageLocale {
+export enum Languages {
   ES = 'es',
   EN = 'en',
-  FROM_DEVICE = 'fromDevice',
 }
+
+const LanguageLocale = {
+  ...Languages,
+  FROM_DEVICE: 'fromDevice',
+};
 
 export const defaultLocale = LanguageLocale.EN;
 
-export type LanguageLocaleType = Exclude<LanguageLocale, LanguageLocale.FROM_DEVICE>;
+export type LanguageLocaleType = Exclude<typeof LanguageLocale, 'fromDevice'>;
 
 
 const initializeI18nConfig = async () => {
   const storedLng = await AsyncStorage.getItem(StorageKeys.LANGUAGE);
   
   const deviceLocale = getDeviceLocale().split('_')[0];
-  const baseLng = Object.values(LanguageLocale).includes(deviceLocale as LanguageLocale)
+  const baseLng = Object.values(LanguageLocale).includes(deviceLocale)
     ? deviceLocale : defaultLocale;
 
   const lng = storedLng ? storedLng : baseLng;

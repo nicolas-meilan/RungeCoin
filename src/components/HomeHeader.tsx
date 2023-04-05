@@ -1,11 +1,14 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import styled from 'styled-components/native';
 
 import BlockchainSelector from './BlockchainSelector';
 import Svg from './Svg';
 import defaultTokenIcon from '@assets/defaultTokenIcon.svg';
+import { ScreenName } from '@navigation/constants';
+import { MainNavigatorType } from '@navigation/MainNavigator';
 
 const Header = styled.View`
   flex-direction: row;
@@ -27,15 +30,21 @@ const ConfigurationSvg = styled(Svg)`
   background-color: ${({ theme }) => theme.colors.statics.black};
 `;
 
-const HomeHeader = () => (
-  <Header>
-    <SelectWrapper>
-      <BlockchainSelector />
-    </SelectWrapper>
-    <TouchableOpacity onPress={() => { }}>
-      <ConfigurationSvg svg={defaultTokenIcon} size={40} />
-    </TouchableOpacity>
-  </Header>
-);
+const HomeHeader = () => {
+  const navigation = useNavigation<NavigationProp<MainNavigatorType>>();
+
+  const onPressConfiguration = () => navigation.navigate(ScreenName.configuration);
+
+  return (
+    <Header>
+      <SelectWrapper>
+        <BlockchainSelector />
+      </SelectWrapper>
+      <TouchableOpacity onPress={onPressConfiguration}>
+        <ConfigurationSvg svg={defaultTokenIcon} size={40} />
+      </TouchableOpacity>
+    </Header>
+  );
+};
 
 export default HomeHeader;

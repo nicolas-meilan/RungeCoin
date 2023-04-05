@@ -5,6 +5,8 @@ import useWalletPublicValues from '@hooks/useWalletPublicValues';
 
 export type HwConnectionSelectorProps = {
   initialized?: boolean;
+  label?: RadioButtonProps['label'];
+  labelI18nArgs?: RadioButtonProps['labelI18nArgs'];
   style?: RadioButtonProps['style'];
   disabled?: RadioButtonProps['disabled'];
 };
@@ -24,6 +26,8 @@ const HW_CONNECTION_OPTIONS = [{
 
 const HwConnectionSelector = ({
   style,
+  label,
+  labelI18nArgs,
   disabled = false,
   initialized = false,
 }: HwConnectionSelectorProps) => {
@@ -44,6 +48,8 @@ const HwConnectionSelector = ({
 
   return (
     <RadioButton
+      label={label}
+      labelI18nArgs={labelI18nArgs}
       options={HW_CONNECTION_OPTIONS}
       selected={selected}
       onChange={onChange}

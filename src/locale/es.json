@@ -56,6 +56,23 @@
     }
   },
   "main": {
+    "configuration": {
+      "title": "Configuración",
+      "WalletSectionTitle": "Billetera",
+      "appSectionTitle": "Configuracion de aplicación",
+      "appVersion": "Versión de la aplicación: **{{version}}**",
+      "derivationPath": "Ruta de derivación de la billetera: **{{- derivationPath}}**",
+      "closeWallet": {
+        "title": "Cerrar billetera",
+        "message": "Para volver a abrir la billetera necesitará ingresar las **palabras secretas**, si no las recuerda, **perderá el acceso**"
+      },
+      "labels": {
+        "blockchainSelector": "Cambiar Blockchain",
+        "hwConnectionSelector": "Cambiar método de conexión de **Ledger**",
+        "themeSwitcher": "Modo oscuro",
+        "languageSelector": "Cambiar idioma"
+      }
+    },
     "validateAccess": {
       "title": "Ingresa tu contraseña para acceder a la billetera",
       "inputs": {
@@ -144,6 +161,10 @@
   "number": {
     "thousandSeparator": ".",
     "decimalSeparator": ","
+  },
+  "languages": {
+    "en": "Ingles",
+    "es": "Español"
   },
   "error": {
     "title": "Error al cargar",

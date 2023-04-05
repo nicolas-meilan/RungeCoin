@@ -7,6 +7,7 @@ import {
   screenOptions,
 } from './constants';
 import type { WalletTx } from '@http/tx';
+import ConfigurationScreen from '@screens/main/ConfigurationScreen';
 import HomeScreen from '@screens/main/HomeScreen';
 import SendScreen from '@screens/main/SendScreen';
 import TokenScreen from '@screens/main/TokenScreen';
@@ -20,6 +21,7 @@ export type MainNavigatorType = {
   [ScreenName.send]: { tokenToSendSymbol?: TokenSymbol } | undefined;
   [ScreenName.token]: { tokenSymbol: TokenSymbol };
   [ScreenName.tx]: { token: TokenType; tx: WalletTx };
+  [ScreenName.configuration]: undefined;
 };
 
 type ScreenProps = {
@@ -44,6 +46,9 @@ const screens: ScreenProps[] = [{
 }, {
   name: ScreenName.tx,
   component: TxScreen,
+}, {
+  name: ScreenName.configuration,
+  component: ConfigurationScreen,
 }];
 
 const StackNavigator = createNativeStackNavigator<MainNavigatorType>();

@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Keyboard,
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native';
 
-import { useFocusEffect } from '@react-navigation/native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -26,7 +25,7 @@ const SWIPE_TO_CLOSE = 0.30;
 type BottomSheetProps = {
   visible?: boolean;
   onOpen?: () => void;
-  onClose?: () => void;
+  onClose: () => void;
   children?: React.ReactNode;
   topMargin?: number;
   animationDuration?: number;
@@ -107,7 +106,7 @@ const BottomSheetContent = ({
 
   const toggleVisibility = (newVisibility: boolean, executeOnClose?: boolean) => {
     if (newVisibility) Keyboard.dismiss();
-    if (!newVisibility && executeOnClose) onClose?.();
+    if (!newVisibility && executeOnClose) onClose();
   };
 
   const toggleBottomSheet = (show: boolean, executeOnClose?: boolean) => {
@@ -152,10 +151,6 @@ const BottomSheetContent = ({
 
     if (!neverWasVisible) toggleBottomSheet(false, true);
   }, [visible]);
-
-  useFocusEffect(useCallback(() => () => {
-    toggleBottomSheet(false, true); // Execute on blur
-  }, []));
 
   const gesture = Gesture.Pan()
     .onBegin((event) => {
@@ -227,7 +222,7 @@ const BottomSheet = ({
 
   const handleClose = () => {
     setCanShow(false);
-    onClose?.();
+    onClose();
   };
 
   return (
@@ -236,6 +231,7 @@ const BottomSheet = ({
       animationType="none"
       transparent
       hardwareAccelerated
+      onClose={handleClose}
     >
       <BottomSheetContent
         onOpen={handleOpen}

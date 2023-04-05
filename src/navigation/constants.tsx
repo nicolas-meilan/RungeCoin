@@ -17,4 +17,5 @@ export enum ScreenName {
   send = 'send',
   token = 'token',
   tx = 'tx',
+  configuration = 'configuration',
 }
