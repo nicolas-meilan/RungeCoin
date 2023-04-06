@@ -36,7 +36,7 @@ const ErrorTitle = styled(Text)`
 
 const ErrorMessage = styled(Text)`
     font-size: ${({ theme }) => theme.fonts.size[14]};
-    color: ${({ theme }) => theme.colors.text.tertiary};
+    color: ${({ theme }) => theme.colors.text.secondary};
     margin-bottom: ${({ theme }) => theme.spacing(6)};
 `;
 

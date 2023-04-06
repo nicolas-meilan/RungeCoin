@@ -56,7 +56,7 @@ const Switch = ({
 
   const trackColor = trackColorProp || {
     false: theme.colors.disabled,
-    true: disabled ? theme.colors.disabled : theme.colors.text.tertiary,
+    true: disabled ? theme.colors.disabled : theme.colors.text.secondary,
   };
   const thumbColor = disabled ? theme.colors.disabled : (thumbColorProp || theme.colors.info);
   const borderColor = disabled ? theme.colors.disabled : (borderColorProp || theme.colors.info);

@@ -55,7 +55,7 @@ const BalanceData = styled.View`
 
 const Description = styled(Text) <{ alignRight?: boolean }>`
   font-size: ${({ theme }) => theme.fonts.size[12]};
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  color: ${({ theme }) => theme.colors.text.secondary};
   text-align: ${({ alignRight }) => (alignRight ? 'right' : 'left')};
 `;
 

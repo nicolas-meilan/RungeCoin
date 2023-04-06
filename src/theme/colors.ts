@@ -14,7 +14,6 @@ export type Colors = {
   text: {
     primary: string;
     secondary: string;
-    tertiary: string;
     inverted: string;
   };
   transparent: string;
@@ -25,22 +24,21 @@ export type Colors = {
 };
 
 export const light: Colors = {
-  primary: '#00317A',
-  secondary: '#05A7FF',
-  success: '#51C11D',
-  warning: '#FF8307',
-  error: '#FF0004',
-  info: '#05A7FF',
+  primary: '#00CC66',
+  secondary: '#D600FF',
+  success: '#00CC00',
+  warning: '#FFB84D',
+  error: '#FF4D4D',
+  info: '#4DA6FF',
   disabled: '#8a8a8a',
   border: '#C5CAE0',
   background: {
     primary: '#FFFFFF',
-    secondary: '#F7F8FC',
+    secondary: '#F2F2F2',
   },
   text: {
-    primary: '#101426',
-    secondary: '#646D84',
-    tertiary: '#C5CAE0',
+    primary: '#000000',
+    secondary: '#A6A6A6',
     inverted: '#FFFFFF',
   },
   transparent: 'transparent',
@@ -51,23 +49,22 @@ export const light: Colors = {
 };
 
 export const dark: Colors = {
-  primary: '#39FF14',
-  secondary: '#9D00FF',
-  success:'#51C11D',
-  warning: '#FF8307',
-  error: '#FF0004',
-  info: '#05A7FF',
+  primary: '#00FF7F',
+  secondary: '#FF00FF',
+  success:'#00CC00',
+  warning: '#FFB84D',
+  error: '#FF4D4D',
+  info: '#4DA6FF',
   disabled: '#8a8a8a',
-  border: '#C5CAE0',
+  border: '#A6A6A6',
   background: {
     primary: '#000000',
     secondary: '#1e1e1e',
   },
   text: {
     primary: '#FFFFFF',
-    secondary: '#E4E7F2',
-    tertiary: '#C5CAE0',
-    inverted: '#101426',
+    secondary: '#A6A6A6',
+    inverted: '#2F2F2F',
   },
   transparent: 'transparent',
   statics: {

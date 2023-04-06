@@ -145,7 +145,7 @@ const TextInput = ({
         <StyledTextInput
           hasSvg={!!leftSvg}
           cursorColor={theme.colors.primary}
-          placeholderTextColor={theme.colors.text.tertiary}
+          placeholderTextColor={theme.colors.text.secondary}
           {...props}
           placeholder={inputPH}
           onFocus={handleOnFocus}

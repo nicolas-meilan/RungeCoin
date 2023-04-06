@@ -60,7 +60,7 @@ const Title = styled(Text)`
 
 const Description = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[12]};
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const StyledTokenIcon = styled(TokenIcon)`

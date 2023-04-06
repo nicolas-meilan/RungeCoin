@@ -36,7 +36,7 @@ const ConfigurationItem = styled.View`
 `;
 
 const Info = styled(Text) <{ withMargin?: boolean }>`
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const CloseWallet = styled(Pill)`

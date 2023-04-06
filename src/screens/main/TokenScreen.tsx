@@ -53,7 +53,7 @@ const FiatBalanceSkeleton = styled(Skeleton)`
 
 const FiatBalance = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const ButtonsWrapper = styled.View`
@@ -160,14 +160,12 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
             <ActionButton
               margin
               icon="arrow-top-right"
-              type="secondary"
               text="common.send"
               onPress={onPressSend}
             />
           )}
           <ActionButton
             icon="arrow-bottom-left"
-            type="secondary"
             text="common.receive"
             onPress={() => toggleReceiveBottomSheet(true)}
           />

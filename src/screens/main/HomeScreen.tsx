@@ -130,13 +130,11 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
           <ActionButton
             margin
             icon="arrow-top-right"
-            type="secondary"
             text="common.send"
             onPress={onPressSend}
           />
           <ActionButton
             icon="arrow-bottom-left"
-            type="secondary"
             text="common.receive"
             onPress={() => toggleReceiveBottomSheet(true)}
           />

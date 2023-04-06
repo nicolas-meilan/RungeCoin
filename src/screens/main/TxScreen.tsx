@@ -52,7 +52,7 @@ const FromToIcon = styled(Icon) <{ color: string }>`
 `;
 
 const RowData = styled(Text) <{ color?: string }>`
-  color: ${({ color, theme }) => color || theme.colors.text.tertiary};
+  color: ${({ color, theme }) => color || theme.colors.text.secondary};
 `;
 
 const Hash = styled(Text)`
