@@ -8,6 +8,7 @@ import {
 import styled, { useTheme } from 'styled-components/native';
 
 import Skeleton from './Skeleton';
+import FullViewLayout from './Skeleton/FullViewLayout';
 
 type BaseSvg = React.FC<RnSvgProps>;
 
@@ -89,7 +90,7 @@ const Svg = ({
     >
       <StyledSkeleton
         isLoading={loading}
-        speed={0.5}
+        Layout={FullViewLayout}
       />
       <SvgComponent
         style={[svgBaseStyle, svgStyle]}
