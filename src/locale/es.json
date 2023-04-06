@@ -167,7 +167,10 @@
     "es": "Español"
   },
   "error": {
-    "title": "Error al cargar",
-    "message": "Inténtalo de nuevo"
+    "loadError": "Error al cargar",
+    "tryAgain": "Inténtalo de nuevo",
+    "balances": "Error al cargar los balances",
+    "tokenConversions": "Error al cargar los datos de conversiónes",
+    "walletActivity": "Error al cargar la actividad del token"
   }
 }

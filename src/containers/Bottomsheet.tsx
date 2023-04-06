@@ -231,7 +231,7 @@ const BottomSheet = ({
       animationType="none"
       transparent
       hardwareAccelerated
-      onClose={handleClose}
+      onClose={onClose}
     >
       <BottomSheetContent
         onOpen={handleOpen}

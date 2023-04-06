@@ -64,8 +64,8 @@ const ErrorWrapper = ({
           <>
             {errorComponent || (
               <ErrorCard height={height} style={style}>
-                <ErrorTitle text={title || 'error.title'} />
-                {renderMessage && <ErrorMessage text={message || 'error.message'} />}
+                <ErrorTitle text={title || 'error.loadError'} />
+                {renderMessage && <ErrorMessage text={message || 'error.tryAgain'} />}
                 {!!retryCallback && <Icon name="reload" onPress={retryCallback} />}
               </ErrorCard>
             )}

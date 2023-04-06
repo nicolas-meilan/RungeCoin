@@ -167,7 +167,10 @@
     "es": "Spanish"
   },
   "error": {
-    "title": "Failed to load",
-    "message": "Try again"
+    "loadError": "Failed to load",
+    "tryAgain": "Try again",
+    "balances": "Error loading balances",
+    "tokenConversions": "Error loading conversion data",
+    "walletActivity": "Error al cargar la actividad del token"
   }
 }

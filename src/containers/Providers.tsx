@@ -26,9 +26,9 @@ const Providers = ({ children }: ProvidersProps) => (
       <SafeAreaProvider>
         <StyledGestureHandlerRootView>
           {children}
+          {notificationContainerInstance}
         </StyledGestureHandlerRootView>
       </SafeAreaProvider>
-      {notificationContainerInstance}
     </ThemeProvider>
   </QueryClientProvider>
 );

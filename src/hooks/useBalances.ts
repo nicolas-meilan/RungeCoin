@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 
 import useBlockchainData from './useBlockchainData';
+import useNotifications from './useNotifications';
 import useWalletPublicValues from './useWalletPublicValues';
 import { ReactQueryKeys } from '@utils/constants';
 import { Blockchains } from '@web3/constants';
@@ -20,6 +21,8 @@ type UseBalancesProps = Omit<QueryOptions, 'queryKey' | 'queryFn' | 'initialData
 const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
   const queryClient = useQueryClient();
 
+  const { dispatchNotification } = useNotifications();
+
   const { walletPublicValues } = useWalletPublicValues();
   const { blockchain } = useBlockchainData();
 
@@ -31,6 +34,8 @@ const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
 
   const queryKey: QueryClient = [ReactQueryKeys.BALANCES, blockchain];
 
+  const onError = () => dispatchNotification('error.balances', 'error');
+
   const {
     data: tokenBalances,
     isLoading,
@@ -40,6 +45,7 @@ const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
     queryKey,
     queryFn: fetchBalances,
     initialData: null,
+    onError,
     ...(options || {}),
   });
 

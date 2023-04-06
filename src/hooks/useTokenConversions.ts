@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { BigNumber, utils } from 'ethers';
 
+import useNotifications from './useNotifications';
 import { getTokenConversions, TokenConversionsEndpointResponse } from '@http/tokens';
 import { ReactQueryKeys } from '@utils/constants';
 import { numberToFormattedString } from '@utils/formatter';
@@ -21,6 +22,10 @@ type UseTokenConversionsProps = Omit<QueryOptions, 'queryKey' | 'queryFn' | 'ini
 const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenConversionssReturn => {
   const queryClient = useQueryClient();
 
+  const { dispatchNotification } = useNotifications();
+
+  const onError = () => dispatchNotification('error.tokenConversions', 'error');
+
   const {
     data: tokenConversions,
     isLoading,
@@ -30,6 +35,7 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
     queryKey: [ReactQueryKeys.TOKEN_CONVERSIONS],
     queryFn: getTokenConversions,
     initialData: null,
+    onError,
     ...options,
   });
 

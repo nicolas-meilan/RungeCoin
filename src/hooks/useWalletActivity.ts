@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useInfiniteQuery, UseInfiniteQueryOptions, useQueryClient } from '@tanstack/react-query';
 
 import useBlockchainData from './useBlockchainData';
+import useNotifications from './useNotifications';
 import useWalletPublicValues from './useWalletPublicValues';
 import { WalletTx, getWalletTxs } from '@http/tx';
 import { ReactQueryKeys } from '@utils/constants';
@@ -31,6 +32,8 @@ const useWalletActivity = ({
 }: UseWalletActivityProps): UseWalletActivityReturn => {
   const queryClient = useQueryClient();
 
+  const { dispatchNotification } = useNotifications();
+
   const { blockchain } = useBlockchainData();
   const { walletPublicValues } = useWalletPublicValues();
 
@@ -49,6 +52,8 @@ const useWalletActivity = ({
     blockchain,
   ];
 
+  const onError = () => dispatchNotification('error.walletActivity', 'error');
+
   const {
     data,
     isLoading,
@@ -61,6 +66,7 @@ const useWalletActivity = ({
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     queryKey,
+    onError,
     queryFn: ({ pageParam = 1 }) => fetchTokenActivity(pageParam),
     getNextPageParam: (lastPage, allPages) => {
       if ((lastPage?.length || 0) < PAGE_OFFSET) return undefined;
