@@ -12,12 +12,11 @@ import type {
   Notification as TypeNotification,
 } from '@hooks/useNotifications';
 
-const NotificationWrapper = styled(Animated.View) <{
+const StyledNotificationWrapper = styled.TouchableOpacity <{
   color: string;
   width: number;
 }>`
   width: ${({ width }) => width}px;
-  height: ${({ theme }) => theme.inputsHeight.small};
   background-color: ${({ color }) => color};
   border-radius: ${({ theme }) => theme.borderRadius};
   align-self: center;
@@ -25,12 +24,18 @@ const NotificationWrapper = styled(Animated.View) <{
   justify-content: center;
   position: absolute;
   margin-bottom: ${({ theme }) => theme.spacing(6)};
+  padding: ${({ theme }) => theme.spacing(2)};
   bottom: 0;
 `;
 
-const NotificationText = styled(Text)`
+const NotificationWrapper = Animated.createAnimatedComponent(StyledNotificationWrapper);
+
+const NotificationText = styled(Text).attrs({
+  weight: 'bold',
+})`
   font-size: ${({ theme }) => theme.fonts.size[16]};
   color: ${({ theme }) => theme.colors.text.inverted};
+  text-align: center;
 `;
 
 const ANIMATION_TIME = 500;
@@ -50,6 +55,8 @@ const Notification = ({
       color={theme.colors[notification.type]}
       entering={SlideInDown.duration(ANIMATION_TIME)}
       exiting={SlideOutDown.duration(ANIMATION_TIME)}
+      onPress={notification.onPress}
+      disabled={!notification.onPress}
     >
       <NotificationText text={notification.message} />
     </NotificationWrapper>

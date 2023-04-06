@@ -11,12 +11,17 @@ type NotificationTypes = 'error' | 'success' | 'info' | 'warning';
 export type Notification = {
   message: string;
   type: NotificationTypes;
+  onPress?: () => void;
 };
 
 type UseNotificationsReturn = {
   notification?: Notification | null;
   notificationLoading: boolean;
-  dispatchNotification: (message: Notification['message'], type?: Notification['type']) => void;
+  dispatchNotification: (
+    message: Notification['message'],
+    type?: Notification['type'],
+    onPress?: Notification['onPress'],
+  ) => void;
   resetNotification: () => void;
 };
 
@@ -43,7 +48,8 @@ const useNotifications = (options: UseNotificationsProps = {}): UseNotifications
   const dispatchNotification: UseNotificationsReturn['dispatchNotification'] = (
     message,
     type = 'success',
-  ) => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], { message, type });
+    onPress = undefined,
+  ) => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], { message, type, onPress });
 
   const resetNotification = () => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], null);
 

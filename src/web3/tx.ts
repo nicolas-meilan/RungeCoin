@@ -143,7 +143,7 @@ export const send = async (
     hwBluetooth: false,
     privateKey: '',
   },
-): Promise<void> => {
+): Promise<string> => {
   const provider = getProvider(blockchain);
 
   if (!privateKey && !isHw) throw new Error(INVALID_SIGN_INFORMATION);
@@ -185,9 +185,12 @@ export const send = async (
       tx: unsignedTx,
     });
 
-    await provider.sendTransaction(utils.serializeTransaction(txToSerialize, signedTx));
-    return;
+    const { hash } = await provider.sendTransaction(utils.serializeTransaction(txToSerialize, signedTx));
+
+    return hash;
   }
   const wallet = new Wallet(privateKey!, provider);
-  wallet.sendTransaction(tx);
+  const { hash } = await wallet.sendTransaction(tx);
+
+  return hash;
 };

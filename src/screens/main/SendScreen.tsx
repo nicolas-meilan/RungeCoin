@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Linking } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BigNumber, ethers } from 'ethers';
+import { useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components/native';
 
 import BlockchainSelector from '@components/BlockchainSelector';
@@ -24,6 +26,7 @@ import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import { TX_URL } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
@@ -69,12 +72,22 @@ const TotalFeeText = styled(Text)<{ error: boolean }>`
 type SendScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.send>;
 
 const SendScreen = ({ navigation, route }: SendScreenProps) => {
+  const { t } = useTranslation();
   const theme = useTheme();
+
   const { dispatchNotification } = useNotifications();
   const {
     biometricsEnabled,
     dispatchBiometrics,
   } = useBiometrics();
+
+  const {
+    blockchain,
+    isBlockchainInitialLoading,
+    tokens: tokensObj,
+    blockchainBaseToken,
+  } = useBlockchainData();
+
   const {
     estimatedTxInfo,
     estimatedTxInfoLoading,
@@ -83,8 +96,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     sendToken,
     sendTokenError,
   } = useTx({
-    onSendFinish: () => {
-      dispatchNotification('main.send.successNotification');
+    onSendFinish: (txHash: string) => {
+      dispatchNotification(
+        t('main.send.successNotification', { txHash }),
+        'success',
+        () => Linking.openURL(`${TX_URL[blockchain]}${txHash}`),
+      );
       navigation.navigate(ScreenName.home);
     },
   });
@@ -93,13 +110,6 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     walletPublicValues,
     walletPublicValuesLoading,
   } = useWalletPublicValues();
-
-  const {
-    blockchain,
-    isBlockchainInitialLoading,
-    tokens: tokensObj,
-    blockchainBaseToken,
-  } = useBlockchainData();
 
   const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
 

@@ -27,10 +27,10 @@ const API_CONFIG = {
 
 export const TX_URL = {
   [Blockchains.ETHEREUM]: isDev()
-    ? 'https://api-goerli.etherscan.io/api'
-    : 'https://api.etherscan.io/api',
-  [Blockchains.POLYGON]: 'https://api.polygonscan.com/api',
-  [Blockchains.BSC]: 'https://api.bscscan.com/api',
+    ? 'https://goerli.etherscan.io/tx/'
+    : 'https://etherscan.io/tx/',
+  [Blockchains.POLYGON]: 'https://polygonscan.com/tx/',
+  [Blockchains.BSC]: 'https://bscscan.com/tx/',
 };
 
 export type WalletTx = {

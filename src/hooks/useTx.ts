@@ -26,7 +26,7 @@ type UseTxReturn = {
 };
 
 type UseTxProps = {
-  onSendFinish?: () => void;
+  onSendFinish?: (txHash: string) => void;
 };
 
 const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
@@ -65,13 +65,13 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
         return;
       }
 
-      await send(blockchain, walletPublicValues.address, toAddress, token, amount, {
+      const txHash = await send(blockchain, walletPublicValues.address, toAddress, token, amount, {
         privateKey,
         isHw: walletPublicValues.isHw,
         hwBluetooth: walletPublicValues.hwConnectedByBluetooth,
       });
 
-      onSendFinish?.();
+      onSendFinish?.(txHash);
     } catch (error) {
       setSendTokenError(true);
     }
