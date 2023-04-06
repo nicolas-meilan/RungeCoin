@@ -125,6 +125,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     refetchOnWindowFocus: false,
   });
 
+  const [firstRender, setFirstRender] = useState(true);
+
   const [tokenToSend, setTokenToSend] = useState<TokenType | null>(
     tokens.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
   );
@@ -141,7 +143,14 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
 
-  useEffect(() => setTokenToSend(null), [blockchain]);
+  useEffect(() => {
+    if (firstRender) {
+      setFirstRender(false);
+      return;
+    }
+
+    setTokenToSend(null);
+  }, [blockchain]);
 
   useEffect(() => {
     if (allDataSetted) fetchestimateTxInfo(addressToSend, tokenToSend.address);
