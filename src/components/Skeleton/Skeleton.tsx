@@ -69,7 +69,7 @@ const SkeletonBase = ({
         height={calculatedHeight}
         width={calculatedWidth}
         backgroundColor={theme.colors.background.secondary}
-        foregroundColor={theme.colors.primary}
+        foregroundColor={theme.colors.disabled}
         speed={speed}
       >
         <Layout
