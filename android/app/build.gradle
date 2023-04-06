@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.ethwallet"
+    namespace "com.RungeCoin"
     defaultConfig {
-        applicationId "com.ethwallet"
+        applicationId "com.RungeCoin"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
