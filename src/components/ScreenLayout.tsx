@@ -32,6 +32,8 @@ type ScreenLayoutProps = {
   hasBack?: boolean;
   hasFooterBanner?: boolean;
   keyboardAvoidingView?: boolean;
+  onKeyboardShow?: () => void;
+  onKeyboardHide?: () => void;
   waitUntilNavigationFinish?: boolean;
   headerRightComponent?: React.ReactNode;
   headerRightComponentOnBigTitle?: boolean;
@@ -118,6 +120,8 @@ const ScreenLayout = ({
   footer,
   footerHeight,
   contentContainerStyle,
+  onKeyboardShow,
+  onKeyboardHide,
   gradientBackground = false,
   scroll = false,
   hasBack = true,
@@ -138,9 +142,11 @@ const ScreenLayout = ({
   useEffect(() => { // listeners
     const showKeyboardSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setIsKeyboardOpen(true);
+      onKeyboardShow?.();
     });
     const hideKeyboardSubscription = Keyboard.addListener('keyboardDidHide', () => {
       setIsKeyboardOpen(false);
+      onKeyboardHide?.();
     });
 
     const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {

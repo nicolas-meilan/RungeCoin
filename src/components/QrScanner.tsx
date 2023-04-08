@@ -14,7 +14,7 @@ import Text from './Text';
 import BottomSheet from '@containers/Bottomsheet';
 import { requestCameraPermission } from '@system/camera';
 
-const CAMERA_CORNERS_SIZE = 80;
+const CAMERA_CORNERS_SIZE = 50;
 const CameraCorner = styled.View<{
   positionV: 'top' | 'bottom';
   positionH: 'left' | 'right';
@@ -39,7 +39,8 @@ const CameraCorner = styled.View<{
 `;
 
 const BaseCameraWrapper = styled.View<{ size: number }>`
-  width: 100%;
+  width: 70%;
+  align-self: center;
   height: ${({ size }) => size}px;
   align-items: center;
   justify-content: center;

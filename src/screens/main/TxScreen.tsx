@@ -82,6 +82,10 @@ const Gas = styled.View`
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
+const StyledPill = styled(Pill)`
+  max-width: 40%
+`;
+
 const Footer = styled.View`
   flex-direction: row;
   justify-content: space-between;
@@ -135,22 +139,23 @@ const TxScreen = ({ route }: TxScreenProps) => {
     <ScreenLayout
       title="main.token.activity.tx.title"
       bigTitle
+      scroll
     >
       <StyledTokenIcon
         tokenSymbol={token.symbol}
         size={TOKEN_ICON_SIZE}
         status={status}
       />
-      <Card scroll>
+      <Card>
         <FromToWrapper>
-          <Pill
+          <StyledPill
             text={formatAddress(walletPublicValues!.address)}
             type="info"
             noI18n
             onPress={() => onPressAdress(walletPublicValues!.address)}
           />
           <FromToIcon name={txIcon} color={txIconColor} />
-          <Pill
+          <StyledPill
             text={formatAddress(txAddress)}
             type="info"
             noI18n

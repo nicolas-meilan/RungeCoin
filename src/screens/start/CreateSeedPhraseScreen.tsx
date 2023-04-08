@@ -67,7 +67,6 @@ const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => 
       <Button
         text="common.continue"
         onPress={onPressContinue}
-        type="tertiary"
       />
     </ScreenLayout>
   );

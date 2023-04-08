@@ -193,7 +193,6 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
     <ScreenLayout
       title="access.obtainAccess.title"
       bigTitle
-      hasFooterBanner
       scroll
     >
       <Form>

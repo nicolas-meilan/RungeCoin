@@ -56,16 +56,11 @@ const BottomSheetContainer = styled(Animated.View) <{
   background-color: ${({ theme }) => theme.colors.background.secondary};
 `;
 
-const Top = styled.View`
-  width: 100%;
-  height: ${({ theme }) => theme.inputsHeight.small};
-  align-items: center;
-  justify-content: center;
-`;
-
 const TopLine = styled.View`
   width: 20%;
+  align-self: center;
   height: ${({ theme }) => theme.spacing(1)};
+  margin: ${({ theme }) => theme.spacing(6)} 0 ${({ theme }) => theme.spacing(2)} 0;
   border-radius: ${({ theme }) => theme.borderRadius};
   background-color: ${({ theme }) => theme.colors.text.primary};
 `;
@@ -194,9 +189,7 @@ const BottomSheetContent = ({
           style={animatedStyle}
         >
           <Content>
-            <Top>
-              <TopLine />
-            </Top>
+            <TopLine />
             <ChildrenWrapper>
               {children}
             </ChildrenWrapper>

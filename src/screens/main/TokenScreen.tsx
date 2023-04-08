@@ -35,6 +35,7 @@ const TokenInfo = styled.View`
 `;
 
 const BalanceWrapper = styled.View`
+  flex: 1;
   margin-left: ${({ theme }) => theme.spacing(2)};
   justify-content: center;
 `;

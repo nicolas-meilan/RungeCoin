@@ -28,7 +28,8 @@ type CalculatorProps = {
 
 const ANIMATION_DURATION = 1000;
 const TOUCH_VELOCITY = 150;
-const BUTTONS_SIZE = 65;
+const TOP_MARGIN = 50;
+const BUTTONS_SIZE = 50;
 const PERCENTAGES = [
   25, 50, 75, 100,
 ];
@@ -40,9 +41,9 @@ const KEYBOARD_BUTTONS = [
   DELETE_BUTTON, '0', 'number.decimalSeparator',
 ];
 
-const Bottom = styled.View`
-  flex: 1;
-  justify-content: flex-end;
+const Content = styled.View`
+  flex-grow: 1;
+  margin-bottom: ${({ theme }) => theme.spacing(2)};
 `;
 
 const Keyboard = styled.View`
@@ -287,57 +288,57 @@ const Calculator = ({
     <BottomSheet
       visible={visible}
       onClose={handleClose}
-      topMargin={100}
+      topMargin={TOP_MARGIN}
       animationDuration={ANIMATION_DURATION}
     >
-      {!!token && (
-        <Token>
-          <TokenIcon tokenSymbol={token.symbol} />
-          <SkeletonWrapper isLoading={tokenBalancesLoading}>
-            <Skeleton
-              isLoading={tokenBalancesLoading}
-              height={25}
-            >
-              {!!tokenBalances && (
-                <TokenText
-                  text={`${numberToFormattedString(
-                    tokenBalances[token.symbol] || 0, {
-                      decimals: token.decimals,
-                    })} ${token.symbol}`}
-                  noI18n
-                />
-              )}
-            </Skeleton>
-          </SkeletonWrapper>
-        </Token>
-      )}
-      <Amount
-        text={localizeNumber(amount)}
-        weight="bold"
-        balanceExceeded={balanceExceeded}
-        noI18n
+      <Content>
+        {!!token && (
+          <Token>
+            <TokenIcon tokenSymbol={token.symbol} />
+            <SkeletonWrapper isLoading={tokenBalancesLoading}>
+              <Skeleton
+                isLoading={tokenBalancesLoading}
+                height={25}
+              >
+                {!!tokenBalances && (
+                  <TokenText
+                    text={`${numberToFormattedString(
+                      tokenBalances[token.symbol] || 0, {
+                        decimals: token.decimals,
+                      })} ${token.symbol}`}
+                    noI18n
+                  />
+                )}
+              </Skeleton>
+            </SkeletonWrapper>
+          </Token>
+        )}
+        <Amount
+          text={localizeNumber(amount)}
+          weight="bold"
+          balanceExceeded={balanceExceeded}
+          noI18n
+        />
+        {balanceExceeded && <ExceededError text="main.calculator.exceededBalance" />}
+        {!transactionFee.isZero() && (
+          <GasFee
+            text="main.calculator.gasFee"
+            i18nArgs={{
+              fee: `${numberToFormattedString(transactionFee, {
+                decimals: blockchainBaseToken.decimals,
+              })} ${blockchainBaseToken.symbol}`,
+            }}
+          />
+        )}
+      </Content>
+      {pills}
+      {keyboard}
+      <Button
+        onPress={() => onEnd(amount)}
+        text="common.continue"
+        loading={loading || tokenBalancesLoading}
+        disabled={disabled || !Number(amount) || balanceExceeded}
       />
-      {balanceExceeded && <ExceededError text="main.calculator.exceededBalance" />}
-      {!transactionFee.isZero() && (
-        <GasFee
-          text="main.calculator.gasFee"
-          i18nArgs={{
-            fee: `${numberToFormattedString(transactionFee, {
-              decimals: blockchainBaseToken.decimals,
-            })} ${blockchainBaseToken.symbol}`,
-          }}
-        />
-      )}
-      <Bottom>
-        {pills}
-        {keyboard}
-        <Button
-          onPress={() => onEnd(amount)}
-          text="common.continue"
-          loading={loading || tokenBalancesLoading}
-          disabled={disabled || !Number(amount) || balanceExceeded}
-        />
-      </Bottom>
     </BottomSheet>
   );
 };

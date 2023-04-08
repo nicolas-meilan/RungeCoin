@@ -17,20 +17,18 @@ import { MainNavigatorType } from '@navigation/MainNavigator';
 import StorageKeys from '@system/storageKeys';
 import { hashFrom } from '@utils/security';
 
-const FINGERPRINT_SIZE = 80;
+const FINGERPRINT_SIZE = 40;
 const MAX_PASSWORD_ATTEMPS = 5;
-
-const AlignWrapper = styled.View`
-  flex: 1;
-  justify-content: space-evenly;
-  overflow: hidden;
-`;
 
 const FingerprintCard = styled(Card)`
   border-color: ${({ theme, disabled }) => (disabled
     ? theme.colors.disabled
     : theme.colors.info)};
   align-self: center;
+`;
+
+const ContinueButton = styled(Button)`
+  margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(10)} 0;
 `;
 
 const Fingerprint = styled(Icon).attrs({
@@ -60,6 +58,7 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
   const [passwordAttemps, setPasswordAttemps] = useState(0);
   const [passwordError, setPasswordError] = useState(false);
   const [userPassword, setUserPassword] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const comesFromBackground = route.params?.comesFromBackground;
 
@@ -70,7 +69,7 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
       navigation.goBack();
       return;
     }
-  
+
     navigation.reset({
       index: 0,
       routes: [{ name: ScreenName.home }],
@@ -93,14 +92,14 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', () => setTransitionEnd(true));
-  
+
     return unsubscribe;
   }, []);
 
   useEffect(() => {
     if (passwordAttemps >= MAX_PASSWORD_ATTEMPS) destroyWallet();
   }, [passwordAttemps]);
-  
+
   useEffect(() => {
     if (biometricsEnabled && transitionEnd) validateWithBiometrics();
   }, [biometricsEnabled, transitionEnd]);
@@ -111,6 +110,7 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
   };
 
   const onPressContinue = async () => {
+    setLoading(true);
     const hashedPassword = await hashFrom(password);
     const invalidPassword = userPassword !== hashedPassword;
     if (invalidPassword) {
@@ -118,10 +118,12 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
       await storagePasswordAttemps(newPasswordAttemps.toString());
       setPasswordAttemps(newPasswordAttemps);
       setPasswordError(true);
+      setLoading(false);
 
       return;
     }
 
+    setLoading(false);
     goToNextScreen();
   };
 
@@ -132,6 +134,7 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
       title='main.validateAccess.title'
       bigTitle
       hasBack={false}
+      scroll
       hasFooterBanner
     >
       <TextInput
@@ -145,21 +148,21 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
           : ''}
         errorI18nArgs={{ remainingAttemps }}
         onChangeText={onPasswordChange}
+        onSubmitEditing={onPressContinue}
       />
-      <AlignWrapper>
-        <FingerprintCard
-          touchable
-          onPress={validateWithBiometrics}
-          disabled={!biometricsEnabled}
-        >
-          <Fingerprint disabled={!biometricsEnabled} />
-        </FingerprintCard>
-        <Button
-          disabled={passwordError || !password || !userPassword}
-          text="common.continue"
-          onPress={onPressContinue}
-        />
-      </AlignWrapper>
+      <ContinueButton
+        disabled={passwordError || !password || !userPassword}
+        loading={loading}
+        text="common.continue"
+        onPress={onPressContinue}
+      />
+      <FingerprintCard
+        touchable
+        onPress={validateWithBiometrics}
+        disabled={!biometricsEnabled}
+      >
+        <Fingerprint disabled={!biometricsEnabled} />
+      </FingerprintCard>
     </ScreenLayout>
   );
 };

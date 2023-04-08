@@ -2,9 +2,9 @@ import React from 'react';
 import {
   StyleProp,
   ViewStyle,
-  ScrollView,
 } from 'react-native';
 
+import { ScrollView } from 'react-native-gesture-handler';
 import styled from 'styled-components/native';
 
 export type CardProps = {

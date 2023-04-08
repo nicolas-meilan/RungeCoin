@@ -1,6 +1,7 @@
 import React from 'react';
-import { ScrollView, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 
+import { ScrollView } from 'react-native-gesture-handler';
 import QRCode from 'react-native-qrcode-svg';
 import styled from 'styled-components/native';
 
@@ -8,7 +9,7 @@ import Card from './Card';
 import Text from './Text';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 
-const QR_SIZE = 300;
+const QR_SIZE = 250;
 const QR_PADDING = 20;
 
 type ReceiveProps = {

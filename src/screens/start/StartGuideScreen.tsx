@@ -61,7 +61,6 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
       <StyledButton
         text={`common.${guideFinish ? 'continue' : 'next'}`}
         onPress={goNext}
-        type="tertiary"
       />
     </ScreenLayout>
   );

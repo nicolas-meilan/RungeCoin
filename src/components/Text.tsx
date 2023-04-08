@@ -110,6 +110,7 @@ const Text = ({
   return (
     <StyledText
       style={[{ fontWeight: weight }, style, animatedStyle]}
+      maxFontSizeMultiplier={1}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       onPress={onPress}
