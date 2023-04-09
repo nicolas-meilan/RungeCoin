@@ -134,7 +134,7 @@ const ConfigurationScreen = () => {
             <Switch
               value={themeMode === AvailableThemes.DARK}
               label="main.configuration.labels.themeSwitcher"
-              disabled={themeLoading}
+              loading={themeLoading}
               onChange={() => setThemeMode(themeMode === AvailableThemes.DARK
                 ? AvailableThemes.LIGHT
                 : AvailableThemes.DARK)}

@@ -12,7 +12,7 @@ import {
 import { delay } from '@utils/time';
 
 type UseBiometricsReturn = {
-  biometricsEnabled: boolean;
+  biometricsEnabled?: boolean;
   biometricsEnabledLoading: boolean;
   setBiometrics: (enabled: boolean) => void;
   dispatchBiometrics: () => Promise<boolean>;
@@ -44,7 +44,6 @@ const useBiometrics = ({
   } = useQuery({
     queryKey: [ReactQueryKeys.BIOMETRICS],
     queryFn: getBiometricsEnabled,
-    initialData: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     staleTime: Infinity,

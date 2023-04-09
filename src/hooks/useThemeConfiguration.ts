@@ -23,7 +23,7 @@ const useThemeConfiguration = (): UseThemeReturn => {
     return storedTheme as UseThemeReturn['themeMode'];
   };
 
-  const { data: themeMode, isLoading: themeLoading } = useQuery({
+  const { data: themeMode, isLoading } = useQuery({
     queryKey: [ReactQueryKeys.THEME],
     queryFn: getCurrentTheme,
     refetchOnReconnect: false,
@@ -39,7 +39,7 @@ const useThemeConfiguration = (): UseThemeReturn => {
     return newThemeMode;
   };
 
-  const { mutate: mutateTheme } = useMutation({
+  const { mutate: mutateTheme, isLoading: mutationLoading } = useMutation({
     mutationKey: [ReactQueryKeys.THEME],
     mutationFn: setStorageTheme,
   });
@@ -49,7 +49,7 @@ const useThemeConfiguration = (): UseThemeReturn => {
   });
 
   const initializeTheme = () => {
-    if (!themeMode && !themeLoading) {
+    if (!themeMode && !isLoading) {
       const deviceThemeMode = isDarkThemeEnabled() ? AvailableThemes.DARK : AvailableThemes.LIGHT;
       setThemeMode(deviceThemeMode);
     }
@@ -58,7 +58,7 @@ const useThemeConfiguration = (): UseThemeReturn => {
   return {
     themeMode,
     setThemeMode,
-    themeLoading,
+    themeLoading: isLoading || mutationLoading,
     initializeTheme,
   };
 };
