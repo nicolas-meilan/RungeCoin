@@ -1,5 +1,6 @@
 import React from 'react';
-import type {
+import {
+  ActivityIndicator,
   StyleProp,
   SwitchProps as SwitchPropsRN,
   ViewStyle,
@@ -14,6 +15,7 @@ type SwitchProps = SwitchPropsRN & {
   label?: string;
   i18nArgs?: TextProps['i18nArgs'];
   style?: StyleProp<ViewStyle>;
+  loading?: boolean;
 };
 
 const SWITCH_WIDTH = 60;
@@ -38,7 +40,7 @@ const StyledSwitch = styled.Switch`
   flex: 1;
 `;
 
-const Label = styled(Text)<{ disabled?: boolean }>`
+const Label = styled(Text) <{ disabled?: boolean }>`
   ${({ disabled, theme }) => (disabled ? `color: ${theme.colors.disabled};` : '')}
 `;
 const Switch = ({
@@ -51,6 +53,7 @@ const Switch = ({
   borderColor: borderColorProp,
   value = false,
   disabled = false,
+  loading = false,
 }: SwitchProps) => {
   const theme = useTheme();
 
@@ -64,13 +67,17 @@ const Switch = ({
   return (
     <BaseWrapper style={style}>
       <SwitchWrapper color={borderColor}>
-        <StyledSwitch
-          value={value}
-          disabled={disabled}
-          onChange={onChange}
-          thumbColor={thumbColor}
-          trackColor={trackColor}
-        />
+        {loading
+          ? <ActivityIndicator color={thumbColor} />
+          : (
+            <StyledSwitch
+              value={value}
+              disabled={disabled}
+              onChange={onChange}
+              thumbColor={thumbColor}
+              trackColor={trackColor}
+            />
+          )}
       </SwitchWrapper>
       {label && <Label disabled={disabled} text={label} i18nArgs={i18nArgs} />}
     </BaseWrapper>

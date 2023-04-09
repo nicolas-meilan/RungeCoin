@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { DEV_WALLET_SEED_PHRASE } from '@env';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -17,7 +17,6 @@ import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/formatter';
 import { hashFrom } from '@utils/security';
-import { delay } from '@utils/time';
 import {
   SEED_PHRASE_VALID_LENGTH,
   formatSeedPhrase,
@@ -76,8 +75,9 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
 
   const [seedPhraseHidden, setSeedPhraseHidden] = useState(true);
 
-  const [canUseBiometrics, setCanUseBiometrics] = useState(false);
   const [enableBiometricsAuth, setEnableBiometricsAuth] = useState(false);
+
+  const canUseBiometrics = useMemo(deviceHasBiometrics, []);
 
   const obtainAccess = async () => {
     const wallet = await createWalletFromSeedPhrase(seedPhrase);
@@ -89,10 +89,6 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
 
     setWalletPublicValues(wallet.getAddressString());
   };
-
-  useEffect(() => {
-    deviceHasBiometrics().then((hasBiometrics) => setCanUseBiometrics(hasBiometrics));
-  }, []);
 
   useEffect(() => {
     if (walletPublicValues) setLoading(false);
@@ -177,7 +173,6 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
 
     setLoading(true);
     if (enableBiometricsAuth) {
-      await delay(0.0001); // react-native-keychain freeze the app when use biometrics
       setBiometrics(true);
 
       return;

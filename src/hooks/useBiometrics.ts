@@ -9,9 +9,10 @@ import {
   obtainBiometrics,
   toggleBiometrics,
 } from '@utils/security';
+import { delay } from '@utils/time';
 
 type UseBiometricsReturn = {
-  biometricsEnabled?: boolean | null;
+  biometricsEnabled: boolean;
   biometricsEnabledLoading: boolean;
   setBiometrics: (enabled: boolean) => void;
   dispatchBiometrics: () => Promise<boolean>;
@@ -39,10 +40,11 @@ const useBiometrics = ({
 
   const {
     data: biometricsEnabled,
-    isLoading: biometricsEnabledLoading,
+    isLoading,
   } = useQuery({
     queryKey: [ReactQueryKeys.BIOMETRICS],
     queryFn: getBiometricsEnabled,
+    initialData: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     staleTime: Infinity,
@@ -62,6 +64,7 @@ const useBiometrics = ({
   };
 
   const setBiometricsMutation = async (enable: boolean) => {
+    await delay(0.0001); // react-native-keychain freeze the app when use biometrics
     if (!enable) {
       const grantAccess = await dispatchBiometrics(true);
       if (!grantAccess) {
@@ -69,13 +72,11 @@ const useBiometrics = ({
 
         return biometricsEnabled;
       }
-
       await toggleBiometrics(false);
       await setItem(String(false));
       onBiometricsChaingeSuccess?.();
       return false;
     }
-
     await toggleBiometrics(true);
     const grantAccess = await dispatchBiometrics(true);
     if (!grantAccess) {
@@ -89,7 +90,7 @@ const useBiometrics = ({
     return true;
   };
 
-  const { mutate: mutateBiometrics } = useMutation({
+  const { mutate: mutateBiometrics, isLoading: mutationLoading } = useMutation({
     mutationKey: [ReactQueryKeys.BIOMETRICS],
     mutationFn: setBiometricsMutation,
   });
@@ -100,7 +101,7 @@ const useBiometrics = ({
 
   return {
     biometricsEnabled,
-    biometricsEnabledLoading,
+    biometricsEnabledLoading: isLoading || mutationLoading,
     setBiometrics,
     dispatchBiometrics,
     deviceHasBiometrics,

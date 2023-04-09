@@ -17,6 +17,7 @@ import Switch from '@components/Switch';
 import Text from '@components/Text';
 import Title from '@components/Title';
 import Modal from '@containers/Modal';
+import useBiometrics from '@hooks/useBiometrics';
 import useDestroyWallet from '@hooks/useDestroyWallet';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
@@ -35,13 +36,14 @@ const ConfigurationItem = styled.View`
   margin-bottom: ${({ theme }) => theme.spacing(6)};
 `;
 
-const Info = styled(Text) <{ withMargin?: boolean }>`
+const Info = styled(Text)`
   color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const CloseWallet = styled(Pill)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
   align-self: flex-start;
+  margin-top: ${({ theme }) => theme.spacing(2)};
 `;
 
 const ConfigurationWrapper = styled.ScrollView`
@@ -84,6 +86,15 @@ const ConfigurationScreen = () => {
     setThemeMode,
   } = useThemeConfiguration();
 
+  const {
+    setBiometrics,
+    biometricsEnabled,
+    deviceHasBiometrics,
+    biometricsEnabledLoading,
+  } = useBiometrics();
+
+  const canUseBiometrics = useMemo(deviceHasBiometrics, []);
+
   const languages = useMemo(() => Object.values(Languages).map((key) => ({
     label: t(`languages.${key}`),
     value: key,
@@ -112,6 +123,15 @@ const ConfigurationScreen = () => {
           <Subtitle title="main.configuration.appSectionTitle" />
           <ConfigurationItem>
             <Switch
+              label="access.biometrics.useBiometrics"
+              value={biometricsEnabled}
+              disabled={!canUseBiometrics}
+              loading={biometricsEnabledLoading}
+              onChange={async () => setBiometrics(!biometricsEnabled)}
+            />
+          </ConfigurationItem>
+          <ConfigurationItem>
+            <Switch
               value={themeMode === AvailableThemes.DARK}
               label="main.configuration.labels.themeSwitcher"
               disabled={themeLoading}
@@ -128,6 +148,7 @@ const ConfigurationScreen = () => {
               onChange={(option) => i18n.changeLanguage(option.value)}
             />
           </ConfigurationItem>
+          <Info text="main.configuration.labels.changePassword" />
           <CloseWallet
             text="main.configuration.closeWallet.title"
             onPress={() => toggleCloseWalletModal(true)}
@@ -135,14 +156,12 @@ const ConfigurationScreen = () => {
           />
         </ConfigurationWrapper>
         <Info
-          withMargin
           text="main.configuration.derivationPath"
           i18nArgs={{
             derivationPath: `${ETH_DERIVATION_PATH}/${BASE_ADDRESS_INDEX}`,
           }}
         />
         <Info
-          withMargin
           text="main.configuration.appVersion"
           i18nArgs={{
             version: getVersion(),

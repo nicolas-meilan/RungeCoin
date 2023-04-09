@@ -44,7 +44,6 @@ const useWalletPublicValues = ({
   const {
     data: walletPublicValues,
     isLoading,
-    isRefetching,
   } = useQuery({
     queryKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     queryFn: getWalletFromStorage,
@@ -61,7 +60,7 @@ const useWalletPublicValues = ({
     return wallet;
   };
 
-  const { mutate: mutateSetWallet } = useMutation({
+  const { mutate: mutateSetWallet, isLoading: mutationLoading } = useMutation({
     mutationKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     mutationFn: setWallet,
   });
@@ -108,7 +107,7 @@ const useWalletPublicValues = ({
     });
   };
 
-  const { mutate: mutateRemoveWallet } = useMutation({
+  const { mutate: mutateRemoveWallet, isLoading: removingMutationLoading } = useMutation({
     mutationKey: [ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY],
     mutationFn: removeItem,
   });
@@ -119,7 +118,7 @@ const useWalletPublicValues = ({
 
   return {
     walletPublicValues,
-    walletPublicValuesLoading: isLoading || isRefetching,
+    walletPublicValuesLoading: isLoading || mutationLoading || removingMutationLoading,
     setWalletPublicValues,
     removeWalletPublicValues,
     setWalletPublicValuesHw,

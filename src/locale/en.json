@@ -70,7 +70,8 @@
         "blockchainSelector": "Change Blockchain",
         "hwConnectionSelector": "Change **Ledger** connection method",
         "themeSwitcher": "Dark mode",
-        "languageSelector": "Change language"
+        "languageSelector": "Change language",
+        "changePassword": "To change the password you must close the wallet"
       }
     },
     "validateAccess": {
