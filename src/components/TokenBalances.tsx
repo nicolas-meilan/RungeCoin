@@ -6,7 +6,7 @@ import styled from 'styled-components/native';
 import ErrorWrapper from './ErrorWrapper';
 import Skeleton from './Skeleton';
 import TokenItem from './TokenItem';
-import useBalances from '@hooks/useBalances';
+import useBalances, { TokensBalanceArrayItem } from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
 import type { TokenType } from '@web3/tokens';
 
@@ -24,18 +24,19 @@ const TokenBalances = ({
   onPressToken,
   retryError,
 }: TokenBalancesProps) => {
-  const { tokens: tokensObj } = useBlockchainData();
+  const { tokens } = useBlockchainData();
 
   const {
     tokenBalances,
     tokenBalancesLoading,
+    orderTokens,
   } = useBalances({
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   });
 
-  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
+  const orderedBalances = useMemo(() => orderTokens(), [tokenBalances]);
 
   return (
     <ErrorWrapper
@@ -46,7 +47,7 @@ const TokenBalances = ({
     >
       <StyledSkeleton
         isLoading={!tokenBalances}
-        quantity={tokens.length}
+        quantity={Object.keys(tokens).length}
         height={35}
         withScroll
       >
@@ -54,16 +55,23 @@ const TokenBalances = ({
           nestedScrollEnabled
           showsVerticalScrollIndicator={false}
         >
-          {tokenBalances && tokens.map((token: TokenType, index: number) => (
-            <TokenItem
-              key={`BALANCE_${token.name}`}
-              withoutMargin={!index}
-              balance={tokenBalances[token.symbol]}
-              rightIcon="chevron-right"
-              onPress={() => onPressToken(token)}
-              {...token}
-            />
-          ))}
+          {orderedBalances && orderedBalances.map((
+            tokenBalance: TokensBalanceArrayItem,
+            index: number,
+          ) => {
+            const token = tokens[tokenBalance.symbol]!;
+
+            return (
+              <TokenItem
+                key={`BALANCE_${token.name}`}
+                withoutMargin={!index}
+                balance={tokenBalance.balance}
+                rightIcon="chevron-right"
+                onPress={() => onPressToken(token)}
+                {...token}
+              />
+            );
+          })}
         </ScrollView>
       </StyledSkeleton>
     </ErrorWrapper>

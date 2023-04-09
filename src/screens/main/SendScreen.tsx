@@ -19,7 +19,7 @@ import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import TokenIcon from '@components/TokenIcon';
 import TokenItem from '@components/TokenItem';
-import useBalances from '@hooks/useBalances';
+import useBalances, { TokensBalanceArrayItem } from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
 import useBlockchainData from '@hooks/useBlockchainData';
 import useNotifications from '@hooks/useNotifications';
@@ -31,7 +31,7 @@ import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
-import { GWEI, TokenType } from '@web3/tokens';
+import { GWEI, TokenSymbol, TokenType } from '@web3/tokens';
 import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
 
 const StyledButton = styled(Button)`
@@ -63,7 +63,7 @@ const HwMessage = styled(Text)`
   margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(4)} 0;
 `;
 
-const TotalFeeText = styled(Text)<{ error: boolean }>`
+const TotalFeeText = styled(Text) <{ error: boolean }>`
   ${({ error, theme }) => (error ? `
     color: ${theme.colors.error};
   ` : '')}
@@ -119,7 +119,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     refetchOnWindowFocus: false,
   });
 
-  const { tokenBalances, tokenBalancesLoading } = useBalances({
+  const {
+    orderTokens,
+    tokenBalances,
+    tokenBalancesLoading,
+  } = useBalances({
     refetchOnMount: false,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
@@ -180,7 +184,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
   const onCalculatorEnd = async (amount: string) => {
     if (!tokenToSend) return;
-    
+
     if (biometricsEnabled) {
       const success = await dispatchBiometrics();
       if (!success) return;
@@ -210,13 +214,22 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     closeQrScanner();
   };
 
-  const tokensList = useMemo(() => tokens.map((token: TokenType) => ({
-    value: token.symbol as string,
-    data: token,
-    label: token.name,
-    leftComponent: <TokenIcon tokenSymbol={token.symbol} size={24} />,
-    disabled: !tokenBalances || tokenBalances?.[token.symbol].isZero(),
-  })), [tokenBalances]);
+  const tokensList = useMemo(() => {
+    const tokensToSelect = orderTokens();
+    if (!tokensToSelect) return [];
+
+    return tokensToSelect.map((tokenBalanceItem: TokensBalanceArrayItem) => {
+      const token = tokensObj[tokenBalanceItem.symbol as TokenSymbol]!;
+
+      return {
+        value: token.symbol as string,
+        data: token,
+        label: token.name,
+        leftComponent: <TokenIcon tokenSymbol={token.symbol} size={24} />,
+        disabled: !tokenBalances || tokenBalances?.[token.symbol].isZero(),
+      };
+    });
+  }, [tokenBalances]);
 
   const goBack = () => {
     if (sendTokenLoading) return;
@@ -332,6 +345,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
             || sendTokenLoading
             || isBlockchainInitialLoading
             || walletPublicValuesLoading
+            || tokenBalancesLoading
           }
           onPress={openCalculator}
         />
