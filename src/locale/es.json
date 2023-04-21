@@ -169,6 +169,10 @@
     "en": "Ingles",
     "es": "Español"
   },
+  "links": {
+    "pp": "https://rungecoin-crypto-wallet.web.app/es.html#privacyPolicies",
+    "tyc": "https://rungecoin-crypto-wallet.web.app/es.html#tyc"
+  },
   "error": {
     "loadError": "Error al cargar",
     "tryAgain": "Inténtalo de nuevo",

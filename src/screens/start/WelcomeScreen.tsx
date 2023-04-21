@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import styled, { useTheme } from 'styled-components/native';
 
 import appIcon from '@assets/images/icon.png';
@@ -12,7 +13,6 @@ import ScreenLayout from '@components/ScreenLayout';
 import useStartFlowFlag from '@hooks/useStartFlowFlag';
 import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
-import { PP_LINK, TYC_LINK } from '@utils/constants';
 
 const StyledButton = styled(Button)`
   margin-top: ${({ theme }) => theme.spacing(2)};
@@ -29,8 +29,10 @@ const StyledCheckbox = styled(Checkbox)`
 type WelcomeScreenProps = NativeStackScreenProps<StartNavigatorType, ScreenName.welcome>;
 
 const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
-  const { setComesFromStartFlow } = useStartFlowFlag();
   const theme = useTheme();
+  const { t } = useTranslation();
+
+  const { setComesFromStartFlow } = useStartFlowFlag();
 
   const [ppAccepted, setPpAccepted] = useState(false);
   const [tycAccepted, setTycAccepted] = useState(false);
@@ -39,8 +41,8 @@ const WelcomeScreen = ({ navigation }: WelcomeScreenProps) => {
     setComesFromStartFlow(true);
   }, []);
 
-  const goToPp = () => Linking.openURL(PP_LINK);
-  const goToTyc = () => Linking.openURL(TYC_LINK);
+  const goToPp = () => Linking.openURL(t('links.pp'));
+  const goToTyc = () => Linking.openURL(t('links.tyc'));
   const goToImport = () => navigation.navigate(ScreenName.obtainAccess);
   const goToCreate = () => navigation.navigate(ScreenName.startGuide);
 
