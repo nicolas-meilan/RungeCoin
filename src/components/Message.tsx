@@ -6,6 +6,8 @@ import styled from 'styled-components/native';
 import Svg, { SvgProps } from '@components/Svg';
 import Text, { TextProps } from '@components/Text';
 
+const MIN_HEIGHT_IMAGE = 250;
+
 type MessageProps = {
   scroll?: boolean;
   text: TextProps['text'];
@@ -36,7 +38,8 @@ const MessageText = styled(Text)`
 `;
 
 const ImageWrapper = styled.View`
-  flex: 1
+  flex: 1;
+  min-height: ${MIN_HEIGHT_IMAGE}px;
 `;
 
 const Image = styled.Image`

@@ -19,6 +19,8 @@
     "welcome": {
       "title": "¡Bienvenido a la billetera RungeCoin!",
       "welcomeText": "Con esta billetera podrás almacenar tus **ethers** de forma anónima y segura.\n**¡El mundo descentralizado te espera!**",
+      "pp": "Acepto las __políticas de privacidad__",
+      "tyc":"Acepto los __términos y condiciones__",
       "importWalletButton": "Ya tengo una billetera",
       "createWalletButton": "Quiero crear una nueva billetera"
     },

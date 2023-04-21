@@ -7,10 +7,11 @@ import type {
 
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import styled from 'styled-components/native';
+import styled, { useTheme } from 'styled-components/native';
 
 const ANIMATION_TIME = 100;
 const BOLD_SYMBOL = '**';
+const LINK_SYMBOL = '__';
 
 type Weight = 'normal' | 'bold';
 
@@ -18,13 +19,15 @@ export type TextProps = TextPropsRN & {
   text: string;
   style?: StyleProp<TextStyle>;
   boldTextStyle?: StyleProp<TextStyle>;
+  linkTextStyle?: StyleProp<TextStyle>;
   children?: React.ReactNode;
   weight?: Weight;
+  hasLinks?: boolean;
   i18nArgs?: { [key: string]: string | number | undefined };
   onPress?: () => void;
   disabled?: boolean;
   noI18n?: boolean;
-  usesFormat?: boolean;
+  useFormat?: boolean;
 };
 
 const StyledText = styled(Animated.Text)`
@@ -39,13 +42,16 @@ const Text = ({
   onPress,
   weight = 'normal',
   boldTextStyle,
+  linkTextStyle = {},
   i18nArgs = {},
   disabled = false,
   noI18n = false,
-  usesFormat = true,
+  useFormat = true,
+  hasLinks = false,
   ...props
 }: TextProps) => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const opacity = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
@@ -77,10 +83,24 @@ const Text = ({
 
   const text = noI18n ? textProp : t(textProp, i18nArgs);
 
-  if (usesFormat && weight !== 'bold') {
-    const splittedText = text.split(BOLD_SYMBOL);
-    const weightForIndex = (index: number) => (index % 2 !== 0 ? 'bold' : weight);
-    const getStyleForIndex = (index: number) => (index % 2 !== 0 ? boldTextStyle : undefined);
+  if (useFormat) {
+    const splittedText = text.split(hasLinks ? LINK_SYMBOL : BOLD_SYMBOL);
+
+    const weightForIndex = (index: number) => {
+      if (hasLinks) return weight;
+
+      return index % 2 !== 0 ? 'bold' : weight;
+    };
+
+    const getStyleForIndex = (index: number) => {
+      const styleForSpecialText = hasLinks ? {
+        color: theme.colors.info,
+        textDecorationLine: 'underline',
+        ...(linkTextStyle as object),
+      } as StyleProp<TextStyle> : boldTextStyle;
+
+      return index % 2 !== 0 ? styleForSpecialText : undefined;
+    };
 
     return (
       <StyledText

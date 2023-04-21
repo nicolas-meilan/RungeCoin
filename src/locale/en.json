@@ -19,6 +19,8 @@
     "welcome": {
       "title": "Welcome to the RungeCoin wallet!",
       "welcomeText": "With this wallet you can store your **ethers** anonymously and securely.\n**The decentralized world awaits you!**",
+      "pp": "I accept the __privacy policies__",
+      "tyc":"I accept the __terms and conditions__",
       "importWalletButton": "I already have a wallet",
       "createWalletButton": "I want to create a new wallet"
     },

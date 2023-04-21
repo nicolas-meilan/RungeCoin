@@ -18,3 +18,6 @@ export enum FiatCurrencies {
 }
 
 export const FIAT_DECIMALS = 2;
+
+export const PP_LINK = 'https://rungecoin-crypto-wallet.web.app#privacyPolicies';
+export const TYC_LINK = 'https://rungecoin-crypto-wallet.web.app#tyc';
