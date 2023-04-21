@@ -28,7 +28,7 @@ const Icon = ({
   } : {};
 
   const iconComponent = (
-    <StyledIcon {...props} style={[style, disabledStyle]} />
+    <StyledIcon {...props} style={[style, disabledStyle]} maxFontSizeMultiplier={1} />
   );
 
   if (!onPress) return iconComponent;
