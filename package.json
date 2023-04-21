@@ -3,14 +3,17 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "postinstall": "patch-package && ./node_modules/.bin/rn-nodeify --hack --install 'crypto,buffer,stream' --hack",
+    "postinstall": "./node_modules/.bin/rn-nodeify --hack --install 'crypto,buffer,stream' --hack && patch-package",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "lint": "eslint --quiet --no-error-on-unmatched-pattern . --ext .ts,.tsx --cache",
     "lint-fix": "npm run lint -- --fix",
     "typescript": "tsc --project tsconfig.json",
     "start": "react-native start --resetCache",
-    "test": "jest"
+    "test": "jest",
+    "build-android-development": "eval $(./scripts/parsedEnv.sh) && cd android && ./gradlew bundleDebug && cd ..",
+    "build-android-release-candidate": "eval $(./scripts/parsedEnv.sh) && cd android && ./gradlew bundleDebug && cd ..",
+    "build-android-release": "eval $(./scripts/parsedEnv.sh) && cd android && ./gradlew bundleRelease && cd .."
   },
   "dependencies": {
     "@ethereumjs/util": "^8.0.3",
