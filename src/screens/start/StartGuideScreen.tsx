@@ -14,7 +14,11 @@ import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
 
 const StyledButton = styled(Button)`
-  margin-top: ${({ theme }) => theme.spacing(4)};
+  margin-top: ${({ theme }) => theme.spacing(10)};
+`;
+
+const StyledCarousel = styled(Carousel)`
+  min-height: 450px;
 `;
 
 type StartGuideScreenProps = NativeStackScreenProps<StartNavigatorType, ScreenName.startGuide>;
@@ -52,8 +56,9 @@ const StartGuideScreen = ({ navigation }: StartGuideScreenProps) => {
       title="access.startGuide.title"
       bigTitle
       hasFooterBanner
+      scroll
     >
-      <Carousel
+      <StyledCarousel
         ref={carouselRef}
         items={carouselItems}
         onRenderLastItem={onFinishCarousel}

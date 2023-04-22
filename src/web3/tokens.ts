@@ -8,6 +8,7 @@ export const GWEI = 'Gwei';
 
 export enum TokenSymbol {
   ETH = 'ETH',
+  BTC = 'BTC',
   MATIC = 'MATIC',
   BNB = 'BNB',
   USDT = 'USDT',
@@ -142,6 +143,36 @@ export const TOKENS_BSC: TokensStruct = {
     name: 'Token BNB',
     symbol: TokenSymbol.BNB,
     address: BASE_TOKEN_ADDRESS,
+    decimals: 18,
+  },
+  [TokenSymbol.ETH]: {
+    name: 'Ether',
+    symbol: TokenSymbol.ETH,
+    address: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
+    decimals: 18,
+  },
+  [TokenSymbol.BTC]: {
+    name: 'Bitcoin',
+    symbol: TokenSymbol.BTC,
+    address: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
+    decimals: 18,
+  },
+  [TokenSymbol.MATIC]: {
+    name: 'Matic',
+    symbol: TokenSymbol.MATIC,
+    address: '0xCC42724C6683B7E57334c4E856f4c9965ED682bD',
+    decimals: 18,
+  },
+  [TokenSymbol.USDT]: {
+    name: 'Tether USD',
+    symbol: TokenSymbol.USDT,
+    address: '0x55d398326f99059fF775485246999027B3197955',
+    decimals: 18,
+  },
+  [TokenSymbol.DAI]: {
+    name: 'Dai Stablecoin',
+    symbol: TokenSymbol.DAI,
+    address: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
     decimals: 18,
   },
 };
