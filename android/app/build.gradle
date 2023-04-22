@@ -99,7 +99,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
 
     splits {
@@ -114,8 +114,8 @@ android {
         release {
             storeFile file("../../app-configuration/rungecoin.keystore")
             keyAlias "rungecoin"
-            storePassword System.getenv("UPLOAD_PASSWORD")
-            keyPassword System.getenv("UPLOAD_PASSWORD")
+            storePassword System.getenv("APP_KEYCHAIN_PASSWRD")
+            keyPassword System.getenv("APP_KEYCHAIN_PASSWRD")
         }
         debug {
             storeFile file('debug.keystore')
