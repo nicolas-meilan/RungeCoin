@@ -30,6 +30,7 @@ type ScreenLayoutProps = {
   title?: string;
   bigTitle?: boolean;
   hasBack?: boolean;
+  disableHardwareBack?: boolean;
   hasFooterBanner?: boolean;
   keyboardAvoidingView?: boolean;
   onKeyboardShow?: () => void;
@@ -125,6 +126,7 @@ const ScreenLayout = ({
   gradientBackground = false,
   scroll = false,
   hasBack = true,
+  disableHardwareBack = false,
   hasFooterBanner = false,
   bigTitle = false,
   keyboardAvoidingView = false,
@@ -150,7 +152,7 @@ const ScreenLayout = ({
     });
 
     const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (!hasBack && !goBack) return true;
+      if (disableHardwareBack || (!hasBack && !goBack)) return true;
 
       backAction();
       return true;

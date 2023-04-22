@@ -243,6 +243,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         bigTitle
         scroll
         title="main.send.title"
+        disableHardwareBack
         goBack={goBack}
       >
         <BlockchainSelector
