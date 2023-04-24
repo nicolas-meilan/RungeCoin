@@ -43,7 +43,7 @@ export const estimateTxInfo = async (
     { chainId },
   ] = await Promise.all([
     provider.getFeeData(),
-    provider.getTransactionCount(fromAddress, 'latest'),
+    provider.getTransactionCount(fromAddress, 'pending'),
     provider.getNetwork(),
   ]);
 
@@ -60,21 +60,29 @@ export const estimateTxInfo = async (
     chainId,
   };
 
+  const offsetDecimals = 2;
+  const maxFeePerGasOffset = 1;
   let gasLimitTolerance = 1;
+
   if (tokenAddress !== BASE_TOKEN_ADDRESS) { // is not ETH
     const txContract = new Contract(tokenAddress, BASE_TOKENS_TRANSFER_ABI, voidSigner);
     tx.data = txContract.interface.encodeFunctionData('transferFrom', [fromAddress, toAddress, 0]);
     tx.to = tokenAddress;
     gasLimitTolerance = 2; // the gas limit estimated for a smart contract can be unexacted.
-  } 
+  }
 
+  const gasLimit = (await voidSigner.estimateGas(tx))
+    .mul(utils.parseUnits(gasLimitTolerance.toString(), offsetDecimals))
+    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
-  const gasLimit = (await voidSigner.estimateGas(tx)).mul(gasLimitTolerance);
+  const maxFeePerGas = (feeData.maxFeePerGas || feeData.gasPrice || BigNumber.from(0))
+    .mul(utils.parseUnits(maxFeePerGasOffset.toString(), offsetDecimals))
+    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
   return {
     nonce,
     chainId,
-    maxFeePerGas: feeData.maxFeePerGas || BigNumber.from(0),
+    maxFeePerGas,
     maxPriorityFeePerGas: feeData.maxPriorityFeePerGas || BigNumber.from(0),
     gasPrice: feeData.gasPrice || BigNumber.from(0),
     gasUnits: gasLimit,
