@@ -61,7 +61,7 @@ export const estimateTxInfo = async (
   };
 
   const offsetDecimals = 2;
-  const maxFeePerGasOffset = 1;
+  const maxFeePerGasOffset = 1.25;
   let gasLimitTolerance = 1;
 
   if (tokenAddress !== BASE_TOKEN_ADDRESS) { // is not ETH
