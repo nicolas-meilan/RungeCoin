@@ -11,6 +11,7 @@ type NotificationTypes = 'error' | 'success' | 'info' | 'warning';
 export type Notification = {
   message: string;
   type: NotificationTypes;
+  hasLinks?: boolean;
   onPress?: () => void;
 };
 
@@ -21,6 +22,7 @@ type UseNotificationsReturn = {
     message: Notification['message'],
     type?: Notification['type'],
     onPress?: Notification['onPress'],
+    hasLinks?: Notification['hasLinks'],
   ) => void;
   resetNotification: () => void;
 };
@@ -49,7 +51,8 @@ const useNotifications = (options: UseNotificationsProps = {}): UseNotifications
     message,
     type = 'success',
     onPress = undefined,
-  ) => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], { message, type, onPress });
+    hasLinks = false,
+  ) => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], { message, type, onPress, hasLinks });
 
   const resetNotification = () => queryClient.setQueryData([ReactQueryKeys.NOTIFICATIONS], null);
 

@@ -94,7 +94,7 @@
     },
     "send": {
       "title": "Enviar cryptos",
-      "successNotification": "Transacción enviada\n{{txHash}}",
+      "successNotification": "Transacción enviada\n__{{txHash}}__",
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
       "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
       "gasFee": "Comisiones",

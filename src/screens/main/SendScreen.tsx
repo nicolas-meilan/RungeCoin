@@ -101,6 +101,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         t('main.send.successNotification', { txHash }),
         'success',
         () => Linking.openURL(`${TX_URL[blockchain]}${txHash}`),
+        true,
       );
       navigation.navigate(ScreenName.home);
     },

@@ -9,7 +9,7 @@ import {
   providers,
 } from 'ethers';
 
-import { Blockchains } from './constants';
+import { BLOCKCHAINS_CONFIG, Blockchains } from './constants';
 import getProvider from './providers';
 import { BASE_TOKENS_TRANSFER_ABI } from './smartContracts';
 import { BASE_TOKEN_ADDRESS, TokenType } from './tokens';
@@ -20,7 +20,6 @@ import {
 } from './wallet';
 
 export type TxInfo = {
-  nonce: number;
   chainId: number;
   maxFeePerGas: BigNumber;
   maxPriorityFeePerGas: BigNumber;
@@ -39,11 +38,9 @@ export const estimateTxInfo = async (
 
   const [
     feeData,
-    nonce,
     { chainId },
   ] = await Promise.all([
     provider.getFeeData(),
-    provider.getTransactionCount(fromAddress, 'pending'),
     provider.getNetwork(),
   ]);
 
@@ -56,12 +53,11 @@ export const estimateTxInfo = async (
     value: 0,
     maxFeePerGas: 0,
     maxPriorityFeePerGas: 0,
-    nonce,
     chainId,
   };
 
   const offsetDecimals = 2;
-  const maxFeePerGasOffset = 1.25;
+  const feePerGasOffset = 1;
   let gasLimitTolerance = 1;
 
   if (tokenAddress !== BASE_TOKEN_ADDRESS) { // is not ETH
@@ -76,17 +72,24 @@ export const estimateTxInfo = async (
     .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
   const maxFeePerGas = (feeData.maxFeePerGas || feeData.gasPrice || BigNumber.from(0))
-    .mul(utils.parseUnits(maxFeePerGasOffset.toString(), offsetDecimals))
+    .mul(utils.parseUnits(feePerGasOffset.toString(), offsetDecimals))
+    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
+
+  const maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas || feeData.gasPrice || BigNumber.from(0))
+    .mul(utils.parseUnits(feePerGasOffset.toString(), offsetDecimals))
+    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
+
+  const gasPrice = (feeData.gasPrice || BigNumber.from(0))
+    .mul(utils.parseUnits(feePerGasOffset.toString(), offsetDecimals))
     .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
   return {
-    nonce,
     chainId,
     maxFeePerGas,
-    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas || BigNumber.from(0),
-    gasPrice: feeData.gasPrice || BigNumber.from(0),
+    maxPriorityFeePerGas,
+    gasPrice,
     gasUnits: gasLimit,
-    totalFee: (feeData.gasPrice || BigNumber.from(0)).mul(gasLimit),
+    totalFee: maxFeePerGas.mul(gasLimit),
   };
 };
 
@@ -99,6 +102,7 @@ type SignedTx = {
   r: string;
 };
 
+// https://github.com/ethers-io/ethers-ledger/blob/master/src.ts/index.ts#L67
 const signTxWithLedger = async ({
   index,
   bluetoothConnection,
@@ -119,12 +123,13 @@ const signTxWithLedger = async ({
   const transport = await connectHw(bluetoothConnection);
 
   const eth = new AppEth(transport);
-  const resolution = await ledgerService.resolveTransaction(tx, {}, { erc20: true });
+  const resolution = await ledgerService.resolveTransaction(tx, {}, {});
   const signedTx: SignedTx = await eth.signTransaction(derivationPath, tx, resolution);
   transport.close();
 
+  
   return {
-    v: Number(signedTx.v),
+    v: parseInt(`0x${signedTx.v}`, 16),
     r: `0x${signedTx.r}`,
     s: `0x${signedTx.s}`,
   };
@@ -154,14 +159,30 @@ export const send = async (
 ): Promise<string> => {
   const provider = getProvider(blockchain);
 
+  const blockchainConfig = BLOCKCHAINS_CONFIG[blockchain];
+
   if (!privateKey && !isHw) throw new Error(INVALID_SIGN_INFORMATION);
 
-  const txEstimations = await estimateTxInfo(blockchain, fromAddress, toAddress, token.address);
+  const [
+    txEstimations,
+    nonce,
+  ] = await Promise.all([
+    estimateTxInfo(blockchain, fromAddress, toAddress, token.address),
+    provider.getTransactionCount(fromAddress, 'pending'),
+  ]);
 
   const gasLimit = txEstimations.gasUnits.toNumber();
   const amount = BigNumber.isBigNumber(quantity)
     ? quantity
     : utils.parseUnits(quantity.toString(), token.decimals);
+
+  const txFees = blockchainConfig.hasMaxFeePerGas ? {
+    maxFeePerGas: txEstimations.maxFeePerGas,
+    maxPriorityFeePerGas: txEstimations.maxPriorityFeePerGas,
+    type: 2,
+  } : {
+    gasPrice: txEstimations.gasPrice,
+  };
 
   const tx: Omit<utils.Deferrable<providers.TransactionRequest>, 'nonce'> & {
     nonce: number;
@@ -169,15 +190,13 @@ export const send = async (
     from: fromAddress,
     to: toAddress,
     value: amount,
-    nonce: txEstimations.nonce,
+    nonce,
     chainId: txEstimations.chainId,
     gasLimit,
-    type: 2,
-    maxFeePerGas: txEstimations.maxFeePerGas,
-    maxPriorityFeePerGas: txEstimations.maxPriorityFeePerGas,
+    ...txFees,
   };
 
-  if (token.address !== BASE_TOKEN_ADDRESS) { // is not ETH
+  if (token.address !== BASE_TOKEN_ADDRESS) { // is not native token
     const txContract = new Contract(token.address, BASE_TOKENS_TRANSFER_ABI);
     tx.to = token.address;
     tx.value = 0;
@@ -188,12 +207,12 @@ export const send = async (
     const txToSerialize = await utils.resolveProperties(txToResolveProperties);
     const unsignedTx = utils.serializeTransaction(txToSerialize).substring(2);
 
-    const signedTx = await signTxWithLedger({
+    const sig = await signTxWithLedger({
       bluetoothConnection: hwBluetooth,
       tx: unsignedTx,
     });
 
-    const { hash } = await provider.sendTransaction(utils.serializeTransaction(txToSerialize, signedTx));
+    const { hash } = await provider.sendTransaction(utils.serializeTransaction(txToSerialize, sig));
 
     return hash;
   }

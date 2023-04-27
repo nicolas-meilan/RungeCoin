@@ -58,7 +58,7 @@ const Notification = ({
       onPress={notification.onPress}
       disabled={!notification.onPress}
     >
-      <NotificationText text={notification.message} />
+      <NotificationText text={notification.message} hasLinks={notification.hasLinks} />
     </NotificationWrapper>
   );
 };
