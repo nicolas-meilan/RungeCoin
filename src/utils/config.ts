@@ -1,5 +1,1 @@
-import { ENV } from '@env';
-
-const PRODUCTION_ENV = 'PRODUCTION';
-
-export const isDev = () => ENV !== PRODUCTION_ENV;
+export const isDev = () => __DEV__;
