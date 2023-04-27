@@ -35,6 +35,7 @@ export const estimateTxInfo = async (
   tokenAddress: string,
 ): Promise<TxInfo> => {
   const provider = getProvider(blockchain);
+  const blockchainConfig = BLOCKCHAINS_CONFIG[blockchain];
 
   const [
     feeData,
@@ -83,13 +84,18 @@ export const estimateTxInfo = async (
     .mul(utils.parseUnits(feePerGasOffset.toString(), offsetDecimals))
     .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
+  const totalFee = (blockchainConfig.hasMaxFeePerGas
+    ? maxFeePerGas
+    : gasPrice
+  ).mul(gasLimit);
+
   return {
     chainId,
     maxFeePerGas,
     maxPriorityFeePerGas,
     gasPrice,
+    totalFee,
     gasUnits: gasLimit,
-    totalFee: maxFeePerGas.mul(gasLimit),
   };
 };
 

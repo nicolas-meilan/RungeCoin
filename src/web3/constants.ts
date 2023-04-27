@@ -11,7 +11,7 @@ export const BLOCKCHAINS_CONFIG = {
     hasMaxFeePerGas: true,
   },
   [Blockchains.POLYGON]: {
-    hasMaxFeePerGas: true,
+    hasMaxFeePerGas: false,
   },
   [Blockchains.BSC]: {
     hasMaxFeePerGas: false,
