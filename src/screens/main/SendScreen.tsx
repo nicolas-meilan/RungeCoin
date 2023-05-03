@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Linking } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BigNumber, ethers } from 'ethers';
-import { useTranslation } from 'react-i18next';
+import { ethers } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import BlockchainSelector from '@components/BlockchainSelector';
@@ -22,11 +20,11 @@ import TokenItem from '@components/TokenItem';
 import useBalances, { TokensBalanceArrayItem } from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
-import { TX_URL } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
@@ -72,7 +70,6 @@ const TotalFeeText = styled(Text) <{ error: boolean }>`
 type SendScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.send>;
 
 const SendScreen = ({ navigation, route }: SendScreenProps) => {
-  const { t } = useTranslation();
   const theme = useTheme();
 
   const { dispatchNotification } = useNotifications();
@@ -88,6 +85,18 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     blockchainBaseToken,
   } = useBlockchainData();
 
+  const [txSended, setTxSended] = useState('');
+  const [errorOnSaveTx, setErrorOnSaveTx] = useState(false);
+
+  const {
+    txs,
+    addTx,
+    updateTxs,
+    txsLoading,
+  } = useMiningPendingTxs({
+    onAddError: () => setErrorOnSaveTx(true),
+  });
+
   const {
     estimatedTxInfo,
     estimatedTxInfoLoading,
@@ -96,14 +105,9 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     sendToken,
     sendTokenError,
   } = useTx({
-    onSendFinish: (txHash: string) => {
-      dispatchNotification(
-        t('main.send.successNotification', { txHash }),
-        'success',
-        () => Linking.openURL(`${TX_URL[blockchain]}${txHash}`),
-        true,
-      );
-      navigation.navigate(ScreenName.home);
+    onSendFinish: async (txHash: string) => {
+      addTx(txHash);
+      setTxSended(txHash);
     },
   });
 
@@ -142,13 +146,18 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const [addressToSend, setAddressToSend] = useState('');
   const [addressToSendError, setAddressToSendError] = useState(false);
 
+  const blockchainBaseTokenBalance = useMemo(() => (
+    tokenBalances?.[blockchainBaseToken.symbol] || 0
+  ), [blockchainBaseToken, tokenBalances]);
+
   const hasNotBalanceForGas = useMemo(() => (
-    estimatedTxInfo?.totalFee.gt(tokenBalances?.[blockchainBaseToken.symbol] || 0) || false
+    estimatedTxInfo?.totalFee.gt(blockchainBaseTokenBalance) || false
   ), [estimatedTxInfo, tokenBalances]);
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
 
   useEffect(() => {
+    updateTxs();
     if (firstRender) {
       setFirstRender(false);
       return;
@@ -158,14 +167,25 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   }, [blockchain]);
 
   useEffect(() => {
+    if (tokenToSend && txSended && !txsLoading) {
+      const txData = txs.find(({ hash }) => hash === txSended);
+
+      if (errorOnSaveTx || !txData) {
+        navigation.navigate(ScreenName.home);
+        return;
+      }
+
+      navigation.navigate(ScreenName.tx, {
+        token: tokenToSend,
+        tx: txData,
+        forceHome: true,
+      });
+    }
+  }, [txSended, txsLoading]);
+
+  useEffect(() => {
     if (allDataSetted) fetchestimateTxInfo(addressToSend, tokenToSend.address);
   }, [tokenToSend, addressToSend, addressToSendError]);
-
-  const tokenToSendBalance = useMemo(() => {
-    if (!tokenBalances || !tokenToSend) return BigNumber.from(0);
-
-    return tokenBalances[tokenToSend.symbol];
-  }, [tokenToSend]);
 
   useEffect(() => {
     if (sendTokenError) dispatchNotification('main.send.sendError', 'error');
@@ -192,7 +212,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     }
 
     closeCalculator();
-    if (estimatedTxInfo?.totalFee.gt(tokenToSendBalance)) {
+    if (estimatedTxInfo?.totalFee.gt(blockchainBaseTokenBalance)) {
       dispatchNotification('main.send.notFoundsForFeeNotification', 'error');
       return;
     }
@@ -348,6 +368,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
             || isBlockchainInitialLoading
             || walletPublicValuesLoading
             || tokenBalancesLoading
+            || txsLoading
           }
           onPress={openCalculator}
         />

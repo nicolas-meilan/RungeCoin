@@ -94,7 +94,6 @@
     },
     "send": {
       "title": "Enviar cryptos",
-      "successNotification": "Transacción enviada\n__{{txHash}}__",
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
       "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
       "gasFee": "Comisiones",
@@ -124,6 +123,7 @@
       "info": "Información",
       "activity": {
         "title": "Actividad",
+        "miningPendingTxs": "Transacciones pendientes de minado",
         "emptyTitle": "No se han encontrado transacciones",
         "emptyMessage": "Pruebe a refrescar",
         "tx": {
@@ -178,6 +178,7 @@
     "tryAgain": "Inténtalo de nuevo",
     "balances": "Error al cargar los balances",
     "tokenConversions": "Error al cargar los datos de conversiónes",
-    "walletActivity": "Error al cargar la actividad del token"
+    "walletActivity": "Error al cargar la actividad del token",
+    "miningPendingTxs": "Error al cargar transacciones pendientes de minado"
   }
 }

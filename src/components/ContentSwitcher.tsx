@@ -78,10 +78,8 @@ const ContentSwitcher = ({
   const [neverChange, setNeverChange] = useState(true);
 
   useEffect(() => {
-    if (neverChange) return;
-
     onChange?.(selectedIndex);
-  }, [selectedIndex, neverChange]);
+  }, [selectedIndex]);
 
   const switcherItems = useMemo(() => labels.map((label, index) => {
     const key = `SWITCHER_LABEL_${index}_${label}`;

@@ -21,8 +21,8 @@ type UseBalancesReturn = {
   orderTokens: () => TokensBalanceArrayItem[] | null;
 };
 
-type QueryClient = [ReactQueryKeys, Blockchains];
-type QueryOptions = UseQueryOptions<TokensBalance | null, unknown, TokensBalance | null, QueryClient>;
+type QueryKey = [ReactQueryKeys, Blockchains];
+type QueryOptions = UseQueryOptions<TokensBalance | null, unknown, TokensBalance | null, QueryKey>;
 type UseBalancesProps = Omit<QueryOptions, 'queryKey' | 'queryFn' | 'initialData'>;
 
 const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
@@ -39,7 +39,7 @@ const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
     return getWalletBalance(blockchain, walletPublicValues.address);
   };
 
-  const queryKey: QueryClient = [ReactQueryKeys.BALANCES, blockchain];
+  const queryKey: QueryKey = [ReactQueryKeys.BALANCES, blockchain];
 
   const onError = () => dispatchNotification('error.balances', 'error');
 

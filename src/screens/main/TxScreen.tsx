@@ -93,7 +93,10 @@ const Footer = styled.View`
   margin-top: ${({ theme }) => theme.spacing(4)};
 `;
 
-const TxScreen = ({ route }: TxScreenProps) => {
+const TxScreen = ({
+  navigation,
+  route,
+}: TxScreenProps) => {
   const theme = useTheme();
   const { dispatchNotification } = useNotifications();
 
@@ -115,6 +118,7 @@ const TxScreen = ({ route }: TxScreenProps) => {
   const {
     token,
     tx,
+    forceHome,
   } = route.params;
 
   const txGasTotal = useMemo(() => BigNumber.from(tx.gasPrice).mul(tx.gasUsed), [tx]);
@@ -135,11 +139,21 @@ const TxScreen = ({ route }: TxScreenProps) => {
 
   const onPressHash = () => Linking.openURL(`${TX_URL[blockchain]}${tx.hash}`);
 
+  const goBack = () => {
+    if (forceHome) {
+      navigation.navigate(ScreenName.home);
+      return;
+    }
+
+    navigation.goBack();
+  };
+
   return (
     <ScreenLayout
       title="main.token.activity.tx.title"
       bigTitle
       scroll
+      goBack={goBack}
     >
       <StyledTokenIcon
         tokenSymbol={token.symbol}

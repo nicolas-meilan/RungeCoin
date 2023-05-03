@@ -9,6 +9,7 @@ export enum ReactQueryKeys {
   NOTIFICATIONS = 'notifications',
   TOKEN_ACTIVITY = 'tokenActivity',
   BLOCKCHAIN = 'blockchain',
+  MINING_PENDING_TXS = 'miningPendingTxs',
 }
 
 export enum FiatCurrencies {

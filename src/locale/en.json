@@ -94,7 +94,6 @@
     },
     "send": {
       "title": "Send cryptos",
-      "successNotification": "Transaction sent\n__{{txHash}}__",
       "notFoundsForFeeNotification": "You do not have funds to pay shipping fee",
       "gasDescription": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
       "gasFee": "Fees",
@@ -120,6 +119,7 @@
       "info": "Information",
       "activity": {
         "title": "Activity",
+        "miningPendingTxs": "Pending mining transactions",
         "emptyTitle": "No transactions found",
         "emptyMessage": "Try refreshing",
         "tx": {
@@ -178,6 +178,7 @@
     "tryAgain": "Try again",
     "balances": "Error loading balances",
     "tokenConversions": "Error loading conversion data",
-    "walletActivity": "Error al cargar la actividad del token"
+    "walletActivity": "Error loading activity token",
+    "miningPendingTxs": "Error loading mining pending transactions"
   }
 }

@@ -18,6 +18,7 @@ import TradingViewChart from '@components/TradingViewChart';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNotifications from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
@@ -76,7 +77,6 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   const tokenSymbol = route.params?.tokenSymbol || '';
 
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
-  const [isOnActivity, setIsOnActivity] = useState(false);
 
   const { dispatchNotification } = useNotifications();
 
@@ -108,6 +108,11 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     tokenAddress: token?.address || '',
   });
 
+  const {
+    updateTxs,
+    txsLoading,
+  } = useMiningPendingTxs();
+
   const tokenBalance = useMemo(() => {
     const zero = BigNumber.from(0);
     if (!token) return zero;
@@ -123,15 +128,33 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     return convert(tokenBalance, token);
   }, [tokenBalance, tokenConversions]);
 
-  const refetch = () => {
-    refetchBalances();
-    refetchTokenConversions();
-    if (isOnActivity) refetchTokenActivity();
+  const refetchActivity = () => {
+    updateTxs();
+    refetchTokenActivity();
   };
 
-  const refreshControl = usePull2Refresh({
-    loading: tokenBalancesLoading || tokenConversionsLoading || tokenActivityLoading,
-    fetch: refetch,
+  const refetchInfo = () => {
+    refetchBalances();
+    refetchTokenConversions();
+  };
+
+  const refetchAll = () => {
+    refetchInfo();
+    refetchActivity();
+  };
+
+  const refreshControlInfo = usePull2Refresh({
+    loading: tokenBalancesLoading
+    || tokenConversionsLoading,
+    fetch: refetchInfo,
+  });
+
+  const refreshControlActivity = usePull2Refresh({
+    loading: tokenBalancesLoading
+    || tokenConversionsLoading
+    || tokenActivityLoading
+    || txsLoading,
+    fetch: refetchAll,
   });
 
   const onPressSend = () => {
@@ -148,7 +171,6 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     Clipboard.setString(walletPublicValues!.address);
     dispatchNotification('notifications.addressCopied');
   };
-  const onTabChange = () => setIsOnActivity(!isOnActivity);
 
   return (
     <>
@@ -194,18 +216,17 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
         </TokenInfo>
         <ContentSwitcher
           labels={['main.token.info', 'main.token.activity.title']}
-          onChange={onTabChange}
           components={[
             (
-              <StyledScrollView refreshControl={refreshControl}>
+              <StyledScrollView refreshControl={refreshControlInfo}>
                 <TradingViewChart token={token} />
               </StyledScrollView>
             ),
             (
               <TokenActivity
                 token={token}
-                refreshControl={refreshControl}
-                retry={refetchTokenActivity}
+                refreshControl={refreshControlActivity}
+                retryTokenActivity={refetchAll}
               />
             ),
           ]}

@@ -20,7 +20,7 @@ export type MainNavigatorType = {
   [ScreenName.home]: undefined;
   [ScreenName.send]: { tokenToSendSymbol?: TokenSymbol } | undefined;
   [ScreenName.token]: { tokenSymbol: TokenSymbol };
-  [ScreenName.tx]: { token: TokenType; tx: WalletTx };
+  [ScreenName.tx]: { token: TokenType; tx: WalletTx; forceHome?: boolean };
   [ScreenName.configuration]: undefined;
 };
 

@@ -18,6 +18,7 @@ import {
   BASE_ADDRESS_INDEX,
   ETH_DERIVATION_PATH,
 } from './wallet';
+import type { WalletTx } from '@http/tx';
 
 export type TxInfo = {
   chainId: number;
@@ -133,7 +134,7 @@ const signTxWithLedger = async ({
   const signedTx: SignedTx = await eth.signTransaction(derivationPath, tx, resolution);
   transport.close();
 
-  
+
   return {
     v: parseInt(`0x${signedTx.v}`, 16),
     r: `0x${signedTx.r}`,
@@ -226,4 +227,39 @@ export const send = async (
   const { hash } = await wallet.sendTransaction(tx);
 
   return hash;
+};
+
+export const obtainTxData = async (txHash: string, blockchain: Blockchains): Promise<WalletTx | null> => {
+  const provider = getProvider(blockchain);
+
+  const txData = await provider.getTransaction(txHash);
+
+  if (!txData) return null;
+
+  const walletTx: WalletTx = {
+    confirmations: txData.confirmations,
+    contractAddress: BASE_TOKEN_ADDRESS,
+    from: txData.from,
+    to: txData.to || '',
+    gasPrice: (txData.gasPrice || txData.maxFeePerGas || BigNumber.from(0)).toString(),
+    hash: txData.hash,
+    isError: false,
+    timeStamp: (new Date()).getTime().toString(),
+    value: (txData.value).toString(),
+    gasUsed: txData.gasLimit.toNumber(),
+  };
+
+  const voidData = '0x';
+  if (!txData.data || txData.data === voidData) return walletTx;
+
+  const txContract = new Contract(txData.to || '', BASE_TOKENS_TRANSFER_ABI);
+  const decodedTxData = txContract.interface
+    .decodeFunctionData('transferFrom', txData.data) as [string, string, BigNumber];
+
+  walletTx.value = decodedTxData[2].toString();
+  walletTx.to = decodedTxData[1];
+
+  walletTx.contractAddress = txData.to || '';
+
+  return walletTx;
 };
