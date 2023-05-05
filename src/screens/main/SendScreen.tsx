@@ -25,6 +25,7 @@ import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import type { WalletTx } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
@@ -32,7 +33,7 @@ import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { GWEI, TokenSymbol, TokenType } from '@web3/tokens';
 import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
 
-const StyledButton = styled(Button)`
+const FooterWrapper = styled.View`
   margin-top: ${({ theme }) => theme.spacing(10)};
 `;
 
@@ -46,6 +47,12 @@ const AddressToSendInput = styled(TextInput)`
 
 const GasMessage = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
+  margin-bottom: ${({ theme }) => theme.spacing(4)};
+`;
+
+
+const MiningPendingTxsMessage = styled(Text)`
+  color: ${({ theme }) => theme.colors.warning};
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
@@ -71,8 +78,10 @@ type SendScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.send
 
 const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const theme = useTheme();
-
   const { dispatchNotification } = useNotifications();
+
+  const [firstRender, setFirstRender] = useState(true);
+
   const {
     biometricsEnabled,
     dispatchBiometrics,
@@ -85,17 +94,39 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     blockchainBaseToken,
   } = useBlockchainData();
 
-  const [txSended, setTxSended] = useState('');
-  const [errorOnSaveTx, setErrorOnSaveTx] = useState(false);
+  const {
+    walletPublicValues,
+    walletPublicValuesLoading,
+  } = useWalletPublicValues();
+
+  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
+
+  const [tokenToSend, setTokenToSend] = useState<TokenType | null>(
+    tokens.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
+  );
+
+  const onAddError = () => navigation.navigate(ScreenName.home);
+  const onAddSuccess = (txData: WalletTx) => {
+    if (!tokenToSend || !txData) return;
+
+    navigation.navigate(ScreenName.tx, {
+      token: tokenToSend,
+      tx: txData,
+      forceHome: true,
+    });
+  };
 
   const {
-    txs,
     addTx,
     updateTxs,
+    txs,
     txsLoading,
   } = useMiningPendingTxs({
-    onAddError: () => setErrorOnSaveTx(true),
+    onAddError,
+    onAddSuccess,
   });
+
+  const onSendFinish = (txHash: string) => addTx(txHash);
 
   const {
     estimatedTxInfo,
@@ -104,19 +135,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     sendTokenLoading,
     sendToken,
     sendTokenError,
-  } = useTx({
-    onSendFinish: async (txHash: string) => {
-      addTx(txHash);
-      setTxSended(txHash);
-    },
-  });
-
-  const {
-    walletPublicValues,
-    walletPublicValuesLoading,
-  } = useWalletPublicValues();
-
-  const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
+  } = useTx({ onSendFinish });
 
   const { convert } = useTokenConversions({
     refetchOnMount: false,
@@ -133,12 +152,6 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   });
-
-  const [firstRender, setFirstRender] = useState(true);
-
-  const [tokenToSend, setTokenToSend] = useState<TokenType | null>(
-    tokens.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
-  );
 
   const [showCalculator, setShowCalculator] = useState(false);
   const [showQrScanner, setShowQrScanner] = useState(false);
@@ -165,23 +178,6 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
     setTokenToSend(null);
   }, [blockchain]);
-
-  useEffect(() => {
-    if (tokenToSend && txSended && !txsLoading) {
-      const txData = txs.find(({ hash }) => hash === txSended);
-
-      if (errorOnSaveTx || !txData) {
-        navigation.navigate(ScreenName.home);
-        return;
-      }
-
-      navigation.navigate(ScreenName.tx, {
-        token: tokenToSend,
-        tx: txData,
-        forceHome: true,
-      });
-    }
-  }, [txSended, txsLoading]);
 
   useEffect(() => {
     if (allDataSetted) fetchestimateTxInfo(addressToSend, tokenToSend.address);
@@ -234,6 +230,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     setAddressToSend(address);
     closeQrScanner();
   };
+
+  const hasPendingTxsWithThisToken = useMemo(() => {
+    if (!tokenToSend) return false;
+
+    return !!txs.find((item) => item.contractAddress === tokenToSend.address);
+  }, [txs, tokenToSend]);
 
   const tokensList = useMemo(() => {
     const tokensToSelect = orderTokens();
@@ -360,18 +362,23 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
             <HwConnectionSelector disabled={sendTokenLoading} />
           </>
         )}
-        <StyledButton
-          text="common.continue"
-          disabled={!allDataSetted || hasNotBalanceForGas}
-          loading={estimatedTxInfoLoading
-            || sendTokenLoading
-            || isBlockchainInitialLoading
-            || walletPublicValuesLoading
-            || tokenBalancesLoading
-            || txsLoading
-          }
-          onPress={openCalculator}
-        />
+        <FooterWrapper>
+          {hasPendingTxsWithThisToken && (
+            <MiningPendingTxsMessage text="main.send.miningPendingTxs" />
+          )}
+          <Button
+            text="common.continue"
+            disabled={!allDataSetted || hasNotBalanceForGas}
+            loading={estimatedTxInfoLoading
+              || sendTokenLoading
+              || isBlockchainInitialLoading
+              || walletPublicValuesLoading
+              || tokenBalancesLoading
+              || txsLoading
+            }
+            onPress={openCalculator}
+          />
+        </FooterWrapper>
       </ScreenLayout>
       <Calculator
         visible={showCalculator}

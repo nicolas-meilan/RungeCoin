@@ -29,12 +29,14 @@ type QueryOptions = UseQueryOptions<WalletTx[] | null, unknown, WalletTx[] | nul
 type UseMiningPendingTxsProps = {
   options?: Omit<QueryOptions, 'queryKey' | 'queryFn'>;
   onAddError?: () => void;
+  onAddSuccess?: (tx: WalletTx) => void;
   onRemoveError?: () => void;
   onUpdateError?: () => void;
 };
 
 const useMiningPendingTxs = ({
   options,
+  onAddSuccess,
   onAddError,
   onRemoveError,
   onUpdateError,
@@ -86,7 +88,10 @@ const useMiningPendingTxs = ({
   });
 
   const addTx = (txHash: string) => mutateAddTx(txHash, {
-    onSuccess: (newTxs) => queryClient.setQueryData(queryKey, newTxs),
+    onSuccess: (newTxs) => {
+      queryClient.setQueryData(queryKey, newTxs);
+      onAddSuccess?.(newTxs[newTxs.length - 1]);
+    },
   });
 
 

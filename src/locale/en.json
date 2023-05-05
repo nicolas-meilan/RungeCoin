@@ -101,6 +101,7 @@
       "gasPrice": "Gas price: **{{price}}**",
       "totalFee": "Total",
       "sendError": "An error occurred while sending thetransaction",
+      "miningPendingTxs": "You have pending mining transactions",
       "qr": {
         "title": "Scan the QR code of the destination wallet",
         "message": "Remember that the wallet must be from the **Ethereum** network, otherwise you may lose your funds",
