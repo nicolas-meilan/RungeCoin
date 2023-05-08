@@ -19,6 +19,7 @@ const SeedPhraseCard = styled(Card).attrs({
   },
 })`
   max-height: 350px;
+  width: 100%;
 `;
 
 const WordPill = styled(Pill)`

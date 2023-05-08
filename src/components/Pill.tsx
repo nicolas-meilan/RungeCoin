@@ -25,7 +25,7 @@ type PillProps = {
 const PillWrapper = styled.TouchableOpacity<{ color: string }>`
   border: 1px solid ${({ color }) => color};
   border-radius: ${({ theme }) => theme.borderRadius};
-  padding: ${({ theme }) => theme.spacing(2)};
+  padding: ${({ theme }) => theme.spacing(1)} ${({ theme }) => theme.spacing(2)};
   justify-content: center;
   flex-direction: row;
 `;
@@ -34,7 +34,7 @@ const PillText = styled(Text)<{ borderColor: string; color: string }>`
   color: ${({ color }) => color};
   border: 1px solid ${({ borderColor }) => borderColor};
   border-radius: ${({ theme }) => theme.borderRadius};
-  padding: ${({ theme }) => theme.spacing(2)};
+  padding: ${({ theme }) => theme.spacing(1)} ${({ theme }) => theme.spacing(2)};
   justify-content: center;
   vertical-align: middle;
 `;
