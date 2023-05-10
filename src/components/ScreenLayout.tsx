@@ -165,12 +165,12 @@ const ScreenLayout = ({
     };
   }, []);
 
-  useEffect(() => { // Initial loading
+  useEffect(() => { // Wait until navigation finish (loading until first app render finish)
     if (!canRender) {
-      const navigationListenerSuscription = navigation.addListener('transitionEnd' as keyof EventMapCore<any>, () => {
+      const timeoutInstance = setTimeout(() => {
         setCanRender(true);
-        navigationListenerSuscription();
-      });
+        clearTimeout(timeoutInstance);
+      }, 0);
     }
   }, []);
 

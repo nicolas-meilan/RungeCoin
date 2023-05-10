@@ -12,14 +12,10 @@ import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
 import { createSeedPhrase } from '@web3/wallet';
 
-const SeedPhraseCard = styled(Card).attrs({
-  contentContainerStyle: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-})`
-  max-height: 350px;
-  width: 100%;
+const SeedPhraseCard = styled(Card)`
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
 `;
 
 const WordPill = styled(Pill)`
@@ -51,10 +47,7 @@ const CreateSeedPhraseScreen = ({ navigation }: CreateSeedPhraseScreenProps) => 
       hasFooterBanner
       scroll
     >
-      <SeedPhraseCard
-        scroll
-        persistentScrollbar
-      >
+      <SeedPhraseCard>
         {seedPhrase.map((word, index) => (
           <WordPill
             noI18n

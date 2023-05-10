@@ -50,6 +50,10 @@ const ConfigurationWrapper = styled.ScrollView`
   flex: 1;
 `;
 
+const Footer = styled.View`
+  margin-top: ${({ theme }) => theme.spacing(2)};
+`;
+
 const CloseWalletModalContent = styled.View`
   flex: 1;
   justify-content: center;
@@ -155,18 +159,20 @@ const ConfigurationScreen = () => {
             type="error"
           />
         </ConfigurationWrapper>
-        <Info
-          text="main.configuration.derivationPath"
-          i18nArgs={{
-            derivationPath: `${ETH_DERIVATION_PATH}/${BASE_ADDRESS_INDEX}`,
-          }}
-        />
-        <Info
-          text="main.configuration.appVersion"
-          i18nArgs={{
-            version: getVersion(),
-          }}
-        />
+        <Footer>
+          <Info
+            text="main.configuration.derivationPath"
+            i18nArgs={{
+              derivationPath: `${ETH_DERIVATION_PATH}/${BASE_ADDRESS_INDEX}`,
+            }}
+          />
+          <Info
+            text="main.configuration.appVersion"
+            i18nArgs={{
+              version: getVersion(),
+            }}
+          />
+        </Footer>
       </ScreenLayout>
       <Modal
         visible={closeWalletModalVisible}
