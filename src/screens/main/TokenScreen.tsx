@@ -14,11 +14,12 @@ import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import TokenActivity from '@components/TokenActivity';
 import TokenIcon from '@components/TokenIcon';
-import TradingViewChart from '@components/TradingViewChart';
+import TokenInfo from '@components/TokenInfo';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
 import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
+import useNews from '@hooks/useNews';
 import useNotifications from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
@@ -29,7 +30,7 @@ import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 
-const TokenInfo = styled.View`
+const TokenBaseInfo = styled.View`
   flex-direction: row;
   align-items: center;
   margin-vertical: ${({ theme }) => theme.spacing(4)};
@@ -62,10 +63,6 @@ const ButtonsWrapper = styled.View`
   flex-direction: row;
 `;
 
-const StyledScrollView = styled.ScrollView`
-  flex: 1;
-`;
-
 const ActionButton = styled(Button) <{ margin?: boolean }>`
   flex: 1;
   ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
@@ -89,6 +86,17 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     tokenBalancesLoading,
   } = useBalances();
 
+  const token = useMemo(() => (
+    tokenSymbol ? tokens[tokenSymbol] : null
+  ), [tokenSymbol]);
+
+  const {
+    refetchNews,
+    newsLoading,
+  } = useNews({
+    token,
+    withResponse: false,
+  });
 
   const {
     convert,
@@ -96,10 +104,6 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     tokenConversionsLoading,
     refetchTokenConversions,
   } = useTokenConversions();
-
-  const token = useMemo(() => (
-    tokenSymbol ? tokens[tokenSymbol] : null
-  ), [tokenSymbol]);
 
   const {
     refetchTokenActivity,
@@ -135,6 +139,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
 
   const refetchInfo = () => {
     refetchBalances();
+    refetchNews();
     refetchTokenConversions();
   };
 
@@ -145,12 +150,14 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
 
   const refreshControlInfo = usePull2Refresh({
     loading: tokenBalancesLoading
+    || newsLoading
     || tokenConversionsLoading,
     fetch: refetchInfo,
   });
 
   const refreshControlActivity = usePull2Refresh({
     loading: tokenBalancesLoading
+    || newsLoading
     || tokenConversionsLoading
     || tokenActivityLoading
     || txsLoading,
@@ -193,7 +200,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
             onPress={() => toggleReceiveBottomSheet(true)}
           />
         </ButtonsWrapper>
-        <TokenInfo>
+        <TokenBaseInfo>
           <ErrorWrapper requiredValuesToRender={[token]}>
             {token && <TokenIcon tokenSymbol={token.symbol} size={44} />}
             <BalanceWrapper>
@@ -213,14 +220,15 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
               </FiatBalanceSkeleton>
             </BalanceWrapper>
           </ErrorWrapper>
-        </TokenInfo>
+        </TokenBaseInfo>
         <ContentSwitcher
-          labels={['main.token.info', 'main.token.activity.title']}
+          labels={['main.token.info.title', 'main.token.activity.title']}
           components={[
             (
-              <StyledScrollView refreshControl={refreshControlInfo}>
-                <TradingViewChart token={token} />
-              </StyledScrollView>
+              <TokenInfo
+                token={token}
+                refreshControl={refreshControlInfo}
+              />
             ),
             (
               <TokenActivity

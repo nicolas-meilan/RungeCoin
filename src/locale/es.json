@@ -121,7 +121,10 @@
       "gasFee": "Costo de Gas: ≈ {{fee}}"
     },
     "token": {
-      "info": "Información",
+      "info": {
+        "title": "Información",
+        "news": "Noticias"
+      },
       "activity": {
         "title": "Actividad",
         "miningPendingTxs": "Transacciones pendientes de minado",
@@ -178,6 +181,7 @@
     "loadError": "Error al cargar",
     "tryAgain": "Inténtalo de nuevo",
     "balances": "Error al cargar los balances",
+    "news": "Error al cargar las noticias",
     "tokenConversions": "Error al cargar los datos de conversiónes",
     "walletActivity": "Error al cargar la actividad del token",
     "miningPendingTxs": "Error al cargar transacciones pendientes de minado"

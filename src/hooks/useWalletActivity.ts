@@ -73,6 +73,7 @@ const useWalletActivity = ({
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    retry:false,
     queryKey,
     onError,
     queryFn: ({ pageParam = 1 }) => fetchTokenActivity(pageParam),

@@ -117,7 +117,10 @@
       }
     },
     "token": {
-      "info": "Information",
+      "info": {
+        "title": "Information",
+        "news": "News"
+      },
       "activity": {
         "title": "Activity",
         "miningPendingTxs": "Pending mining transactions",
@@ -178,6 +181,7 @@
     "loadError": "Failed to load",
     "tryAgain": "Try again",
     "balances": "Error loading balances",
+    "news": "Error loading news",
     "tokenConversions": "Error loading conversion data",
     "walletActivity": "Error loading activity token",
     "miningPendingTxs": "Error loading mining pending transactions"
