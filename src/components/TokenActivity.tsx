@@ -130,7 +130,7 @@ const TokenActivity = ({
             <ErrorWrapper
               requiredValuesToRender={[null]}
               title="main.token.activity.emptyTitle"
-              message={token ? 'main.token.activity.emptyMessage' : ''}
+              message={token ? 'common.tryRefresh' : ''}
               retryCallback={token ? handleRetry : undefined}
               height={400}
             >

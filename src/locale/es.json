@@ -6,6 +6,7 @@
     "next": "Siguiente",
     "send": "Enviar",
     "receive": "Recibir",
+    "tryRefresh": "Pruebe a refrescar",
     "inputs": {
       "password": "Ingresa una contraseña",
       "passwordPH": "Nueva contraseña",
@@ -121,15 +122,12 @@
       "gasFee": "Costo de Gas: ≈ {{fee}}"
     },
     "token": {
-      "info": {
-        "title": "Información",
-        "news": "Noticias"
-      },
+      "price": "Precio",
+      "news": "Noticias",
       "activity": {
         "title": "Actividad",
         "miningPendingTxs": "Transacciones pendientes de minado",
         "emptyTitle": "No se han encontrado transacciones",
-        "emptyMessage": "Pruebe a refrescar",
         "tx": {
           "title": "Detalle de transacción",
           "rows": {

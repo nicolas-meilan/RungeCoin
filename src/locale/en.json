@@ -6,6 +6,7 @@
     "next": "Next",
     "send": "Send",
     "receive": "Receive",
+    "tryRefresh": "Try refreshing",
     "inputs": {
       "password": "Enter a password",
       "passwordPH": "New password",
@@ -117,15 +118,12 @@
       }
     },
     "token": {
-      "info": {
-        "title": "Information",
-        "news": "News"
-      },
+      "price": "Price",
+      "news": "News",
       "activity": {
         "title": "Activity",
         "miningPendingTxs": "Pending mining transactions",
         "emptyTitle": "No transactions found",
-        "emptyMessage": "Try refreshing",
         "tx": {
           "title": "Transaction detail",
           "rows": {

@@ -3,7 +3,7 @@ import { uniqBy } from 'lodash';
 
 const NEWS_API_KEY = process.env.NEWS_API_KEY;
 const BASE_URL = 'https://newsapi.org/v2/';
-const PAGE_SIZE = 6;
+export const NEWS_PAGE_SIZE = 10;
 
 export type ArticleResponse = {
   articleUrl: string;
@@ -20,7 +20,7 @@ type BaseArticle = {
 };
 
 export const getLatestNews = async (about: string, language: string): Promise<ArticleResponse[]> => {
-  const response = await axios.get<{ articles: BaseArticle[] }>(`${BASE_URL}everything?apiKey=${NEWS_API_KEY}&q=${about}&searchIn=title,description&language=${language}&sortBy=publishedAt&pageSize=${PAGE_SIZE}`);
+  const response = await axios.get<{ articles: BaseArticle[] }>(`${BASE_URL}everything?apiKey=${NEWS_API_KEY}&q=${about}&searchIn=title,description&language=${language}&sortBy=publishedAt&pageSize=${NEWS_PAGE_SIZE}`);
 
   const articles: ArticleResponse[] = response.data.articles.map((item) => ({
     articleUrl: item.url,

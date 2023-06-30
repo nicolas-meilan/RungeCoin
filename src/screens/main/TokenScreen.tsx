@@ -14,7 +14,8 @@ import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import TokenActivity from '@components/TokenActivity';
 import TokenIcon from '@components/TokenIcon';
-import TokenInfo from '@components/TokenInfo';
+import TokenNews from '@components/TokenNews';
+import TokenPrice from '@components/TokenPrice';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
@@ -137,30 +138,34 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     refetchTokenActivity();
   };
 
-  const refetchInfo = () => {
+  const refetchPrice = () => {
     refetchBalances();
-    refetchNews();
     refetchTokenConversions();
   };
 
   const refetchAll = () => {
-    refetchInfo();
+    refetchPrice();
+    refetchNews();
     refetchActivity();
   };
 
-  const refreshControlInfo = usePull2Refresh({
+  const refreshControlPrice = usePull2Refresh({
     loading: tokenBalancesLoading
-    || newsLoading
-    || tokenConversionsLoading,
-    fetch: refetchInfo,
+      || tokenConversionsLoading,
+    fetch: refetchPrice,
+  });
+
+  const refreshControlNews = usePull2Refresh({
+    loading: newsLoading,
+    fetch: refetchNews,
   });
 
   const refreshControlActivity = usePull2Refresh({
     loading: tokenBalancesLoading
-    || newsLoading
-    || tokenConversionsLoading
-    || tokenActivityLoading
-    || txsLoading,
+      || newsLoading
+      || tokenConversionsLoading
+      || tokenActivityLoading
+      || txsLoading,
     fetch: refetchAll,
   });
 
@@ -178,6 +183,35 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     Clipboard.setString(walletPublicValues!.address);
     dispatchNotification('notifications.addressCopied');
   };
+
+  const tabsComponents = useMemo(() => [
+    (
+      <TokenPrice
+        token={token}
+        refreshControl={refreshControlPrice}
+      />
+    ),
+    (
+      <TokenNews
+        token={token}
+        refreshControl={refreshControlNews}
+        retryNews={refetchAll}
+      />
+    ),
+    (
+      <TokenActivity
+        token={token}
+        refreshControl={refreshControlActivity}
+        retryTokenActivity={refetchAll}
+      />
+    ),
+  ], [
+    token,
+    refreshControlPrice, 
+    refreshControlNews,
+    refreshControlActivity,
+    refetchAll,
+  ]);
 
   return (
     <>
@@ -222,22 +256,8 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
           </ErrorWrapper>
         </TokenBaseInfo>
         <ContentSwitcher
-          labels={['main.token.info.title', 'main.token.activity.title']}
-          components={[
-            (
-              <TokenInfo
-                token={token}
-                refreshControl={refreshControlInfo}
-              />
-            ),
-            (
-              <TokenActivity
-                token={token}
-                refreshControl={refreshControlActivity}
-                retryTokenActivity={refetchAll}
-              />
-            ),
-          ]}
+          labels={['main.token.price', 'main.token.news', 'main.token.activity.title']}
+          components={tabsComponents}
         />
       </ScreenLayout>
       <BottomSheet
