@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 
 import {
-  EventMapCore,
   NavigationProp,
   useNavigation,
 } from '@react-navigation/native';

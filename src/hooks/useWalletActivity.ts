@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useInfiniteQuery, UseInfiniteQueryOptions, useQueryClient } from '@tanstack/react-query';
 
@@ -32,6 +32,8 @@ const useWalletActivity = ({
 }: UseWalletActivityProps): UseWalletActivityReturn => {
   const queryClient = useQueryClient();
 
+  const [fetchError, setFetchError] = useState(false);
+
   const { dispatchNotification } = useNotifications();
 
   const { blockchain } = useBlockchainData();
@@ -40,10 +42,13 @@ const useWalletActivity = ({
   const fetchTokenActivity = async (page: number) => {
     if (!walletPublicValues || !tokenAddress) return [];
 
-    return getWalletTxs(walletPublicValues.address, tokenAddress, blockchain, {
+    const walletTxs = await getWalletTxs(walletPublicValues.address, tokenAddress, blockchain, {
       page,
       offset: PAGE_OFFSET,
     });
+
+    setFetchError(false);
+    return walletTxs;
   };
 
   const queryKey: QueryKey = [
@@ -52,7 +57,10 @@ const useWalletActivity = ({
     blockchain,
   ];
 
-  const onError = () => dispatchNotification('error.walletActivity', 'error');
+  const onError = () => {
+    dispatchNotification('error.walletActivity', 'error');
+    setFetchError(true);
+  };
 
   const {
     data,
@@ -85,6 +93,7 @@ const useWalletActivity = ({
   };
 
   const next = async () => {
+    if (fetchError) return;
     await fetchNextPage();
   };
 
