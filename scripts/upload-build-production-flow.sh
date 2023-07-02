@@ -18,8 +18,6 @@ if [ -z "$message" ]; then
   exit 0
 fi
 
-echo "App center message:"
-echo "$message"
 appcenter distribute stores publish\
   -f ./android/app/build/outputs/bundle/release/app-release.aab\
   --store Production\
