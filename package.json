@@ -13,7 +13,9 @@
     "test": "jest",
     "build-android-development": "eval $(./scripts/parsedEnv.sh) && cd android && ./gradlew bundleDebug && cd ..",
     "build-android-release-candidate": "eval $(./scripts/parsedEnv.sh) && cd android && ./gradlew bundleDebug && cd ..",
-    "build-android-release": "eval $(./scripts/parsedEnv.sh) && cd android && ./gradlew bundleRelease && cd .."
+    "build-android-release": "eval $(./scripts/parsedEnv.sh) && cd android && ./gradlew bundleRelease && cd ..",
+    "distribute-development-flow": "eval $(./scripts/parsedEnv.sh) && ./scripts/upload-build-development-flow.sh",
+    "distribute-production-flow": "eval $(./scripts/parsedEnv.sh) && ./scripts/upload-build-production-flow.sh"
   },
   "dependencies": {
     "@ethereumjs/util": "^8.0.3",

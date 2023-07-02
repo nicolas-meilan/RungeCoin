@@ -1,0 +1,48 @@
+name: App Deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: App Environment
+        default: development
+        options:
+          - development
+          - production
+
+jobs:
+  buildAndDeploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 11.0.19
+
+      - name: Install App center
+        run: npm install -g appcenter-cli
+
+      - name: Obtain config
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ secrets.GIT_CONFIG_REPO }}
+          ref: master
+          path: app-configuration
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - name: Obtain env variables
+        run: mv ./app-configuration/.env.${{ github.event.inputs.environment }} ./.env
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build android
+        run: npm run build-android-release
+
+      - name: Publish
+        run: npm run distribute-${{ github.event.inputs.environment }}-flow
