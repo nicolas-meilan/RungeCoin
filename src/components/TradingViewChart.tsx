@@ -8,9 +8,8 @@ import styled, { useTheme } from 'styled-components/native';
 import ErrorWrapper from './ErrorWrapper';
 import Skeleton from './Skeleton';
 import CandlesChartLayout from './Skeleton/CandlesChartLayout';
-import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
-import type { TokenType } from '@web3/tokens';
 import { FiatCurrencies } from '@utils/constants';
+import type { TokenType } from '@web3/tokens';
 
 const CHART_HEIGHT = 400;
 const LOADING_BORDERS = 20;
