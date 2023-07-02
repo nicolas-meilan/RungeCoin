@@ -38,4 +38,4 @@ jobs:
         run: npm run build-android-release
 
       - name: Publish
-        run: npm run distribute-production-flow
+        run: npm run distribute-production-flow -- -m "${{ github.event.release.body }}"
