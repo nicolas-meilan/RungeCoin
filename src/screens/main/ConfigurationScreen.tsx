@@ -16,11 +16,14 @@ import Select from '@components/Select';
 import Switch from '@components/Switch';
 import Text from '@components/Text';
 import Title from '@components/Title';
+import TokenIcon from '@components/TokenIcon';
 import Modal from '@containers/Modal';
 import useBiometrics from '@hooks/useBiometrics';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useDestroyWallet from '@hooks/useDestroyWallet';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import { FiatCurrencies } from '@utils/constants';
 import {
   BASE_ADDRESS_INDEX,
   ETH_DERIVATION_PATH,
@@ -97,6 +100,11 @@ const ConfigurationScreen = () => {
     biometricsEnabledLoading,
   } = useBiometrics();
 
+  const {
+    consolidatedCurrency,
+    setConsolidatedCurrency,
+  } = useConsolidatedCurrency();
+
   const canUseBiometrics = useMemo(deviceHasBiometrics, []);
 
   const languages = useMemo(() => Object.values(Languages).map((key) => ({
@@ -104,6 +112,13 @@ const ConfigurationScreen = () => {
     value: key,
     data: undefined,
   })), [i18n.language]);
+
+  const consolidatedCurrenciesList = useMemo(() => Object.values(FiatCurrencies).map((item) => ({
+    label: item,
+    value: item,
+    leftComponent: <TokenIcon isFiat tokenSymbol={item} size={24} />,
+    data: undefined,
+  })), []);
 
   const toggleCloseWalletModal = (visible: boolean) => setCloseWalletModalVisible(visible);
 
@@ -118,6 +133,14 @@ const ConfigurationScreen = () => {
           <Subtitle title="main.configuration.WalletSectionTitle" />
           <ConfigurationItem>
             <BlockchainSelector label="main.configuration.labels.blockchainSelector" />
+          </ConfigurationItem>
+          <ConfigurationItem>
+            <Select
+              label="main.configuration.labels.consolidatedCurrencySelector"
+              options={consolidatedCurrenciesList}
+              selected={consolidatedCurrency}
+              onChange={(option) => setConsolidatedCurrency(option.value as FiatCurrencies)}
+            />
           </ConfigurationItem>
           {walletPublicValues?.isHw && (
             <ConfigurationItem>

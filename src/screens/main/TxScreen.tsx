@@ -14,13 +14,13 @@ import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import TokenIcon from '@components/TokenIcon';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { TX_URL } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
-import { FiatCurrencies } from '@utils/constants';
 import { formatAddress, numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/tx';
@@ -101,6 +101,7 @@ const TxScreen = ({
   const { dispatchNotification } = useNotifications();
 
   const { walletPublicValues } = useWalletPublicValues();
+  const { consolidatedCurrency } = useConsolidatedCurrency();
   const {
     blockchain,
     blockchainBaseToken,
@@ -130,7 +131,7 @@ const TxScreen = ({
   const balance = BigNumber.from(tx.value);
 
   const balanceFormatted = numberToFormattedString(balance || 0, { decimals: token.decimals });
-  const balanceConverted = numberToFiatBalance(convert(balance || 0, token), FiatCurrencies.USD);
+  const balanceConverted = numberToFiatBalance(convert(balance || 0, token), consolidatedCurrency);
 
   const onPressAdress = (address: string) => {
     Clipboard.setString(address);

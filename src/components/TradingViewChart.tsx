@@ -8,8 +8,9 @@ import styled, { useTheme } from 'styled-components/native';
 import ErrorWrapper from './ErrorWrapper';
 import Skeleton from './Skeleton';
 import CandlesChartLayout from './Skeleton/CandlesChartLayout';
-import { FiatCurrencies } from '@utils/constants';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import type { TokenType } from '@web3/tokens';
+import { FiatCurrencies } from '@utils/constants';
 
 const CHART_HEIGHT = 400;
 const LOADING_BORDERS = 20;
@@ -79,7 +80,6 @@ const ChartSkeletonWrapper = styled(Wrapper)`
 const TradingViewChart = ({ token }: TradingViewChartProps) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
-
   const [size, setSize] = useState({
     width: 0,
     height: 0,

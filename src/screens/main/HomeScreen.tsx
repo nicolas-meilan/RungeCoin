@@ -18,13 +18,13 @@ import TokenPrices from '@components/TokenPrices';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useNotifications from '@hooks/useNotifications';
 import usePull2Refresh from '@hooks/usePull2Refresh';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
-import { FiatCurrencies } from '@utils/constants';
 import { formatAddress, numberToFiatBalance } from '@utils/formatter';
 import type { TokenType } from '@web3/tokens';
 
@@ -71,6 +71,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     refetchTokenConversions,
   } = useTokenConversions();
 
+  const { consolidatedCurrency } = useConsolidatedCurrency();
+
   const {
     tokenBalances,
     refetchBalances,
@@ -90,7 +92,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
 
   const totalConvertedBalance = useMemo(() => {
-    if (!tokenBalances) return `0 ${FiatCurrencies.USD}`;
+    if (!tokenBalances) return `0 ${consolidatedCurrency}`;
 
     const total = tokens.reduce((
       acc: number,
@@ -100,8 +102,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       return acc + currentBalance;
     }, 0);
 
-    return numberToFiatBalance(total, FiatCurrencies.USD);
-  }, [tokenBalances, tokenConversions]);
+    return numberToFiatBalance(total, consolidatedCurrency);
+  }, [consolidatedCurrency, tokenBalances, tokenConversions]);
 
   const onPressAdress = () => {
     Clipboard.setString(walletPublicValues!.address);

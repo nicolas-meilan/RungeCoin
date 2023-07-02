@@ -4,13 +4,13 @@ import SplashScreen from 'react-native-splash-screen';
 
 import initializeI18nConfig from './locale/i18nConfig';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import Navigator from '@navigation/Navigator';
 
 const Root = () => {
   const { themeMode, initializeTheme } = useThemeConfiguration();
-
   const { walletPublicValuesLoading } = useWalletPublicValues({
     refetchOnMount: true,
   });
@@ -18,6 +18,11 @@ const Root = () => {
     blockchainLoading,
     isBlockchainInitialLoading,
   } = useBlockchainData({
+    refetchOnMount: true,
+  });
+  const {
+    consolidatedCurrency,
+  } = useConsolidatedCurrency({
     refetchOnMount: true,
   });
 
@@ -41,6 +46,7 @@ const Root = () => {
 
     const canStart =
       !!themeMode
+      && !!consolidatedCurrency
       && !i18nLoading
       && !walletPublicValuesLoading
       && finishFetchBlockchain;
@@ -51,6 +57,7 @@ const Root = () => {
     themeMode,
     walletPublicValuesLoading,
     finishFetchBlockchain,
+    consolidatedCurrency,
   ]);
 
   useEffect(() => {

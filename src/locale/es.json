@@ -74,6 +74,7 @@
         "hwConnectionSelector": "Cambiar método de conexión de **Ledger**",
         "themeSwitcher": "Modo oscuro",
         "languageSelector": "Cambiar idioma",
+        "consolidatedCurrencySelector": "Cambiar moneda consolidada",
         "changePassword": "Para cambiar la contraseña debes cerrar la billetera"
       }
     },

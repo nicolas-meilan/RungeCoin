@@ -8,6 +8,7 @@ enum StorageKeys {
   PASSWORD_ATTEMPS = 'passwordAttemps',
   BLOCKCHAIN = 'blockchain',
   MINING_PENDING_TXS = 'miningPendingTxs',
+  CONSOLIDATED_CURRENCY = 'consolidatedCurrency',
 }
 
 export default StorageKeys;

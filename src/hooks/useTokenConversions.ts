@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
 import { BigNumber, utils } from 'ethers';
 
+import useConsolidatedCurrency from './useConsolidatedCurrency';
 import useNotifications from './useNotifications';
 import { getTokenConversions, TokenConversionsEndpointResponse } from '@http/tokens';
 import { ReactQueryKeys } from '@utils/constants';
@@ -23,6 +24,7 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
   const queryClient = useQueryClient();
 
   const { dispatchNotification } = useNotifications();
+  const { consolidatedCurrency } = useConsolidatedCurrency();
 
   const onError = () => dispatchNotification('error.tokenConversions', 'error');
 
@@ -48,8 +50,7 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
 
     if (!tokenConversions || balanceToConvert.isZero()) return 0;
 
-    // TODO select to
-    const to = tokenConversions[from.symbol]?.USD || 0;
+    const to = tokenConversions[from.symbol]?.[consolidatedCurrency!] || 0;
     const toDecimals = to.toString().split('.')?.[1]?.length || 0;
 
     const convertedBalance = balanceToConvert

@@ -10,11 +10,12 @@ export enum ReactQueryKeys {
   TOKEN_ACTIVITY = 'tokenActivity',
   BLOCKCHAIN = 'blockchain',
   MINING_PENDING_TXS = 'miningPendingTxs',
+  CONSOLIDATED_CURRENCY = 'consolidatedCurrency',
 }
 
 export enum FiatCurrencies {
-  EUR = 'EUR',
   USD = 'USD',
+  EUR = 'EUR',
   ARS = 'ARS',
 }
 

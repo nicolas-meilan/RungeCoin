@@ -9,12 +9,12 @@ import Icon from './Icon';
 import Skeleton from './Skeleton';
 import Text from './Text';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import type { WalletTx } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import type { MainNavigatorType } from '@navigation/MainNavigator';
-import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/tx';
@@ -86,7 +86,7 @@ const TokenActivityItem = ({
     blockchainBaseToken,
   } = useBlockchainData();
   const { walletPublicValues } = useWalletPublicValues();
-
+  const { consolidatedCurrency } = useConsolidatedCurrency();
   const {
     convert,
     tokenConversions,
@@ -114,7 +114,7 @@ const TokenActivityItem = ({
   if (!token) return null;
 
   const balanceFormatted = numberToFormattedString(balance, { decimals: token.decimals });
-  const balanceConverted = numberToFiatBalance(convert(balance, token), FiatCurrencies.USD);
+  const balanceConverted = numberToFiatBalance(convert(balance, token), consolidatedCurrency);
 
   const goToTx = () => navigation.navigate(ScreenName.tx, { token, tx: activityItem });
 

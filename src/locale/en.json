@@ -74,6 +74,7 @@
         "hwConnectionSelector": "Change **Ledger** connection method",
         "themeSwitcher": "Dark mode",
         "languageSelector": "Change language",
+        "consolidatedCurrencySelector": "Change consolidated currency",
         "changePassword": "To change the password you must close the wallet"
       }
     },

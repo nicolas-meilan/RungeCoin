@@ -8,12 +8,15 @@ import {
   TOKEN_ICON_URL,
   TOKEN_ICON_URL_REPLACER,
 } from '@http/tokens';
+import { FiatCurrencies } from '@utils/constants';
+import { getFiatIconUrl } from '@utils/fiat';
 import type { TokenType } from '@web3/tokens';
 
 type TokenStatus = 'success' | 'warning' | 'error';
 
 export type TokenIconProps = SvgProps & {
-  tokenSymbol: TokenType['symbol'];
+  tokenSymbol: TokenType['symbol'] | FiatCurrencies;
+  isFiat?: boolean;
   status?: TokenStatus;
 };
 
@@ -31,6 +34,7 @@ const StyledSvg = styled(Svg) <{ status?: TokenStatus }>`
 const TokenIcon = ({
   status,
   tokenSymbol,
+  isFiat = false,
   ...props
 }: TokenIconProps) => {
   const [hasError, setHasError] = useState(false);
@@ -39,13 +43,17 @@ const TokenIcon = ({
 
   const svg = hasError ? defaultTokenIcon : null;
 
+  const iconUrl = isFiat
+    ? getFiatIconUrl(tokenSymbol as FiatCurrencies)
+    : TOKEN_ICON_URL.replace(TOKEN_ICON_URL_REPLACER, tokenSymbol);
+
   return (
     <StyledSvg
       status={status}
       svg={svg}
       onError={onError}
       viewBox='0 0 18 18'
-      uri={TOKEN_ICON_URL.replace(TOKEN_ICON_URL_REPLACER, tokenSymbol)}
+      uri={iconUrl}
       {...props}
     />
   );

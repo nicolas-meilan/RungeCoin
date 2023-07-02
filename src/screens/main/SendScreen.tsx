@@ -20,6 +20,7 @@ import TokenItem from '@components/TokenItem';
 import useBalances, { TokensBalanceArrayItem } from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
@@ -28,7 +29,6 @@ import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import type { WalletTx } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
-import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { GWEI, TokenSymbol, TokenType } from '@web3/tokens';
 import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
@@ -81,6 +81,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const { dispatchNotification } = useNotifications();
 
   const [firstRender, setFirstRender] = useState(true);
+
+  const { consolidatedCurrency } = useConsolidatedCurrency();
 
   const {
     biometricsEnabled,
@@ -349,7 +351,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
                 <Text
                   text={numberToFiatBalance(
                     convert(estimatedTxInfo?.totalFee || 0, blockchainBaseToken),
-                    FiatCurrencies.USD,
+                    consolidatedCurrency,
                   )}
                 />
               </Skeleton>

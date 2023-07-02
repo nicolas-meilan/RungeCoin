@@ -7,6 +7,7 @@ import Icon from './Icon';
 import Skeleton from './Skeleton';
 import Text from './Text';
 import TokenIcon, { TokenIconProps } from './TokenIcon';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useTokenConversions from '@hooks/useTokenConversions';
 import {
   numberToFormattedString,
@@ -99,9 +100,10 @@ const TokenItem = ({
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
   });
+  const { consolidatedCurrency } = useConsolidatedCurrency();
 
   const balanceFormatted = numberToFormattedString(balance || 0, { decimals });
-  const balanceConverted = numberToFiatBalance(convert(balance || 0, { symbol, decimals }), 'USD');
+  const balanceConverted = numberToFiatBalance(convert(balance || 0, { symbol, decimals }), consolidatedCurrency);
 
   const dataColumn = fullName ? (
     <>

@@ -19,6 +19,7 @@ import TokenPrice from '@components/TokenPrice';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
+import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNews from '@hooks/useNews';
 import useNotifications from '@hooks/useNotifications';
@@ -28,7 +29,6 @@ import useWalletActivity from '@hooks/useWalletActivity';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
-import { FiatCurrencies } from '@utils/constants';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 
 const TokenBaseInfo = styled.View`
@@ -80,6 +80,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
 
   const { walletPublicValues } = useWalletPublicValues();
   const { tokens } = useBlockchainData();
+  const { consolidatedCurrency } = useConsolidatedCurrency();
 
   const {
     tokenBalances,
@@ -250,7 +251,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
                 isLoading={!tokenBalances || !tokenConversions}
                 height={25}
               >
-                <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, FiatCurrencies.USD)} />
+                <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, consolidatedCurrency)} />
               </FiatBalanceSkeleton>
             </BalanceWrapper>
           </ErrorWrapper>
