@@ -31,16 +31,17 @@ const Background = styled(ImageBackground)`
   flex: 1;
 `;
 
-const Overflow = styled.View`
+const Overlay = styled.View`
   position: absolute;
   width: 100%;
   height: 100%;
-  opacity: 0.8;
-  background-color: ${({ theme }) => theme.colors.background.secondary};
+  opacity: 0.7;
+  background-color: ${({ theme }) => theme.colors.statics.black};
 `;
 
 const Title = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
+  color: ${({ theme }) => theme.colors.statics.white};
 `;
 
 const Author = styled(Text)`
@@ -69,7 +70,7 @@ const ArticleCard = ({
       <Background
         source={backgroundSrc}
       >
-        <Overflow />
+        <Overlay />
         <Content>
           <Title text={article.title} />
           <Author text={article.author} />

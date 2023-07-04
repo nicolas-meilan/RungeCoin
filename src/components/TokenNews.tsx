@@ -13,6 +13,7 @@ import type { TokenType } from '@web3/tokens';
 const StyledScrollView = styled.ScrollView`
   flex: 1;
 `;
+
 const StyledArticle = styled(ArticleCard)`
   margin-vertical: ${({ theme }) => theme.spacing(2)};
 `;
