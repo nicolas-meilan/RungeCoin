@@ -78,7 +78,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
 
   const { dispatchNotification } = useNotifications();
 
-  const { walletPublicValues } = useWalletPublicValues();
+  const { address } = useWalletPublicValues();
   const { tokens } = useBlockchainData();
   const { consolidatedCurrency } = useConsolidatedCurrency();
 
@@ -181,7 +181,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
 
   const onPressAdress = () => {
-    Clipboard.setString(walletPublicValues!.address);
+    Clipboard.setString(address!);
     dispatchNotification('notifications.addressCopied');
   };
 

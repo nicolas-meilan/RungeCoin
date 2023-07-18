@@ -1,54 +1,56 @@
 import { useState } from 'react';
 
 import { BigNumber } from 'ethers';
-import EncryptedStorage from 'react-native-encrypted-storage';
 
 import useBlockchainData from './useBlockchainData';
+import usePrivateKey from './usePrivateKey';
 import useWalletPublicValues from './useWalletPublicValues';
-import StorageKeys from '@system/storageKeys';
+import { WalletTx } from '@http/tx/types';
 import type { TokenType } from '@web3/tokens';
 import {
-  estimateTxInfo as web3EstimateTxInfo,
-  send,
-  TxInfo,
+  estimateTxFees as web3EstimateTxFees,
+  sendTx,
 } from '@web3/tx';
+import { SenndTxReturn, TxFees } from '@web3/tx/types';
 
-export const CONFIRMATIONS_TO_SUCCESS_TRANSACTION = 5;
+export const ERC20_CONFIRMATIONS_TO_SUCCESS_TRANSACTION = 5;
+export const TRON_CONFIRMATIONS_TO_SUCCESS_TRANSACTION = 1;
 
 type UseTxReturn = {
-  estimatedTxInfo: TxInfo | null;
-  estimatedTxInfoLoading: boolean;
-  estimatedTxInfoError: boolean;
-  fetchestimateTxInfo: (toAddress: string, tokenAddress: string) => void;
+  estimatedTxFees: TxFees | null;
+  estimatedTxFeesLoading: boolean;
+  estimatedTxFeesError: boolean;
+  fetchEstimateTxFees: (toAddress: string, token: TokenType) => void;
   sendToken: (toAddress: string, token: TokenType, amount: BigNumber | number | string) => void;
   sendTokenLoading: boolean;
   sendTokenError: boolean;
 };
 
 type UseTxProps = {
-  onSendFinish?: (txHash: string) => void;
+  onSendFinish?: (txReturn: SenndTxReturn<WalletTx | undefined>) => void;
 };
 
 const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
-  const { walletPublicValues } = useWalletPublicValues();
+  const { getPrivateKey } = usePrivateKey();
+  const { walletPublicValues, address } = useWalletPublicValues();
   const { blockchain } = useBlockchainData();
 
-  const [estimatedTxInfo, setEstimatedTxInfo] = useState<TxInfo | null>(null);
-  const [estimatedTxInfoLoading, setEstimatedTxInfoLoading] = useState(false);
-  const [estimatedTxInfoError, setEstimatedTxInfoError] = useState(false);
+  const [estimatedTxFees, setEstimatedTxInfo] = useState<TxFees | null>(null);
+  const [estimatedTxFeesLoading, setEstimatedTxInfoLoading] = useState(false);
+  const [estimatedTxFeesError, setEstimatedTxFeesError] = useState(false);
 
   const [sendTokenLoading, setSendTokenLoading] = useState(false);
   const [sendTokenError, setSendTokenError] = useState(false);
 
-  const fetchestimateTxInfo: UseTxReturn['fetchestimateTxInfo'] = async (toAddress, tokenAddress) => {
-    if (!walletPublicValues) return;
+  const fetchEstimateTxFees: UseTxReturn['fetchEstimateTxFees'] = async (toAddress, token) => {
+    if (!address) return;
     setEstimatedTxInfoLoading(true);
-    setEstimatedTxInfoError(false);
+    setEstimatedTxFeesError(false);
     try {
-      const newTxinfo = await web3EstimateTxInfo(blockchain, walletPublicValues.address, toAddress, tokenAddress);
+      const newTxinfo = await web3EstimateTxFees(blockchain, address, toAddress, token);
       setEstimatedTxInfo(newTxinfo);
     } catch (error) {
-      setEstimatedTxInfoError(true);
+      setEstimatedTxFeesError(true);
     }
     setEstimatedTxInfoLoading(false);
   };
@@ -57,21 +59,21 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
     setSendTokenLoading(true);
     setSendTokenError(false);
     try {
-      const privateKey = await EncryptedStorage.getItem(StorageKeys.WALLET_PRIVATE_KEY);
+      const privateKey = await getPrivateKey(blockchain);
 
-      if (!walletPublicValues) {
+      if (!walletPublicValues || !address) {
         setSendTokenLoading(false);
         setSendTokenError(true);
         return;
       }
 
-      const txHash = await send(blockchain, walletPublicValues.address, toAddress, token, amount, {
+      const data = await sendTx(blockchain, address, toAddress, token, amount, {
         privateKey,
         isHw: walletPublicValues.isHw,
         hwBluetooth: walletPublicValues.hwConnectedByBluetooth,
       });
 
-      onSendFinish?.(txHash);
+      onSendFinish?.(data);
     } catch (error) {
       setSendTokenError(true);
     }
@@ -80,10 +82,10 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
   };
 
   return {
-    estimatedTxInfo,
-    estimatedTxInfoLoading,
-    estimatedTxInfoError,
-    fetchestimateTxInfo,
+    estimatedTxFees,
+    estimatedTxFeesLoading,
+    estimatedTxFeesError,
+    fetchEstimateTxFees,
     sendToken,
     sendTokenLoading,
     sendTokenError,

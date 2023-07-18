@@ -9,6 +9,7 @@ import Message from '@components/Message';
 import ScreenLayout from '@components/ScreenLayout';
 import Text from '@components/Text';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import { Blockchains } from '@web3/constants';
 
 const Content = styled.ScrollView`
   flex: 1;
@@ -37,7 +38,7 @@ const ConnectWithHwScreen = () => {
 
   const hwWalletAction = () => {
     setHwWalletError(false);
-    setWalletPublicValuesHw(walletPublicValues?.hwConnectedByBluetooth);
+    setWalletPublicValuesHw(Blockchains.ETHEREUM, walletPublicValues?.hwConnectedByBluetooth);
   };
 
   return (

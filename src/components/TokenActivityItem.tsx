@@ -12,12 +12,12 @@ import useBlockchainData from '@hooks/useBlockchainData';
 import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
-import type { WalletTx } from '@http/tx';
+import type { WalletTx } from '@http/tx/types';
 import { ScreenName } from '@navigation/constants';
 import type { MainNavigatorType } from '@navigation/MainNavigator';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
-import { isSendTx, txStatus } from '@utils/tx';
+import { isSendTx, txStatus } from '@utils/web3';
 
 type TokenActivityItemProps = {
   activityItem: WalletTx;
@@ -85,7 +85,7 @@ const TokenActivityItem = ({
     tokens: tokensObj,
     blockchainBaseToken,
   } = useBlockchainData();
-  const { walletPublicValues } = useWalletPublicValues();
+  const { address } = useWalletPublicValues();
   const { consolidatedCurrency } = useConsolidatedCurrency();
   const {
     convert,
@@ -105,7 +105,7 @@ const TokenActivityItem = ({
     : blockchainBaseToken;
 
   const balance = BigNumber.from(activityItem.value);
-  const isSending = isSendTx(activityItem, walletPublicValues?.address);
+  const isSending = isSendTx(activityItem, address);
   const txIcon = isSending ? 'arrow-top-right' : 'arrow-bottom-left';
   const txIconColor = isSending ? theme.colors.error : theme.colors.success;
 

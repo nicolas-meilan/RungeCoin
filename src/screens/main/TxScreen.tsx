@@ -23,7 +23,7 @@ import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { formatAddress, numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
 import { formatDate } from '@utils/time';
-import { isSendTx, txStatus } from '@utils/tx';
+import { isSendTx, txStatus } from '@utils/web3';
 import { GWEI } from '@web3/tokens';
 
 type TxScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.tx>;
@@ -100,7 +100,7 @@ const TxScreen = ({
   const theme = useTheme();
   const { dispatchNotification } = useNotifications();
 
-  const { walletPublicValues } = useWalletPublicValues();
+  const { address } = useWalletPublicValues();
   const { consolidatedCurrency } = useConsolidatedCurrency();
   const {
     blockchain,
@@ -122,9 +122,9 @@ const TxScreen = ({
     forceHome,
   } = route.params;
 
-  const txGasTotal = useMemo(() => BigNumber.from(tx.gasPrice).mul(tx.gasUsed), [tx]);
+  const txGasTotal = useMemo(() => BigNumber.from(tx.gasPrice || '0').mul(tx.gasUsed || 0), [tx]);
   const status = txStatus(tx);
-  const isSending = isSendTx(tx, walletPublicValues?.address);
+  const isSending = isSendTx(tx, address);
   const txIcon = isSending ? 'arrow-right' : 'arrow-left';
   const txIconColor = isSending ? theme.colors.error : theme.colors.success;
   const txAddress = isSending ? tx.to : tx.from;
@@ -133,8 +133,8 @@ const TxScreen = ({
   const balanceFormatted = numberToFormattedString(balance || 0, { decimals: token.decimals });
   const balanceConverted = numberToFiatBalance(convert(balance || 0, token), consolidatedCurrency);
 
-  const onPressAdress = (address: string) => {
-    Clipboard.setString(address);
+  const onPressAdress = (addressToCopy: string) => {
+    Clipboard.setString(addressToCopy);
     dispatchNotification('notifications.addressCopied');
   };
 
@@ -164,10 +164,10 @@ const TxScreen = ({
       <Card>
         <FromToWrapper>
           <StyledPill
-            text={formatAddress(walletPublicValues!.address)}
+            text={formatAddress(address!)}
             type="info"
             noI18n
-            onPress={() => onPressAdress(walletPublicValues!.address)}
+            onPress={() => onPressAdress(address!)}
           />
           <FromToIcon name={txIcon} color={txIconColor} />
           <StyledPill
@@ -189,20 +189,22 @@ const TxScreen = ({
             </AmountSkeleton>
           </AmountSkeletonWrapper>
         </Amount>
-        <Gas>
-          <Subtitle text="main.token.activity.tx.rows.gasTitle" />
-          <RowData text="main.token.activity.tx.rows.gasUsed" i18nArgs={{ gasUsed: tx.gasUsed }} />
-          <RowData text="main.token.activity.tx.rows.gasPrice" i18nArgs={{
-            gasPrice: `${numberToFormattedString(tx.gasPrice, {
-              decimals: GWEI.toLowerCase(),
-            })} ${GWEI}`,
-          }} />
-          <RowData text="main.token.activity.tx.rows.gasTotal" i18nArgs={{
-            gasTotal: `${numberToFormattedString(txGasTotal, {
-              decimals: blockchainBaseToken.decimals,
-            })} ${blockchainBaseToken.symbol}`,
-          }} />
-        </Gas>
+        {!txGasTotal.isZero() && (
+          <Gas>
+            <Subtitle text="main.token.activity.tx.rows.gasTitle" />
+            <RowData text="main.token.activity.tx.rows.gasUsed" i18nArgs={{ gasUsed: tx.gasUsed || 0 }} />
+            <RowData text="main.token.activity.tx.rows.gasPrice" i18nArgs={{
+              gasPrice: `${numberToFormattedString(tx.gasPrice || 0, {
+                decimals: GWEI.toLowerCase(),
+              })} ${GWEI}`,
+            }} />
+            <RowData text="main.token.activity.tx.rows.gasTotal" i18nArgs={{
+              gasTotal: `${numberToFormattedString(txGasTotal, {
+                decimals: blockchainBaseToken.decimals,
+              })} ${blockchainBaseToken.symbol}`,
+            }} />
+          </Gas>
+        )}
         <Subtitle text="main.token.activity.tx.rows.hash" />
         <Hash text={tx.hash} onPress={onPressHash} />
         <Footer>

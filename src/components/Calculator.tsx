@@ -188,7 +188,7 @@ const Calculator = ({
   useEffect(() => {
     if (!token || !tokenBalances) return;
 
-    const amountBN = utils.parseUnits(amount);
+    const amountBN = utils.parseUnits(amount, token.decimals);
     setBalanceExceeded(amountBN.gt(maxAmount));
   }, [amount, tokenBalances, token]);
 

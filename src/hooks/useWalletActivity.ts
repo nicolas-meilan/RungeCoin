@@ -5,7 +5,8 @@ import { useInfiniteQuery, UseInfiniteQueryOptions, useQueryClient } from '@tans
 import useBlockchainData from './useBlockchainData';
 import useNotifications from './useNotifications';
 import useWalletPublicValues from './useWalletPublicValues';
-import { WalletTx, getWalletTxs } from '@http/tx';
+import { getWalletTxs } from '@http/tx';
+import { WalletTx } from '@http/tx/types';
 import { ReactQueryKeys } from '@utils/constants';
 import { Blockchains } from '@web3/constants';
 
@@ -37,12 +38,12 @@ const useWalletActivity = ({
   const { dispatchNotification } = useNotifications();
 
   const { blockchain } = useBlockchainData();
-  const { walletPublicValues } = useWalletPublicValues();
+  const { address } = useWalletPublicValues();
 
   const fetchTokenActivity = async (page: number) => {
-    if (!walletPublicValues || !tokenAddress) return [];
+    if (!address || !tokenAddress) return [];
 
-    const walletTxs = await getWalletTxs(walletPublicValues.address, tokenAddress, blockchain, {
+    const walletTxs = await getWalletTxs(address, tokenAddress, blockchain, {
       page,
       offset: PAGE_OFFSET,
     });
@@ -76,9 +77,10 @@ const useWalletActivity = ({
     retry:false,
     queryKey,
     onError,
-    queryFn: ({ pageParam = 1 }) => fetchTokenActivity(pageParam),
+    queryFn: ({ pageParam }) => fetchTokenActivity(pageParam || 1),
     getNextPageParam: (lastPage, allPages) => {
-      if ((lastPage?.length || 0) < PAGE_OFFSET) return undefined;
+      const lastPageLength = lastPage?.length || 0;
+      if (lastPageLength < PAGE_OFFSET) return undefined;
 
       return (allPages?.length || 0) + 1;
     },

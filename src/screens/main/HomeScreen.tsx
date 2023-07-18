@@ -59,7 +59,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const { dispatchNotification } = useNotifications();
 
 
-  const { walletPublicValues } = useWalletPublicValues();
+  const { address } = useWalletPublicValues();
   const {
     tokens: tokensObj,
   } = useBlockchainData();
@@ -106,7 +106,9 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   }, [consolidatedCurrency, tokenBalances, tokenConversions]);
 
   const onPressAdress = () => {
-    Clipboard.setString(walletPublicValues!.address);
+    if (!address) return;
+
+    Clipboard.setString(address);
     dispatchNotification('notifications.addressCopied');
   };
 
@@ -157,7 +159,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
             </BalanceSkeleton>
           </ErrorWrapper>
           <Pill
-            text={formatAddress(walletPublicValues!.address)}
+            text={formatAddress(address!)}
             type="info"
             onPress={onPressAdress}
             noI18n

@@ -13,7 +13,9 @@ export enum TokenSymbol {
   BNB = 'BNB',
   USDT = 'USDT',
   DAI = 'DAI',
+  TRX = 'TRX',
   UNI = 'UNI',
+  USDJ = 'USDJ',
 }
 
 export type TokenType = {
@@ -177,10 +179,43 @@ export const TOKENS_BSC: TokensStruct = {
   },
 };
 
+const TOKENS_TRON_MAINNET: TokensStruct = {
+  [TokenSymbol.TRX]: {
+    name: 'Tron',
+    symbol: TokenSymbol.TRX,
+    address: BASE_TOKEN_ADDRESS,
+    decimals: 6,
+  },
+  [TokenSymbol.USDT]: {
+    name: 'Tether USD',
+    symbol: TokenSymbol.USDT,
+    address: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+    decimals: 6,
+  },
+};
+
+const TOKENS_TRON_NILE: TokensStruct = {
+  [TokenSymbol.TRX]: {
+    name: 'Tron',
+    symbol: TokenSymbol.TRX,
+    address: BASE_TOKEN_ADDRESS,
+    decimals: 6,
+  },
+  [TokenSymbol.USDJ]: {
+    name: 'Tether USDJ',
+    symbol: TokenSymbol.USDJ,
+    address: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL',
+    decimals: 18,
+  },
+};
+
+export const TOKENS_TRON = isDev() ? TOKENS_TRON_NILE : TOKENS_TRON_MAINNET;
+
 const TOKENS_BY_BLOCKCHAIN = {
   [Blockchains.ETHEREUM]: TOKENS_ETH,
   [Blockchains.POLYGON]: TOKENS_POLYGON,
   [Blockchains.BSC]: TOKENS_BSC,
+  [Blockchains.TRON]: TOKENS_TRON,
 };
 
 const getTokens = (blockchain?: Blockchains) => (blockchain

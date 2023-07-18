@@ -28,14 +28,14 @@ const Wrapper = styled.View`
 const Navigator = () => {
   const navigatorRef = useRef<NavigationContainerRef<MainNavigatorType>>(null);
   const { comesFromStartFlow } = useStartFlowFlag();
-  const { walletPublicValues } = useWalletPublicValues();
+  const { address } = useWalletPublicValues();
 
   const mainNavigatorInitialScreen = useMemo(() => (comesFromStartFlow
     ? ScreenName.home
     : ScreenName.validateAccess
   ), [comesFromStartFlow]);
 
-  const hasWallet = useMemo(() => !!walletPublicValues?.address, [walletPublicValues]);
+  const hasWallet = useMemo(() => !!address, [address]);
 
   useLockScreen(navigatorRef, hasWallet);
 

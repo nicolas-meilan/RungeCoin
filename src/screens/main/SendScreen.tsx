@@ -26,12 +26,15 @@ import useNotifications from '@hooks/useNotifications';
 import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
-import type { WalletTx } from '@http/tx';
+import type { WalletTx } from '@http/tx/types';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
+import { Blockchains } from '@web3/constants';
 import { GWEI, TokenSymbol, TokenType } from '@web3/tokens';
-import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
+import { isValidAddressToSend } from '@web3/tx';
+import { SenndTxReturn } from '@web3/tx/types';
+import { getAddressRegex } from '@web3/wallet';
 
 const FooterWrapper = styled.View`
   margin-top: ${({ theme }) => theme.spacing(10)};
@@ -128,12 +131,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     onAddSuccess,
   });
 
-  const onSendFinish = (txHash: string) => addTx(txHash);
+  const onSendFinish = (txData: SenndTxReturn<WalletTx | undefined>) => addTx(txData);
 
   const {
-    estimatedTxInfo,
-    estimatedTxInfoLoading,
-    fetchestimateTxInfo,
+    estimatedTxFees,
+    estimatedTxFeesLoading,
+    fetchEstimateTxFees,
     sendTokenLoading,
     sendToken,
     sendTokenError,
@@ -166,10 +169,15 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   ), [blockchainBaseToken, tokenBalances]);
 
   const hasNotBalanceForGas = useMemo(() => (
-    estimatedTxInfo?.totalFee.gt(blockchainBaseTokenBalance) || false
-  ), [estimatedTxInfo, tokenBalances]);
+    estimatedTxFees?.totalFee.gt(blockchainBaseTokenBalance) || false
+  ), [estimatedTxFees, tokenBalances]);
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
+
+  const onAddressChange = (newAddress: string) => {
+    setAddressToSendError(!!newAddress && !isValidAddressToSend(blockchain, newAddress));
+    setAddressToSend(newAddress);
+  };
 
   useEffect(() => {
     updateTxs();
@@ -179,10 +187,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     }
 
     setTokenToSend(null);
+    onAddressChange('');
   }, [blockchain]);
 
   useEffect(() => {
-    if (allDataSetted) fetchestimateTxInfo(addressToSend, tokenToSend.address);
+    if (allDataSetted) fetchEstimateTxFees(addressToSend, tokenToSend);
   }, [tokenToSend, addressToSend, addressToSendError]);
 
   useEffect(() => {
@@ -190,10 +199,6 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   }, [sendTokenError]);
 
   const onTokenChange = (newToken: Option<TokenType>) => setTokenToSend(newToken.data);
-  const onAddressChange = (newAddress: string) => {
-    setAddressToSendError(!!newAddress && !ethers.utils.isAddress(newAddress));
-    setAddressToSend(newAddress);
-  };
 
   const openCalculator = () => setShowCalculator(true);
   const closeCalculator = () => setShowCalculator(false);
@@ -210,7 +215,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     }
 
     closeCalculator();
-    if (estimatedTxInfo?.totalFee.gt(blockchainBaseTokenBalance)) {
+    if (estimatedTxFees?.totalFee.gt(blockchainBaseTokenBalance)) {
       dispatchNotification('main.send.notFoundsForFeeNotification', 'error');
       return;
     }
@@ -218,7 +223,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   };
 
   const onScanQr = (qrCode: string) => {
-    const address = WALLET_ADDRESS_REGEX.exec(qrCode)?.[0] || '';
+    const addressRegex = getAddressRegex(blockchain);
+    const address = addressRegex.exec(qrCode)?.[0] || '';
 
     const qrError = !ethers.utils.isAddress(address);
     if (qrError) {
@@ -307,7 +313,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           icon="qrcode-scan"
           onPressIcon={openQrScanner}
         />
-        {allDataSetted && (
+        {allDataSetted && blockchain !== Blockchains.TRON && (
           <>
             <GasMessage
               text="main.send.gasDescription"
@@ -315,7 +321,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
             <Card>
               <GasTitle text="main.send.gasFee" avoidTopMargin />
               <Skeleton
-                isLoading={estimatedTxInfoLoading}
+                isLoading={estimatedTxFeesLoading}
                 height={14}
                 width="90%"
                 quantity={2}
@@ -323,13 +329,13 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
                 <Text
                   text="main.send.gasUnits"
                   i18nArgs={{
-                    units: estimatedTxInfo?.gasUnits.toNumber(),
+                    units: estimatedTxFees?.gasUnits?.toNumber(),
                   }}
                 />
                 <Text
                   text="main.send.gasPrice"
                   i18nArgs={{
-                    price: `${numberToFormattedString(estimatedTxInfo?.gasPrice || 0, {
+                    price: `${numberToFormattedString(estimatedTxFees?.gasPrice || 0, {
                       decimals: GWEI.toLowerCase(),
                     })} ${GWEI}`,
                   }}
@@ -337,20 +343,20 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
               </Skeleton>
               <GasTitle text="main.send.totalFee" />
               <Skeleton
-                isLoading={estimatedTxInfoLoading}
+                isLoading={estimatedTxFeesLoading}
                 height={14}
                 width="90%"
                 quantity={2}
               >
                 <TotalFeeText
                   error={hasNotBalanceForGas}
-                  text={`≈ ${numberToFormattedString(estimatedTxInfo?.totalFee || 0, {
+                  text={`≈ ${numberToFormattedString(estimatedTxFees?.totalFee || 0, {
                     decimals: blockchainBaseToken.decimals,
                   })} ${blockchainBaseToken.symbol}`}
                 />
                 <Text
                   text={numberToFiatBalance(
-                    convert(estimatedTxInfo?.totalFee || 0, blockchainBaseToken),
+                    convert(estimatedTxFees?.totalFee || 0, blockchainBaseToken),
                     consolidatedCurrency,
                   )}
                 />
@@ -371,7 +377,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           <Button
             text="common.continue"
             disabled={!allDataSetted || hasNotBalanceForGas}
-            loading={estimatedTxInfoLoading
+            loading={estimatedTxFeesLoading
               || sendTokenLoading
               || isBlockchainInitialLoading
               || walletPublicValuesLoading
@@ -387,7 +393,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         tokenSymbol={tokenToSend?.symbol}
         onClose={closeCalculator}
         onEnd={onCalculatorEnd}
-        transactionFee={estimatedTxInfo?.totalFee}
+        transactionFee={estimatedTxFees?.totalFee}
       />
       <QrScanner
         visible={showQrScanner}

@@ -158,7 +158,8 @@
   "blockchain": {
     "ETHEREUM": "Blockchain Ethereum",
     "POLYGON": "Blockchain Polygon",
-    "BSC": "Blockchain BSC"
+    "BSC": "Blockchain BNB",
+    "TRON": "Blockchain Tron"
   },
   "dateformat": {
     "date": "dd/MM/yyyy",

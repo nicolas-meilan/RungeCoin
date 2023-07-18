@@ -9,16 +9,17 @@ import {
 } from '@tanstack/react-query';
 
 import useBlockchainData from './useBlockchainData';
-import type { WalletTx } from '@http/tx';
+import type { WalletTx } from '@http/tx/types';
 import StorageKeys from '@system/storageKeys';
 import { ReactQueryKeys } from '@utils/constants';
 import { Blockchains } from '@web3/constants';
-import { obtainTxData } from '@web3/tx';
+import { processTxToSave } from '@web3/tx';
+import { SenndTxReturn } from '@web3/tx/types';
 
 type UseMiningPendingTxsReturn = {
   txs: WalletTx[];
   txsLoading: boolean;
-  addTx: (txHash: string) => void;
+  addTx: (tx: SenndTxReturn<WalletTx | undefined>) => void;
   removeTx: (txHash: string) => void;
   updateTxs: () => void;
 };
@@ -65,12 +66,16 @@ const useMiningPendingTxs = ({
     ...options,
   });
 
-  const addTxToStorage = async (txHash: string) => {
+  const addTxToStorage = async (txData: SenndTxReturn<WalletTx | undefined>) => {
     const txsToAddNew = currentTxs.length
       ? currentTxs
       : (await getTxs());
     
-    const tx = await obtainTxData(txHash, blockchain);
+    const tx = await processTxToSave({
+      hash: txData.hash,
+      tx: txData.tx,
+      blockchain,
+    });
 
     if (!tx) return txsToAddNew;
 
@@ -87,7 +92,7 @@ const useMiningPendingTxs = ({
     onError: onAddError,
   });
 
-  const addTx = (txHash: string) => mutateAddTx(txHash, {
+  const addTx: UseMiningPendingTxsReturn['addTx'] = (txData) => mutateAddTx(txData, {
     onSuccess: (newTxs) => {
       queryClient.setQueryData(queryKey, newTxs);
       onAddSuccess?.(newTxs[newTxs.length - 1]);
@@ -115,7 +120,12 @@ const useMiningPendingTxs = ({
       ? currentTxs
       : (await getTxs());
   
-    const updatedTxs = await Promise.all(allTxs.map(({ hash }) => obtainTxData(hash, blockchain)));
+    const updatedTxs = await Promise.all(allTxs.map((currentTx) => processTxToSave({
+      hash: currentTx.hash,
+      blockchain,
+      tx: currentTx,
+      needsUpdate: true,
+    })));
 
     const newTxs = updatedTxs.reduce((acc: WalletTx[], tx, index) => {
       if (!tx) return [...acc, allTxs[index]]; // error on the web3 response

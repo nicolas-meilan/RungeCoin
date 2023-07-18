@@ -1,24 +1,15 @@
 import type { SignatureLike } from '@ethersproject/bytes';
 import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
-import {
-  BigNumber,
-  Contract,
-  utils,
-  VoidSigner,
-  Wallet,
-  providers,
-} from 'ethers';
+import { BigNumber, Contract, VoidSigner, Wallet, providers, utils } from 'ethers';
 
-import { BLOCKCHAINS_CONFIG, Blockchains } from './constants';
-import getProvider from './providers';
-import { BASE_TOKENS_TRANSFER_ABI } from './smartContracts';
-import { BASE_TOKEN_ADDRESS, TokenType } from './tokens';
-import {
-  connectHw,
-  BASE_ADDRESS_INDEX,
-  ETH_DERIVATION_PATH,
-} from './wallet';
-import type { WalletTx } from '@http/tx';
+import { ERC20TxFees, EstimateFees, ProcessTxToSave, SendTx } from './types';
+import { ERC20WalletTx } from '@http/tx/types';
+import { BLOCKCHAINS_CONFIG, Blockchains } from '@web3/constants';
+import getProvider from '@web3/providers';
+import { BASE_TOKENS_TRANSFER_ABI } from '@web3/smartContracts';
+import { BASE_TOKEN_ADDRESS } from '@web3/tokens';
+import { BASE_ADDRESS_INDEX, connectHw, getDerivationPath } from '@web3/wallet';
+
 
 export type TxInfo = {
   chainId: number;
@@ -29,13 +20,18 @@ export type TxInfo = {
   totalFee: BigNumber;
 };
 
-export const estimateTxInfo = async (
-  blockchain: Blockchains,
-  fromAddress: string,
-  toAddress: string,
-  tokenAddress: string,
+
+const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
+  maxFeePerGas: BigNumber;
+  maxPriorityFeePerGas: BigNumber;
+  chainId: number;
+}> = async (
+  blockchain,
+  fromAddress,
+  toAddress,
+  token,
 ): Promise<TxInfo> => {
-  const provider = getProvider(blockchain);
+  const provider = getProvider(blockchain) as providers.Provider;
   const blockchainConfig = BLOCKCHAINS_CONFIG[blockchain];
 
   const [
@@ -62,10 +58,10 @@ export const estimateTxInfo = async (
   const feePerGasOffset = 1;
   let gasLimitTolerance = 1;
 
-  if (tokenAddress !== BASE_TOKEN_ADDRESS) { // is not ETH
-    const txContract = new Contract(tokenAddress, BASE_TOKENS_TRANSFER_ABI, voidSigner);
+  if (token.address !== BASE_TOKEN_ADDRESS) { // is not ETH
+    const txContract = new Contract(token.address, BASE_TOKENS_TRANSFER_ABI, voidSigner);
     tx.data = txContract.interface.encodeFunctionData('transferFrom', [fromAddress, toAddress, 0]);
-    tx.to = tokenAddress;
+    tx.to = token.address;
     gasLimitTolerance = 2; // the gas limit estimated for a smart contract can be unexacted.
   }
 
@@ -100,6 +96,8 @@ export const estimateTxInfo = async (
   };
 };
 
+export const estimateErc20TxFees: EstimateFees<ERC20TxFees> = estimateErc20TxInfo;
+
 export const INVALID_SIGN_INFORMATION = 'INVALID_SIGN_INFORMATION';
 export const NO_TX_TO_SIGN = 'NO_TX_TO_SIGN';
 
@@ -109,24 +107,27 @@ type SignedTx = {
   r: string;
 };
 
+// TODO check to sign also tron with the same function
 // https://github.com/ethers-io/ethers-ledger/blob/master/src.ts/index.ts#L67
-const signTxWithLedger = async ({
-  index,
-  bluetoothConnection,
-  tx,
-}: {
-  index?: number;
-  bluetoothConnection?: boolean;
-  tx: string;
-} = {
-  index: BASE_ADDRESS_INDEX,
-  bluetoothConnection: false,
-  tx: '',
-}): Promise<SignatureLike> => {
+const signTxWithLedger = async (
+  blockchain: Blockchains,
+  {
+    index,
+    bluetoothConnection,
+    tx,
+  }: {
+    index?: number;
+    bluetoothConnection?: boolean;
+    tx: string;
+  } = {
+    index: BASE_ADDRESS_INDEX,
+    bluetoothConnection: false,
+    tx: '',
+  }): Promise<SignatureLike> => {
   if (!tx) throw new Error(NO_TX_TO_SIGN);
 
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
-  const derivationPath = `${ETH_DERIVATION_PATH}/${walletIndex}`;
+  const derivationPath = `${getDerivationPath(blockchain)}/${walletIndex}`;
   const transport = await connectHw(bluetoothConnection);
 
   const eth = new AppEth(transport);
@@ -142,29 +143,23 @@ const signTxWithLedger = async ({
   };
 };
 
-type SignOptions = {
-  privateKey?: string | null;
-  isHw?: boolean;
-  hwBluetooth?: boolean;
-};
-
-export const send = async (
-  blockchain: Blockchains,
-  fromAddress: string,
-  toAddress: string,
-  token: TokenType,
-  quantity: BigNumber | number | string,
+export const erc20send: SendTx<undefined> = async (
+  blockchain,
+  fromAddress,
+  toAddress,
+  token,
+  quantity,
   {
     isHw,
     hwBluetooth,
     privateKey,
-  }: SignOptions = {
+  } = {
     isHw: false,
     hwBluetooth: false,
     privateKey: '',
   },
-): Promise<string> => {
-  const provider = getProvider(blockchain);
+) => {
+  const provider = getProvider(blockchain) as providers.Provider;
 
   const blockchainConfig = BLOCKCHAINS_CONFIG[blockchain];
 
@@ -174,7 +169,7 @@ export const send = async (
     txEstimations,
     nonce,
   ] = await Promise.all([
-    estimateTxInfo(blockchain, fromAddress, toAddress, token.address),
+    estimateErc20TxInfo(blockchain, fromAddress, toAddress, token),
     provider.getTransactionCount(fromAddress, 'pending'),
   ]);
 
@@ -214,29 +209,30 @@ export const send = async (
     const txToSerialize = await utils.resolveProperties(txToResolveProperties);
     const unsignedTx = utils.serializeTransaction(txToSerialize).substring(2);
 
-    const sig = await signTxWithLedger({
+    const sig = await signTxWithLedger(blockchain, {
       bluetoothConnection: hwBluetooth,
       tx: unsignedTx,
     });
 
     const { hash } = await provider.sendTransaction(utils.serializeTransaction(txToSerialize, sig));
 
-    return hash;
+    return { hash };
   }
   const wallet = new Wallet(privateKey!, provider);
   const { hash } = await wallet.sendTransaction(tx);
 
-  return hash;
+  return { hash };
 };
 
-export const obtainTxData = async (txHash: string, blockchain: Blockchains): Promise<WalletTx | null> => {
-  const provider = getProvider(blockchain);
+export const erc20ProcessTxToSave: ProcessTxToSave<ERC20WalletTx> = async ({ hash, blockchain }) => {
+  const provider = getProvider(blockchain) as providers.Provider;
 
-  const txData = await provider.getTransaction(txHash);
+  const txData = await provider.getTransaction(hash);
 
   if (!txData) return null;
 
-  const walletTx: WalletTx = {
+  const walletTx = {
+    blockchain,
     confirmations: txData.confirmations,
     contractAddress: BASE_TOKEN_ADDRESS,
     from: txData.from,
@@ -263,3 +259,5 @@ export const obtainTxData = async (txHash: string, blockchain: Blockchains): Pro
 
   return walletTx;
 };
+
+export const erc20IsValidAddressToSend = (address: string) => utils.isAddress(address);

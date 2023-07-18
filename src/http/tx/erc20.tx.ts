@@ -5,12 +5,13 @@ import {
 } from '@env';
 import axios from 'axios';
 
+import { ERC20WalletTx, GetWalletTxs } from './types';
 import { isDev } from '@utils/config';
 import { Blockchains } from '@web3/constants';
 import { BASE_TOKEN_ADDRESS } from '@web3/tokens';
 
 
-const API_CONFIG = {
+const ERC20_API_CONFIG = {
   [Blockchains.ETHEREUM]: {
     url: isDev()
       ? 'https://api-goerli.etherscan.io/api'
@@ -25,7 +26,7 @@ const API_CONFIG = {
   },
 };
 
-export const TX_URL = {
+export const ERC20_TX_URL = {
   [Blockchains.ETHEREUM]: isDev()
     ? 'https://goerli.etherscan.io/tx/'
     : 'https://etherscan.io/tx/',
@@ -33,57 +34,44 @@ export const TX_URL = {
   [Blockchains.BSC]: 'https://bscscan.com/tx/',
 };
 
-export type WalletTx = {
-  confirmations: number;
-  contractAddress: string;
-  from: string;
-  gasPrice: string;
-  gasUsed: number;
-  hash: string;
-  isError: boolean;
-  timeStamp: string;
-  to: string;
-  value: string;
-};
-
-export type WalletTxResponse = Omit<WalletTx, 'isError' | 'confirmations' | 'gasUsed'> & {
+type ERC20WalletTxResponse = Omit<ERC20WalletTx, 'isError' | 'confirmations' | 'gasUsed'> & {
   isError: string;
   confirmations: string;
   gasUsed: string;
 };
 
-export const getWalletTxs = async (
-  address: string,
-  tokenAddress: string,
-  blockchain: Blockchains,
+
+export const getERC20WalletTxs: GetWalletTxs<ERC20WalletTx> = async (
+  address,
+  tokenAddress,
+  blockchain,
   {
     page,
     offset,
-  }: {
-    page?: number;
-    offset?: number;
   } = {
     page: 1,
     offset: 15,
   },
-): Promise<WalletTx[]> => {
+) => {
   const isBaseToken = tokenAddress === BASE_TOKEN_ADDRESS;
   const action = isBaseToken ? 'txlist' : 'tokentx';
   const contractAddress = isBaseToken ? '' : `&contractAddress=${tokenAddress}`;
-  const apiConfig = API_CONFIG[blockchain];
+  const apiConfig = ERC20_API_CONFIG[blockchain as keyof typeof ERC20_API_CONFIG];
 
   const url = `${apiConfig.url}\
 ?module=account\
 &action=${action}\
 ${contractAddress}\
-&sort=desc&address=${address}\
+&sort=desc\
+&address=${address}\
 &page=${page}\
 &offset=${offset}\
 &apikey=${apiConfig.apiKey}`;
 
-  const response = await axios.get<{ result: WalletTxResponse[] }>(url);
+  const response = await axios.get<{ result: ERC20WalletTxResponse[] }>(url);
 
   const formattedResponse = response.data.result.map((item) => ({
+    blockchain,
     confirmations: Number(item.confirmations),
     contractAddress: item.contractAddress,
     from: item.from,
