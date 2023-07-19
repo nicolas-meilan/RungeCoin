@@ -79,6 +79,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   } = useBlockchainData();
 
   const {
+    address: fromAddress,
     walletPublicValues,
     walletPublicValuesLoading,
   } = useWalletPublicValues();
@@ -149,7 +150,9 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
 
   const onAddressChange = (newAddress: string) => {
-    setAddressToSendError(!!newAddress && !isValidAddressToSend(blockchain, newAddress));
+    const isTheSameAddress = newAddress.toLowerCase() === fromAddress?.toLowerCase();
+    const addressError = isTheSameAddress || !isValidAddressToSend(blockchain, newAddress);
+    setAddressToSendError(!!newAddress && addressError);
     setAddressToSend(newAddress);
   };
 
@@ -164,8 +167,13 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     onAddressChange('');
   }, [blockchain]);
 
+  const estimateFees = () => {
+    if (!tokenToSend) return;
+    fetchEstimateTxFees(addressToSend, tokenToSend);
+  };
+
   useEffect(() => {
-    if (allDataSetted) fetchEstimateTxFees(addressToSend, tokenToSend);
+    if (allDataSetted) estimateFees();
   }, [tokenToSend, allDataSetted, addressToSend, addressToSendError]);
 
   useEffect(() => {
@@ -242,6 +250,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     navigation.goBack();
   };
 
+  const areTheSameAddresses = addressToSend.toLowerCase() === fromAddress?.toLowerCase();
+  const errorMessage = areTheSameAddresses
+    ? 'main.send.inputs.sameAddressError'
+    : 'main.send.inputs.addressError';
+
   return (
     <>
       <ScreenLayout
@@ -278,7 +291,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         <AddressToSendInput
           label="main.send.inputs.addressLabel"
           placeholder="main.send.inputs.addressPlaceholder"
-          errorMessage="main.send.inputs.addressError"
+          errorMessage={errorMessage}
           value={addressToSend}
           pressDisabled={sendTokenLoading}
           editable={!sendTokenLoading}
@@ -287,15 +300,13 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           icon="qrcode-scan"
           onPressIcon={openQrScanner}
         />
-        {allDataSetted && (
+        {allDataSetted && !areTheSameAddresses && (
           <>
-            {!estimatedTxFeesError && <FeeMessage text="main.send.gasDescription" />}
+            {!estimatedTxFeesError && <FeeMessage text={`main.send.feeDescription.${blockchain}`} />}
             <EstimatedTxFee
               txFee={estimatedTxFees}
               loading={estimatedTxFeesLoading}
-              error={estimatedTxFeesError}
-              token={tokenToSend}
-              onRefetchError={() => fetchEstimateTxFees(addressToSend, tokenToSend)}
+              onRetry={estimateFees}
             />
           </>
         )}

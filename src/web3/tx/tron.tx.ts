@@ -5,7 +5,7 @@ import { getTronTxConfirmations } from '@http/tx/tron.tx';
 import { TronWalletTx } from '@http/tx/types';
 import { Blockchains } from '@web3/constants';
 import { tronProvider } from '@web3/providers';
-import { BASE_TOKEN_ADDRESS, TOKENS_TRON } from '@web3/tokens';
+import { BASE_TOKEN_ADDRESS, TOKENS_TRON, TokenType } from '@web3/tokens';
 
 // TODO tx type
 const calculateTronTxBandwithNeeded = (tx: any) => {
@@ -23,7 +23,23 @@ const BANDWITH_PRICE = 1000;
 const ENERGY_PRICE = 420;
 const ACTIVATION_FEE = 1;
 
-export const TRON_TX_NEEDS_ACTIVATION_ERROR = 'TX_NEEDS_ACTIVATION_ERROR';
+const estimateTrc20TokenTxEnergyRequired = async (token: TokenType, toAddress: string) => {
+  const functionSelector = 'transfer(address,uint256)';
+  const contractParams = [
+    { type: 'address', value: toAddress },
+    { type: 'uint256', value: 1 },
+  ];
+
+  const contractConstants = await tronProvider.transactionBuilder.triggerConstantContract(
+    token.address,
+    functionSelector,
+    {},
+    contractParams,
+  );
+
+  return contractConstants.energy_used;
+};
+
 export const estimateTronFees: EstimateFees<TronTxFees> = async (
   _,
   fromAddress,
@@ -31,13 +47,7 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
   token,
   quantity = 1000,
 ) => {
-  const toResources = await tronProvider.trx.getAccountResources(toAddress);
-  const needsDestinationAccountActivation = !Object.keys(toResources).length;
   const isMainToken = token.address === BASE_TOKEN_ADDRESS;
-
-  if (!isMainToken && needsDestinationAccountActivation) {
-    throw new Error(TRON_TX_NEEDS_ACTIVATION_ERROR);
-  }
 
   const accountResources = await tronProvider.trx.getAccountResources(fromAddress);
 
@@ -45,40 +55,44 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
     ? quantity
     : utils.parseUnits(quantity.toString(), token.decimals);
 
-  const activationFee = needsDestinationAccountActivation
-    ? utils.parseUnits((ACTIVATION_FEE).toString(), TOKENS_TRON.TRX?.decimals)
-    : BigNumber.from(0);
-
+  let activationFee = BigNumber.from(0);
   let unsignedTx = null;
   let energyNeeded = 0;
   if (isMainToken) {
-    unsignedTx = await tronProvider.transactionBuilder.sendTrx(toAddress, amount.toString(), fromAddress);
+    const [
+      toResources,
+      newUnsignedTx,
+    ] = await Promise.all([
+      tronProvider.trx.getAccountResources(toAddress),
+      tronProvider.transactionBuilder.sendTrx(toAddress, amount.toString(), fromAddress),
+    ]);
+    unsignedTx = newUnsignedTx;
+    const needsDestinationAccountActivation = !Object.keys(toResources).length;
+    if (needsDestinationAccountActivation) {
+      activationFee = utils.parseUnits((ACTIVATION_FEE).toString(), TOKENS_TRON.TRX?.decimals);
+    }
   } else {
     const functionSelector = 'transfer(address,uint256)';
-    const parameter = [
+    const contractParams = [
       { type: 'address', value: toAddress },
       { type: 'uint256', value: amount.toString() },
     ];
-  
+
     const [
       responseContract,
-      responseConstantContract,
+      newEnergyNeeded,
     ] = await Promise.all([
       tronProvider.transactionBuilder.triggerSmartContract(
         token.address,
         functionSelector,
         {},
-        parameter,
+        contractParams,
       ),
-      tronProvider.transactionBuilder.triggerConstantContract(
-        token.address,
-        functionSelector,
-        {},
-        [],
-      ),
+      estimateTrc20TokenTxEnergyRequired(token, toAddress),
     ]);
+
     unsignedTx = responseContract.transaction;
-    energyNeeded = responseConstantContract.energy_used;
+    energyNeeded = newEnergyNeeded;
   }
 
   const accountEnergy = accountResources.EnergyLimit - (accountResources.EnergyUsed || 0);
@@ -122,8 +136,8 @@ export const tronSend: SendTx<TronWalletTx> = async (
   token,
   quantity,
   {
-  //  isHw,
-  //  hwBluetooth,
+    //  isHw,
+    //  hwBluetooth,
     privateKey,
   } = {
     isHw: false,
@@ -145,8 +159,14 @@ export const tronSend: SendTx<TronWalletTx> = async (
       { type: 'uint256', value: amount.toString() },
     ];
 
+    const estimatedContractEnergy = await estimateTrc20TokenTxEnergyRequired(token, toAddress);
+    
+    const contractOptions = {
+      feeLimit: estimatedContractEnergy * ENERGY_PRICE,
+    };
+
     unsignedTx = (await tronProvider.transactionBuilder
-      .triggerSmartContract(token.address, functionSelector, {}, parameter)).transaction;
+      .triggerSmartContract(token.address, functionSelector, contractOptions, parameter)).transaction;
   }
 
   // if (isHw) { //TODO HW
@@ -157,7 +177,6 @@ export const tronSend: SendTx<TronWalletTx> = async (
   // }
 
   const signedTx = await tronProvider.trx.sign(unsignedTx, privateKey);
-
 
   const response = await tronProvider.trx.sendRawTransaction(signedTx);
 
@@ -190,8 +209,8 @@ export const tronProcessTxToSave: ProcessTxToSave<TronWalletTx> = async ({ tx, n
   try {
     if (needsUpdate && tx) {
       confirmations = await getTronTxConfirmations(tx.hash);
-    } 
-  } catch (error) {}
+    }
+  } catch (error) { }
 
   const tronTx = tx ? {
     ...tx,

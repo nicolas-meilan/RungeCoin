@@ -19,7 +19,7 @@ export const TRON_CONFIRMATIONS_TO_SUCCESS_TRANSACTION = 1;
 type UseTxReturn = {
   estimatedTxFees: TxFees | null;
   estimatedTxFeesLoading: boolean;
-  estimatedTxFeesError: string;
+  estimatedTxFeesError: boolean;
   fetchEstimateTxFees: (toAddress: string, token: TokenType) => void;
   sendToken: (toAddress: string, token: TokenType, amount: BigNumber | number | string) => void;
   sendTokenLoading: boolean;
@@ -37,7 +37,7 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
 
   const [estimatedTxFees, setEstimatedTxFees] = useState<TxFees | null>(null);
   const [estimatedTxFeesLoading, setEstimatedTxFeesLoading] = useState(false);
-  const [estimatedTxFeesError, setEstimatedTxFeesError] = useState('');
+  const [estimatedTxFeesError, setEstimatedTxFeesError] = useState(false);
 
   const [sendTokenLoading, setSendTokenLoading] = useState(false);
   const [sendTokenError, setSendTokenError] = useState(false);
@@ -45,12 +45,12 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
   const fetchEstimateTxFees: UseTxReturn['fetchEstimateTxFees'] = async (toAddress, token) => {
     if (!address) return;
     setEstimatedTxFeesLoading(true);
-    setEstimatedTxFeesError('');
+    setEstimatedTxFeesError(false);
     try {
       const newTxinfo = await web3EstimateTxFees(blockchain, address, toAddress, token);
       setEstimatedTxFees(newTxinfo);
     } catch (error) {
-      setEstimatedTxFeesError(error instanceof Error ? error.message : 'ERROR');
+      setEstimatedTxFeesError(true);
       setEstimatedTxFees(null);
     }
     setEstimatedTxFeesLoading(false);

@@ -11,17 +11,14 @@ import useBlockchainData from '@hooks/useBlockchainData';
 import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useTokenConversions from '@hooks/useTokenConversions';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
-import { GWEI, TokenType } from '@web3/tokens';
-import { TRON_TX_NEEDS_ACTIVATION_ERROR } from '@web3/tx/tron.tx';
+import { GWEI } from '@web3/tokens';
 import { TxFees } from '@web3/tx/types';
 
 type EstimatedTxFeeProps = {
-  token: TokenType;
   txFee?: TxFees | null;
   loading?: boolean;
   hasNotBalanceForFee?: boolean;
-  error?: string;
-  onRefetchError: () => void;
+  onRetry: () => void;
 };
 
 const GasTitle = styled(Text).attrs({
@@ -56,19 +53,11 @@ const StyledPill = styled(Pill) <{ withSpacing?: boolean }>`
     : 0)};
 `;
 
-const TronNeedsActivationError = styled(Text)`
-  font-size: ${({ theme }) => theme.fonts.size[16]};
-  color: ${({ theme }) => theme.colors.error};
-  text-align: center;
-`;
-
 const EstimatedTxFee = ({
   txFee,
-  token,
-  onRefetchError,
+  onRetry,
   loading = false,
   hasNotBalanceForFee = false,
-  error = '',
 }: EstimatedTxFeeProps) => {
   const { convert } = useTokenConversions({
     refetchOnMount: false,
@@ -82,20 +71,10 @@ const EstimatedTxFee = ({
   const isErc20Fee = txFee?.gasPrice && txFee.gasUnits;
   const isTronFee = txFee?.bandwithPrice && txFee.energyPrice;
 
-  const tronNeedsActivateError = error === TRON_TX_NEEDS_ACTIVATION_ERROR;
-  if (tronNeedsActivateError) {
-    return (
-      <TronNeedsActivationError
-        text="error.tronNeedsActivation"
-        i18nArgs={{ token: token.symbol }}
-      />
-    );
-  }
-
   return (
     <ErrorWrapper
       requiredValuesToRender={[txFee]}
-      retryCallback={onRefetchError}
+      retryCallback={onRetry}
       isLoading={loading}
     >
       <Card>

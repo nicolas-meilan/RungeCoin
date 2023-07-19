@@ -98,7 +98,12 @@
     "send": {
       "title": "Send cryptos",
       "notFoundsForFeeNotification": "You do not have funds to pay shipping fee",
-      "gasDescription": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
+      "feeDescription": {
+        "ETHEREUM": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
+        "POLYGON": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
+        "BSC": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
+        "TRON": "The fee is calculated using the **bandwidth** and **energy** needed by the transactions"
+      },
       "fee": "Fees",
       "gasUnits": "Gas units: **{{units}}**",
       "gasPrice": "Gas price: **{{price}}**",
@@ -119,7 +124,8 @@
         "selectTokenPlaceholder": "Select a token",
         "addressLabel": "Shipping address",
         "addressPlaceholder": "Enter address",
-        "addressError": "Invalid address"
+        "addressError": "Invalid address",
+        "sameAddressError": "The source address must not match the destination address"
       }
     },
     "token": {
@@ -149,7 +155,7 @@
     },
     "calculator": {
       "exceededBalance": "Exceeded balance",
-      "fee": "Gas fee: ≈ {{fee}}"
+      "fee": "Blockchain fee: ≈ {{fee}}"
     }
   },
   "hw": {
@@ -188,7 +194,6 @@
     "news": "Error loading news",
     "tokenConversions": "Error loading conversion data",
     "walletActivity": "Error loading activity token",
-    "tronNeedsActivation": "In order to transfer {{token}}, first is necessary activate the destination wallet sending 0.1 TRX",
     "miningPendingTxs": "Error loading mining pending transactions"
   }
 }

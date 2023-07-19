@@ -35,6 +35,7 @@ type StoredWallet = {
 type UseWalletPublicValuesReturn = {
   walletPublicValues?: Wallet | null;
   address?: string;
+  allowWalletAccess: boolean;
   setWalletPublicValues: ({
     erc20Address,
     tronAddress,
@@ -179,8 +180,16 @@ const useWalletPublicValues = ({
     walletPublicValues?.tronAddress,
   ]);
 
+  const allowWalletAccess = useMemo(() => !!(
+    walletPublicValues?.erc20Address || walletPublicValues?.tronAddress
+  ), [
+    walletPublicValues?.erc20Address,
+    walletPublicValues?.tronAddress,
+  ]);
+
   return {
     address,
+    allowWalletAccess,
     walletPublicValues,
     walletPublicValuesLoading: isLoading || mutationLoading || removingMutationLoading,
     setWalletPublicValues,

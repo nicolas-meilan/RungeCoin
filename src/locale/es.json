@@ -98,7 +98,12 @@
     "send": {
       "title": "Enviar cryptos",
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
-      "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+      "feeDescription": {
+        "ETHEREUM": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+        "POLYGON": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+        "BSC": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+        "TRON": "La comisión se calcula basándose en el **ancho de banda** y la **energía** que necesita la transacción"
+      },
       "fee": "Comisiones",
       "gasUnits": "Unidades de gas: **{{units}}**",
       "gasPrice": "Precio de gas: ≈ **{{price}}**",
@@ -119,12 +124,13 @@
         "selectTokenPlaceholder": "Seleccione un token",
         "addressLabel": "Dirección de envío",
         "addressPlaceholder": "Ingresar dirección",
-        "addressError": "Dirección invalida"
+        "addressError": "Dirección invalida",
+        "sameAddressError": "La dirección de origen no debe coincidir con la dirección de destino"
       }
     },
     "calculator": {
       "exceededBalance": "Balance excedido",
-      "fee": "Costo de Gas: ≈ {{fee}}"
+      "fee": "Comisión de red: ≈ {{fee}}"
     },
     "token": {
       "price": "Precio",
@@ -188,7 +194,6 @@
     "news": "Error al cargar las noticias",
     "tokenConversions": "Error al cargar los datos de conversiónes",
     "walletActivity": "Error al cargar la actividad del token",
-    "tronNeedsActivation": "Para poder transferir {{token}}, primero es necesario activar la billetera destino enviando 0.1 TRX",
     "miningPendingTxs": "Error al cargar transacciones pendientes de minado"
   }
 }
