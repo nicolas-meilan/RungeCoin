@@ -19,7 +19,7 @@ export const TRON_CONFIRMATIONS_TO_SUCCESS_TRANSACTION = 1;
 type UseTxReturn = {
   estimatedTxFees: TxFees | null;
   estimatedTxFeesLoading: boolean;
-  estimatedTxFeesError: boolean;
+  estimatedTxFeesError: string;
   fetchEstimateTxFees: (toAddress: string, token: TokenType) => void;
   sendToken: (toAddress: string, token: TokenType, amount: BigNumber | number | string) => void;
   sendTokenLoading: boolean;
@@ -35,24 +35,25 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
   const { walletPublicValues, address } = useWalletPublicValues();
   const { blockchain } = useBlockchainData();
 
-  const [estimatedTxFees, setEstimatedTxInfo] = useState<TxFees | null>(null);
-  const [estimatedTxFeesLoading, setEstimatedTxInfoLoading] = useState(false);
-  const [estimatedTxFeesError, setEstimatedTxFeesError] = useState(false);
+  const [estimatedTxFees, setEstimatedTxFees] = useState<TxFees | null>(null);
+  const [estimatedTxFeesLoading, setEstimatedTxFeesLoading] = useState(false);
+  const [estimatedTxFeesError, setEstimatedTxFeesError] = useState('');
 
   const [sendTokenLoading, setSendTokenLoading] = useState(false);
   const [sendTokenError, setSendTokenError] = useState(false);
 
   const fetchEstimateTxFees: UseTxReturn['fetchEstimateTxFees'] = async (toAddress, token) => {
     if (!address) return;
-    setEstimatedTxInfoLoading(true);
-    setEstimatedTxFeesError(false);
+    setEstimatedTxFeesLoading(true);
+    setEstimatedTxFeesError('');
     try {
       const newTxinfo = await web3EstimateTxFees(blockchain, address, toAddress, token);
-      setEstimatedTxInfo(newTxinfo);
+      setEstimatedTxFees(newTxinfo);
     } catch (error) {
-      setEstimatedTxFeesError(true);
+      setEstimatedTxFeesError(error instanceof Error ? error.message : 'ERROR');
+      setEstimatedTxFees(null);
     }
-    setEstimatedTxInfoLoading(false);
+    setEstimatedTxFeesLoading(false);
   };
 
   const sendToken: UseTxReturn['sendToken'] = async (toAddress, token, amount) => {

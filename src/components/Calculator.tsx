@@ -129,7 +129,7 @@ const ExceededError = styled(Text)`
   color: ${({ theme }) => theme.colors.error};
 `;
 
-const GasFee = styled(Text)`
+const Fee = styled(Text)`
   color: ${({ theme }) => theme.colors.text.secondary};
   text-align: center;
   vertical-align: middle;
@@ -321,8 +321,8 @@ const Calculator = ({
         />
         {balanceExceeded && <ExceededError text="main.calculator.exceededBalance" />}
         {!transactionFee.isZero() && (
-          <GasFee
-            text="main.calculator.gasFee"
+          <Fee
+            text="main.calculator.fee"
             i18nArgs={{
               fee: `${numberToFormattedString(transactionFee, {
                 decimals: blockchainBaseToken.decimals,

@@ -7,6 +7,7 @@
     "send": "Send",
     "receive": "Receive",
     "tryRefresh": "Try refreshing",
+    "free": "Free",
     "inputs": {
       "password": "Enter a password",
       "passwordPH": "New password",
@@ -98,9 +99,12 @@
       "title": "Send cryptos",
       "notFoundsForFeeNotification": "You do not have funds to pay shipping fee",
       "gasDescription": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
-      "gasFee": "Fees",
+      "fee": "Fees",
       "gasUnits": "Gas units: **{{units}}**",
       "gasPrice": "Gas price: **{{price}}**",
+      "bandwith": "Required bandwith: ≈ **{{bandwith}}**",
+      "energy": "Required energy: ≈ **{{energy}}**",
+      "activationAccountFee": "Activation destination account fee: {{fee}}",
       "totalFee": "Total",
       "sendError": "An error occurred while sending the transaction",
       "miningPendingTxs": "You have pending mining transactions",
@@ -145,7 +149,7 @@
     },
     "calculator": {
       "exceededBalance": "Exceeded balance",
-      "gasFee": "Gas fee: ≈ {{fee}}"
+      "fee": "Gas fee: ≈ {{fee}}"
     }
   },
   "hw": {
@@ -184,6 +188,7 @@
     "news": "Error loading news",
     "tokenConversions": "Error loading conversion data",
     "walletActivity": "Error loading activity token",
+    "tronNeedsActivation": "In order to transfer {{token}}, first is necessary activate the destination wallet sending 0.1 TRX",
     "miningPendingTxs": "Error loading mining pending transactions"
   }
 }

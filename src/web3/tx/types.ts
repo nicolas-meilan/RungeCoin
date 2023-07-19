@@ -36,6 +36,7 @@ export type ERC20TxFees = {
   energyPrice?: null;
   bandwithFee?: null;
   energyFee?: null;
+  activationFee?: null;
 };
 
 export type TronTxFees = {
@@ -47,6 +48,7 @@ export type TronTxFees = {
   energyPrice: number;
   bandwithFee: BigNumber;
   energyFee: BigNumber;
+  activationFee: BigNumber;
   totalFee: BigNumber;
   gasPrice?: null;
   gasUnits?: null;

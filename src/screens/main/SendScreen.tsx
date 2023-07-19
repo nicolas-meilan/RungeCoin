@@ -7,12 +7,11 @@ import styled, { useTheme } from 'styled-components/native';
 import BlockchainSelector from '@components/BlockchainSelector';
 import Button from '@components/Button';
 import Calculator from '@components/Calculator';
-import Card from '@components/Card';
+import EstimatedTxFee from '@components/EstimatedTxFee';
 import HwConnectionSelector from '@components/HwConnectionSelector';
 import QrScanner from '@components/QrScanner';
 import ScreenLayout from '@components/ScreenLayout';
 import Select, { Option } from '@components/Select';
-import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import TokenIcon from '@components/TokenIcon';
@@ -20,18 +19,14 @@ import TokenItem from '@components/TokenItem';
 import useBalances, { TokensBalanceArrayItem } from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
 import useBlockchainData from '@hooks/useBlockchainData';
-import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNotifications from '@hooks/useNotifications';
-import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import type { WalletTx } from '@http/tx/types';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
-import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
-import { Blockchains } from '@web3/constants';
-import { GWEI, TokenSymbol, TokenType } from '@web3/tokens';
+import { TokenSymbol, TokenType } from '@web3/tokens';
 import { isValidAddressToSend } from '@web3/tx';
 import { SenndTxReturn } from '@web3/tx/types';
 import { getAddressRegex } from '@web3/wallet';
@@ -48,7 +43,7 @@ const AddressToSendInput = styled(TextInput)`
   margin-vertical: ${({ theme }) => theme.spacing(4)};
 `;
 
-const GasMessage = styled(Text)`
+const FeeMessage = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
@@ -59,22 +54,8 @@ const MiningPendingTxsMessage = styled(Text)`
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
-const GasTitle = styled(Text).attrs({
-  weight: 'bold',
-}) <{ avoidTopMargin?: boolean }>`
-  font-size: ${({ theme }) => theme.fonts.size[18]};
-  margin-bottom: ${({ theme }) => theme.spacing(2)};
-  margin-top: ${({ avoidTopMargin, theme }) => (avoidTopMargin ? 0 : theme.spacing(2))};
-`;
-
 const HwMessage = styled(Text)`
   margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(4)} 0;
-`;
-
-const TotalFeeText = styled(Text) <{ error: boolean }>`
-  ${({ error, theme }) => (error ? `
-    color: ${theme.colors.error};
-  ` : '')}
 `;
 
 type SendScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.send>;
@@ -84,8 +65,6 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const { dispatchNotification } = useNotifications();
 
   const [firstRender, setFirstRender] = useState(true);
-
-  const { consolidatedCurrency } = useConsolidatedCurrency();
 
   const {
     biometricsEnabled,
@@ -136,17 +115,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const {
     estimatedTxFees,
     estimatedTxFeesLoading,
+    estimatedTxFeesError,
     fetchEstimateTxFees,
     sendTokenLoading,
     sendToken,
     sendTokenError,
   } = useTx({ onSendFinish });
-
-  const { convert } = useTokenConversions({
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
 
   const {
     orderTokens,
@@ -192,7 +166,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
   useEffect(() => {
     if (allDataSetted) fetchEstimateTxFees(addressToSend, tokenToSend);
-  }, [tokenToSend, addressToSend, addressToSendError]);
+  }, [tokenToSend, allDataSetted, addressToSend, addressToSendError]);
 
   useEffect(() => {
     if (sendTokenError) dispatchNotification('main.send.sendError', 'error');
@@ -313,55 +287,16 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           icon="qrcode-scan"
           onPressIcon={openQrScanner}
         />
-        {allDataSetted && blockchain !== Blockchains.TRON && (
+        {allDataSetted && (
           <>
-            <GasMessage
-              text="main.send.gasDescription"
+            {!estimatedTxFeesError && <FeeMessage text="main.send.gasDescription" />}
+            <EstimatedTxFee
+              txFee={estimatedTxFees}
+              loading={estimatedTxFeesLoading}
+              error={estimatedTxFeesError}
+              token={tokenToSend}
+              onRefetchError={() => fetchEstimateTxFees(addressToSend, tokenToSend)}
             />
-            <Card>
-              <GasTitle text="main.send.gasFee" avoidTopMargin />
-              <Skeleton
-                isLoading={estimatedTxFeesLoading}
-                height={14}
-                width="90%"
-                quantity={2}
-              >
-                <Text
-                  text="main.send.gasUnits"
-                  i18nArgs={{
-                    units: estimatedTxFees?.gasUnits?.toNumber(),
-                  }}
-                />
-                <Text
-                  text="main.send.gasPrice"
-                  i18nArgs={{
-                    price: `${numberToFormattedString(estimatedTxFees?.gasPrice || 0, {
-                      decimals: GWEI.toLowerCase(),
-                    })} ${GWEI}`,
-                  }}
-                />
-              </Skeleton>
-              <GasTitle text="main.send.totalFee" />
-              <Skeleton
-                isLoading={estimatedTxFeesLoading}
-                height={14}
-                width="90%"
-                quantity={2}
-              >
-                <TotalFeeText
-                  error={hasNotBalanceForGas}
-                  text={`≈ ${numberToFormattedString(estimatedTxFees?.totalFee || 0, {
-                    decimals: blockchainBaseToken.decimals,
-                  })} ${blockchainBaseToken.symbol}`}
-                />
-                <Text
-                  text={numberToFiatBalance(
-                    convert(estimatedTxFees?.totalFee || 0, blockchainBaseToken),
-                    consolidatedCurrency,
-                  )}
-                />
-              </Skeleton>
-            </Card>
           </>
         )}
         {!!walletPublicValues?.isHw && (
@@ -376,7 +311,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           )}
           <Button
             text="common.continue"
-            disabled={!allDataSetted || hasNotBalanceForGas}
+            disabled={!allDataSetted || hasNotBalanceForGas || !!estimatedTxFeesError}
             loading={estimatedTxFeesLoading
               || sendTokenLoading
               || isBlockchainInitialLoading

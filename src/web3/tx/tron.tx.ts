@@ -23,36 +23,43 @@ const BANDWITH_PRICE = 1000;
 const ENERGY_PRICE = 420;
 const ACTIVATION_FEE = 1;
 
+export const TRON_TX_NEEDS_ACTIVATION_ERROR = 'TX_NEEDS_ACTIVATION_ERROR';
 export const estimateTronFees: EstimateFees<TronTxFees> = async (
   _,
   fromAddress,
   toAddress,
   token,
-  quantity = 0,
+  quantity = 1000,
 ) => {
+  const toResources = await tronProvider.trx.getAccountResources(toAddress);
+  const needsDestinationAccountActivation = !Object.keys(toResources).length;
+  const isMainToken = token.address === BASE_TOKEN_ADDRESS;
+
+  if (!isMainToken && needsDestinationAccountActivation) {
+    throw new Error(TRON_TX_NEEDS_ACTIVATION_ERROR);
+  }
+
   const accountResources = await tronProvider.trx.getAccountResources(fromAddress);
 
   const amount = BigNumber.isBigNumber(quantity)
     ? quantity
     : utils.parseUnits(quantity.toString(), token.decimals);
 
+  const activationFee = needsDestinationAccountActivation
+    ? utils.parseUnits((ACTIVATION_FEE).toString(), TOKENS_TRON.TRX?.decimals)
+    : BigNumber.from(0);
+
   let unsignedTx = null;
   let energyNeeded = 0;
-  let activationFee = BigNumber.from(0);
-  if (token.address === BASE_TOKEN_ADDRESS) {
+  if (isMainToken) {
     unsignedTx = await tronProvider.transactionBuilder.sendTrx(toAddress, amount.toString(), fromAddress);
-    const toResources = await tronProvider.trx.getAccountResources(toAddress);
-
-    if (!Object.keys(toResources).length) {
-      activationFee = utils.parseUnits((ACTIVATION_FEE).toString(), TOKENS_TRON.TRX?.decimals);
-    }
   } else {
     const functionSelector = 'transfer(address,uint256)';
     const parameter = [
       { type: 'address', value: toAddress },
       { type: 'uint256', value: amount.toString() },
     ];
-
+  
     const [
       responseContract,
       responseConstantContract,
@@ -67,7 +74,7 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
         token.address,
         functionSelector,
         {},
-        parameter,
+        [],
       ),
     ]);
     unsignedTx = responseContract.transaction;
@@ -89,8 +96,8 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
     ? Math.abs(accountEnergy - energyNeeded)
     : 0;
 
-  const bandwithFee = utils.parseUnits((bandwithMissing * BANDWITH_PRICE).toString(), TOKENS_TRON.TRX?.decimals);
-  const energyFee = utils.parseUnits((energyMissing * ENERGY_PRICE).toString(), TOKENS_TRON.TRX?.decimals);
+  const bandwithFee = utils.parseUnits((bandwithMissing * BANDWITH_PRICE).toString(), 0);
+  const energyFee = utils.parseUnits((energyMissing * ENERGY_PRICE).toString(), 0);
 
   const totalFee = bandwithFee.add(energyFee).add(activationFee);
 

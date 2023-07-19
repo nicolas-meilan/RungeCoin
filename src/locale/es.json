@@ -7,6 +7,7 @@
     "send": "Enviar",
     "receive": "Recibir",
     "tryRefresh": "Pruebe a refrescar",
+    "free": "Gratis",
     "inputs": {
       "password": "Ingresa una contraseña",
       "passwordPH": "Nueva contraseña",
@@ -98,9 +99,12 @@
       "title": "Enviar cryptos",
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
       "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
-      "gasFee": "Comisiones",
+      "fee": "Comisiones",
       "gasUnits": "Unidades de gas: **{{units}}**",
       "gasPrice": "Precio de gas: ≈ **{{price}}**",
+      "bandwith": "Ancho de banda requerido: ≈ **{{bandwith}}**",
+      "energy": "Energía requerida: ≈ **{{energy}}**",
+      "activationAccountFee": "Comisión por activar cuenta destino: {{fee}}",
       "totalFee": "Total",
       "sendError": "Ha ocurrido un error al enviar la transacción",
       "miningPendingTxs": "Tienes transacciones pendientes de minado",
@@ -120,7 +124,7 @@
     },
     "calculator": {
       "exceededBalance": "Balance excedido",
-      "gasFee": "Costo de Gas: ≈ {{fee}}"
+      "fee": "Costo de Gas: ≈ {{fee}}"
     },
     "token": {
       "price": "Precio",
@@ -184,6 +188,7 @@
     "news": "Error al cargar las noticias",
     "tokenConversions": "Error al cargar los datos de conversiónes",
     "walletActivity": "Error al cargar la actividad del token",
+    "tronNeedsActivation": "Para poder transferir {{token}}, primero es necesario activar la billetera destino enviando 0.1 TRX",
     "miningPendingTxs": "Error al cargar transacciones pendientes de minado"
   }
 }

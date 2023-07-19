@@ -65,6 +65,7 @@ export const getTronWalletTxs: GetWalletTxs<TronWalletTx> = async (
   const url = `${TRON_TX_API.url}/transfer\
 /${action}\
 ?address=${address}\
+&direction=0\
 &limit=${limit}\
 &start=${startIndex}\
 ${contractAddress}
