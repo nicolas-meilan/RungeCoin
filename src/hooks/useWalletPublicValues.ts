@@ -15,6 +15,7 @@ import { setTronAddress } from '@web3/wallet/wallet.tron';
 type UseWalletPublicValuesProps = {
   refetchOnMount?: boolean;
   onSetWalletPublicValuesHwError?: () => void;
+  onSetWalletPublicValuesHwSuccess?: () => void;
 };
 
 export type Wallet = {
@@ -53,16 +54,28 @@ type UseWalletPublicValuesReturn = {
 };
 
 type AddressProp = 'erc20Address' | 'tronAddress';
-const BLOCKCHAIN_ADDRESS_CONFIG: {
-  [blockchain in Blockchains]: AddressProp;
+type BlockchainPublicValuesConfig = {
+  addressProp: AddressProp;
+  addressProcessor?: (newAddress?: string) => void;
+};
+export const BLOCKCHAIN_PUBLIC_VALUES_CONFIG: {
+  [blockchain in Blockchains]: BlockchainPublicValuesConfig;
 } = {
-  ...erc20BlockchainsConfigurationPropagation<AddressProp>('erc20Address'),
-  [Blockchains.TRON]: 'tronAddress',
+  ...erc20BlockchainsConfigurationPropagation<BlockchainPublicValuesConfig>({
+    addressProp: 'erc20Address',
+  }),
+  [Blockchains.TRON]: {
+    addressProp: 'tronAddress',
+    addressProcessor: (newAddress) => {
+      if (newAddress) setTronAddress(newAddress);
+    },
+  },
 };
 
 const useWalletPublicValues = ({
   refetchOnMount,
   onSetWalletPublicValuesHwError,
+  onSetWalletPublicValuesHwSuccess,
 }: UseWalletPublicValuesProps = {
   refetchOnMount: false,
 }): UseWalletPublicValuesReturn => {
@@ -70,10 +83,15 @@ const useWalletPublicValues = ({
   const queryClient = useQueryClient();
   const { blockchain } = useBlockchainData();
 
+  const runAllAddressProcessors = (newAddress?: string) => {
+    Object.values(BLOCKCHAIN_PUBLIC_VALUES_CONFIG)
+      .forEach((config) => config.addressProcessor?.(newAddress));
+  };
+
   const getWalletFromStorage = async () => {
     const storedWalletStr = await getItem();
     const storedWallet: StoredWallet | null = storedWalletStr ? JSON.parse(storedWalletStr) : null;
-    setTronAddress(storedWallet?.tronAddress);
+    runAllAddressProcessors(storedWallet?.tronAddress);
 
     if (!storedWallet) return storedWallet;
 
@@ -131,14 +149,20 @@ const useWalletPublicValues = ({
     = async (blockchainToConnect, bluetoothConnection = false) => {
       try {
         const address = await getHwWalletAddress(blockchainToConnect, { bluetoothConnection });
+        const blockchainConfig = BLOCKCHAIN_PUBLIC_VALUES_CONFIG[blockchainToConnect];
         const walletToStore: Wallet = {
-          [BLOCKCHAIN_ADDRESS_CONFIG[blockchainToConnect]]: address,
+          ...(walletPublicValues || {}),
+          [blockchainConfig.addressProp]: address,
           isHw: true,
           hwConnectedByBluetooth: bluetoothConnection,
         };
 
+        blockchainConfig.addressProcessor?.(address);
         return mutateSetWallet(walletToStore, {
-          onSuccess: (savedWallet) => queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWallet),
+          onSuccess: (savedWallet) => {
+            queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWallet);
+            onSetWalletPublicValuesHwSuccess?.();
+          },
         });
       } catch (error) {
         onSetWalletPublicValuesHwError?.();
@@ -173,7 +197,7 @@ const useWalletPublicValues = ({
   });
 
   const address = useMemo(() => (
-    walletPublicValues?.[BLOCKCHAIN_ADDRESS_CONFIG[blockchain]]
+    walletPublicValues?.[BLOCKCHAIN_PUBLIC_VALUES_CONFIG[blockchain].addressProp]
   ), [
     blockchain,
     walletPublicValues?.erc20Address,

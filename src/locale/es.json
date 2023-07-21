@@ -71,7 +71,7 @@
         "message": "Para volver a abrir la billetera necesitará ingresar las **palabras secretas**, si no las recuerda, **perderá el acceso**"
       },
       "labels": {
-        "blockchainSelector": "Cambiar Blockchain",
+        "blockchainSelector": "Cambiar red",
         "hwConnectionSelector": "Cambiar método de conexión de **Ledger**",
         "themeSwitcher": "Modo oscuro",
         "languageSelector": "Cambiar idioma",
@@ -159,7 +159,13 @@
     }
   },
   "hw": {
-    "guide": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+    "guide": {
+      "ETHEREUM": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+      "POLYGON": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+      "BSC": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+      "TRON": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Tron**"
+    },
+    "selectBlockchain": "Selecciona una red",
     "connectionOptions": {
       "USB": "Conectar **Ledger** mediante **USB**",
       "BLUETOOTH": "Conectar **Ledger** mediante **Bluetooth**"

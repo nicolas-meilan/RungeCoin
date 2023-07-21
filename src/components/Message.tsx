@@ -15,6 +15,7 @@ type MessageProps = {
   svgColor?: SvgProps['color'];
   i18nArgs?: TextProps['i18nArgs'];
   image?: ImageProps['source'];
+  imageSize?: number;
   style?: StyleProp<ViewStyle>;
   noFlex?: boolean;
 };
@@ -37,9 +38,19 @@ const MessageText = styled(Text)`
   text-align: center;
 `;
 
-const ImageWrapper = styled.View`
-  flex: 1;
+const ImageWrapper = styled.View<{ imageSize?: number }>`
+  ${({ imageSize }) => (imageSize ? `
+      height: ${imageSize}px;
+      justify-content: center;
+      align-items: center;
+    ` : `
+      flex: 1;
+    `)}
   min-height: ${MIN_HEIGHT_IMAGE}px;
+`;
+
+const StyledSvg = styled(Svg)`
+  align-self: center;
 `;
 
 const Image = styled.Image`
@@ -55,12 +66,13 @@ const Message = ({
   svgColor,
   image,
   style,
+  imageSize,
   noFlex = false,
   scroll = false,
 }: MessageProps) => {
   const media = svg
-    ? <Svg svg={svg} color={svgColor} />
-    : (!!image && <ImageWrapper><Image source={image} /></ImageWrapper>);
+    ? <StyledSvg svg={svg} color={svgColor} size={imageSize}/>
+    : (!!image && <ImageWrapper imageSize={imageSize}><Image source={image} /></ImageWrapper>);
 
   const content = (
     <>

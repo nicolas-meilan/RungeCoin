@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -7,6 +7,7 @@ import styled from 'styled-components/native';
 import Button from '@components/Button';
 import ErrorWrapper from '@components/ErrorWrapper';
 import HomeHeader from '@components/HomeHeader';
+import HwWalletConnector from '@components/HwWalletConnector';
 import Pill from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
@@ -55,6 +56,7 @@ type HomeScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.home
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
+  const [addressUpdated, setAddressUpdated] = useState(false);
 
   const { dispatchNotification } = useNotifications();
 
@@ -80,6 +82,8 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   } = useBalances();
 
   const refetch = () => {
+    if (!address) return;
+
     refetchBalances();
     refetchTokenConversions();
   };
@@ -89,10 +93,17 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     fetch: refetch,
   });
 
+  useEffect(() => {
+    if (addressUpdated && address) {
+      refetch();
+      setAddressUpdated(false);
+    }
+  }, [address, addressUpdated]);
+
   const tokens = useMemo(() => Object.values(tokensObj), [tokensObj]);
 
   const totalConvertedBalance = useMemo(() => {
-    if (!tokenBalances) return `0 ${consolidatedCurrency}`;
+    if (!address || !tokenBalances) return `0 ${consolidatedCurrency}`;
 
     const total = tokens.reduce((
       acc: number,
@@ -103,7 +114,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     }, 0);
 
     return numberToFiatBalance(total, consolidatedCurrency);
-  }, [consolidatedCurrency, tokenBalances, tokenConversions]);
+  }, [address, consolidatedCurrency, tokenBalances, tokenConversions]);
 
   const onPressAdress = () => {
     if (!address) return;
@@ -117,59 +128,68 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
     tokenSymbol: token.symbol,
   });
 
+  const onFinishHwConnection = () => setAddressUpdated(true);
   const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
+
+  const contentStyle = address ? undefined : { flex: 1 };
 
   return (
     <>
       <ScreenLayout
         hasBack={false}
-        keyboardAvoidingView
         scroll
+        keyboardAvoidingView
         refreshControl={refreshControl}
         footerHeight={70}
+        contentContainerStyle={contentStyle}
         footer={<TokenPrices />}
       >
         <HomeHeader />
-        <ButtonsWrapper>
-          <ActionButton
-            margin
-            icon="arrow-top-right"
-            text="common.send"
-            onPress={onPressSend}
-          />
-          <ActionButton
-            icon="arrow-bottom-left"
-            text="common.receive"
-            onPress={() => toggleReceiveBottomSheet(true)}
-          />
-        </ButtonsWrapper>
-        <CenterWrapper>
-          <Title title="main.home.balance" isSubtitle />
-          <ErrorWrapper
-            requiredValuesToRender={[tokenBalances, tokenConversions]}
-            isLoading={tokenBalancesLoading || tokenConversionsLoading}
-            errorComponent={<Balance text={totalConvertedBalance} />}
-          >
-            <BalanceSkeleton
-              isLoading={!tokenBalances || !tokenConversions}
-              width={200}
-              height={30}
-            >
-              <Balance text={totalConvertedBalance} />
-            </BalanceSkeleton>
-          </ErrorWrapper>
-          <Pill
-            text={formatAddress(address!)}
-            type="info"
-            onPress={onPressAdress}
-            noI18n
-          />
-        </CenterWrapper>
-        <TokenBalances
-          onPressToken={onPressToken}
-          retryError={refetch}
-          refreshLoading={tokenConversionsLoading}
-        />
+        {address
+          ? (
+            <>
+              <ButtonsWrapper>
+                <ActionButton
+                  margin
+                  icon="arrow-top-right"
+                  text="common.send"
+                  onPress={onPressSend}
+                />
+                <ActionButton
+                  icon="arrow-bottom-left"
+                  text="common.receive"
+                  onPress={() => toggleReceiveBottomSheet(true)}
+                />
+              </ButtonsWrapper>
+              <CenterWrapper>
+                <Title title="main.home.balance" isSubtitle />
+                <ErrorWrapper
+                  requiredValuesToRender={[tokenBalances, tokenConversions]}
+                  isLoading={tokenBalancesLoading || tokenConversionsLoading}
+                  errorComponent={<Balance text={totalConvertedBalance} />}
+                >
+                  <BalanceSkeleton
+                    isLoading={!tokenBalances || !tokenConversions}
+                    width={200}
+                    height={30}
+                  >
+                    <Balance text={totalConvertedBalance} />
+                  </BalanceSkeleton>
+                </ErrorWrapper>
+                <Pill
+                  text={formatAddress(address!)}
+                  type="info"
+                  onPress={onPressAdress}
+                  noI18n
+                />
+              </CenterWrapper>
+              <TokenBalances
+                onPressToken={onPressToken}
+                retryError={refetch}
+                refreshLoading={tokenConversionsLoading}
+              />
+            </>
+          ) : <HwWalletConnector onConnectionSuccess={onFinishHwConnection} />}
       </ScreenLayout>
       <BottomSheet
         visible={receiveBottomSheet}

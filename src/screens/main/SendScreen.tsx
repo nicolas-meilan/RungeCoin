@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ethers } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import BlockchainSelector from '@components/BlockchainSelector';
@@ -208,7 +207,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     const addressRegex = getAddressRegex(blockchain);
     const address = addressRegex.exec(qrCode)?.[0] || '';
 
-    const qrError = !ethers.utils.isAddress(address);
+    const qrError = !isValidAddressToSend(blockchain, address);
     if (qrError) {
       dispatchNotification('main.send.qr.invalidNotification', 'error');
       setAddressToSend('');
@@ -266,6 +265,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
       >
         <BlockchainSelector
           label="main.send.inputs.blockchainSelectorLabel"
+          disableBlockchainsWithoutAddress
           disabled={sendTokenLoading}
         />
         <StyledSelector
@@ -312,7 +312,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         )}
         {!!walletPublicValues?.isHw && (
           <>
-            <HwMessage text="hw.guide" />
+            <HwMessage text={`hw.guide.${blockchain}`} />
             <HwConnectionSelector disabled={sendTokenLoading} />
           </>
         )}
