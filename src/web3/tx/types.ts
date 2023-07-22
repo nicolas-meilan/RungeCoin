@@ -70,3 +70,5 @@ export type ProcessTxToSave<T> = (config: {
   blockchain: Blockchains;
   needsUpdate?: boolean;
 }) => Promise<T | null>;
+
+export const NO_TX_TO_SIGN_ERROR = 'NO_TX_TO_SIGN';

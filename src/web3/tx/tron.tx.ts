@@ -1,11 +1,13 @@
+import AppTrx from '@ledgerhq/hw-app-trx';
 import { BigNumber, utils } from 'ethers';
 
-import { EstimateFees, ProcessTxToSave, SendTx, TronTxFees } from './types';
+import { EstimateFees, NO_TX_TO_SIGN_ERROR, ProcessTxToSave, SendTx, TronTxFees } from './types';
 import { getTronTxConfirmations } from '@http/tx/tron.tx';
 import { TronWalletTx } from '@http/tx/types';
 import { Blockchains } from '@web3/constants';
 import { tronProvider } from '@web3/providers';
 import { BASE_TOKEN_ADDRESS, TOKENS_TRON, TokenType } from '@web3/tokens';
+import { BASE_ADDRESS_INDEX, connectHw, getDerivationPath } from '@web3/wallet';
 
 // TODO tx type
 const calculateTronTxBandwithNeeded = (tx: any) => {
@@ -45,7 +47,7 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
   fromAddress,
   toAddress,
   token,
-  quantity = 1000,
+  quantity = '1000000000', // 1000 trx
 ) => {
   const isMainToken = token.address === BASE_TOKEN_ADDRESS;
 
@@ -95,15 +97,15 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
     energyNeeded = newEnergyNeeded;
   }
 
-  const accountEnergy = accountResources.EnergyLimit - (accountResources.EnergyUsed || 0);
-  const totalBandwidth = accountResources.freeNetLimit + accountResources.NetLimit;
+  const accountEnergy = (accountResources.EnergyLimit || 0) - (accountResources.EnergyUsed || 0);
+  const totalBandwidth = (accountResources.freeNetLimit || 0) + (accountResources.NetLimit || 0);
   const totalBandwidthUsed = (accountResources.NetUsed || 0) + (accountResources.freeNetUsed || 0);
   const accountBandwidth = totalBandwidth - totalBandwidthUsed;
 
   const bandwithNeeded = calculateTronTxBandwithNeeded(unsignedTx);
 
-  const bandwithMissing = (accountBandwidth - bandwithNeeded) < 0
-    ? Math.abs(accountBandwidth - bandwithNeeded)
+  const bandwithMissing = accountBandwidth < bandwithNeeded
+    ? bandwithNeeded
     : 0;
 
   const energyMissing = (accountEnergy - energyNeeded) < 0
@@ -129,6 +131,32 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
   };
 };
 
+export const tronSignTxWithLedger = async ({
+  index,
+  bluetoothConnection,
+  tx,
+}: {
+  index?: number;
+  bluetoothConnection?: boolean;
+  tx: string;
+} = {
+  index: BASE_ADDRESS_INDEX,
+  bluetoothConnection: false,
+  tx: '',
+}): Promise<string> => {
+  if (!tx) throw new Error(NO_TX_TO_SIGN_ERROR);
+
+  const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
+  const derivationPath = `${getDerivationPath(Blockchains.TRON)}/${walletIndex}`;
+  const transport = await connectHw(bluetoothConnection);
+
+  const trx = new AppTrx(transport);
+  const signedHash: string = await trx.signTransaction(derivationPath, tx, []);
+  transport.close();
+
+  return signedHash;
+};
+
 export const tronSend: SendTx<TronWalletTx> = async (
   _,
   fromAddress,
@@ -136,8 +164,8 @@ export const tronSend: SendTx<TronWalletTx> = async (
   token,
   quantity,
   {
-    //  isHw,
-    //  hwBluetooth,
+    isHw,
+    hwBluetooth,
     privateKey,
   } = {
     isHw: false,
@@ -169,14 +197,17 @@ export const tronSend: SendTx<TronWalletTx> = async (
       .triggerSmartContract(token.address, functionSelector, contractOptions, parameter)).transaction;
   }
 
-  // if (isHw) { //TODO HW
-  //   console.log('TODO TRON HW');
-  //   console.log({ hwBluetooth });
+  let signedTx = unsignedTx;
+  if (isHw) {
+    const signature = await tronSignTxWithLedger({
+      bluetoothConnection: hwBluetooth,
+      tx: unsignedTx.raw_data_hex,
+    });
 
-  //   return 'TODO HW';
-  // }
-
-  const signedTx = await tronProvider.trx.sign(unsignedTx, privateKey);
+    signedTx.signature = [signature];
+  } else {
+    signedTx = await tronProvider.trx.sign(unsignedTx, privateKey);
+  }
 
   const response = await tronProvider.trx.sendRawTransaction(signedTx);
 

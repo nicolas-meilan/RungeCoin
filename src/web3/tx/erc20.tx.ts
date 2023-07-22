@@ -2,7 +2,7 @@ import type { SignatureLike } from '@ethersproject/bytes';
 import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { BigNumber, Contract, VoidSigner, Wallet, providers, utils } from 'ethers';
 
-import { ERC20TxFees, EstimateFees, ProcessTxToSave, SendTx } from './types';
+import { ERC20TxFees, EstimateFees, NO_TX_TO_SIGN_ERROR, ProcessTxToSave, SendTx } from './types';
 import { ERC20WalletTx } from '@http/tx/types';
 import { BLOCKCHAINS_CONFIG, Blockchains } from '@web3/constants';
 import getProvider from '@web3/providers';
@@ -99,7 +99,6 @@ const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
 export const estimateErc20TxFees: EstimateFees<ERC20TxFees> = estimateErc20TxInfo;
 
 export const INVALID_SIGN_INFORMATION = 'INVALID_SIGN_INFORMATION';
-export const NO_TX_TO_SIGN = 'NO_TX_TO_SIGN';
 
 type SignedTx = {
   s: string;
@@ -107,9 +106,8 @@ type SignedTx = {
   r: string;
 };
 
-// TODO check to sign also tron with the same function
 // https://github.com/ethers-io/ethers-ledger/blob/master/src.ts/index.ts#L67
-const signTxWithLedger = async (
+export const erc20SignTxWithLedger = async (
   blockchain: Blockchains,
   {
     index,
@@ -124,7 +122,7 @@ const signTxWithLedger = async (
     bluetoothConnection: false,
     tx: '',
   }): Promise<SignatureLike> => {
-  if (!tx) throw new Error(NO_TX_TO_SIGN);
+  if (!tx) throw new Error(NO_TX_TO_SIGN_ERROR);
 
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
   const derivationPath = `${getDerivationPath(blockchain)}/${walletIndex}`;
@@ -209,7 +207,7 @@ export const erc20send: SendTx<undefined> = async (
     const txToSerialize = await utils.resolveProperties(txToResolveProperties);
     const unsignedTx = utils.serializeTransaction(txToSerialize).substring(2);
 
-    const sig = await signTxWithLedger(blockchain, {
+    const sig = await erc20SignTxWithLedger(blockchain, {
       bluetoothConnection: hwBluetooth,
       tx: unsignedTx,
     });
