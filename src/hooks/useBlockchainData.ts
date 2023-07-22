@@ -8,7 +8,7 @@ import { zipObject } from 'lodash';
 import StorageKeys from '@system/storageKeys';
 import { ReactQueryKeys } from '@utils/constants';
 import { Blockchains, DEFAULT_BLOCKCHAIN } from '@web3/constants';
-import getProvider from '@web3/providers';
+import getProvider, { tronProvider } from '@web3/providers';
 import getTokens, {
   BASE_TOKEN_ADDRESS,
   TokensStruct,
@@ -29,7 +29,7 @@ type UseBlockchainDataReturn = {
     [blockchain in Blockchains]: TokenSymbol;
   };
   blockchain: Blockchains;
-  blockchainProvider: providers.Provider;
+  blockchainProvider: providers.Provider | typeof tronProvider;
   tokens: TokensStruct;
   blockchainBaseToken: TokenType;
 };

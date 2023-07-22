@@ -30,13 +30,13 @@ const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
 
   const { dispatchNotification } = useNotifications();
 
-  const { walletPublicValues } = useWalletPublicValues();
+  const { address } = useWalletPublicValues();
   const { blockchain } = useBlockchainData();
 
   const fetchBalances = async () => {
-    if (!walletPublicValues) return null;
+    if (!address) return null;
 
-    return getWalletBalance(blockchain, walletPublicValues.address);
+    return getWalletBalance(blockchain, address);
   };
 
   const queryKey: QueryKey = [ReactQueryKeys.BALANCES, blockchain];

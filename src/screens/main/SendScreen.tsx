@@ -1,18 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ethers } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import BlockchainSelector from '@components/BlockchainSelector';
 import Button from '@components/Button';
 import Calculator from '@components/Calculator';
-import Card from '@components/Card';
+import EstimatedTxFee from '@components/EstimatedTxFee';
 import HwConnectionSelector from '@components/HwConnectionSelector';
 import QrScanner from '@components/QrScanner';
 import ScreenLayout from '@components/ScreenLayout';
 import Select, { Option } from '@components/Select';
-import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import TokenIcon from '@components/TokenIcon';
@@ -20,18 +18,17 @@ import TokenItem from '@components/TokenItem';
 import useBalances, { TokensBalanceArrayItem } from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
 import useBlockchainData from '@hooks/useBlockchainData';
-import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNotifications from '@hooks/useNotifications';
-import useTokenConversions from '@hooks/useTokenConversions';
 import useTx from '@hooks/useTx';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
-import type { WalletTx } from '@http/tx';
+import type { WalletTx } from '@http/tx/types';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
-import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
-import { GWEI, TokenSymbol, TokenType } from '@web3/tokens';
-import { WALLET_ADDRESS_REGEX } from '@web3/wallet';
+import { TokenSymbol, TokenType } from '@web3/tokens';
+import { isValidAddressToSend } from '@web3/tx';
+import { SenndTxReturn } from '@web3/tx/types';
+import { getAddressRegex } from '@web3/wallet';
 
 const FooterWrapper = styled.View`
   margin-top: ${({ theme }) => theme.spacing(10)};
@@ -45,7 +42,7 @@ const AddressToSendInput = styled(TextInput)`
   margin-vertical: ${({ theme }) => theme.spacing(4)};
 `;
 
-const GasMessage = styled(Text)`
+const FeeMessage = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
@@ -56,22 +53,8 @@ const MiningPendingTxsMessage = styled(Text)`
   margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
-const GasTitle = styled(Text).attrs({
-  weight: 'bold',
-}) <{ avoidTopMargin?: boolean }>`
-  font-size: ${({ theme }) => theme.fonts.size[18]};
-  margin-bottom: ${({ theme }) => theme.spacing(2)};
-  margin-top: ${({ avoidTopMargin, theme }) => (avoidTopMargin ? 0 : theme.spacing(2))};
-`;
-
 const HwMessage = styled(Text)`
   margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(4)} 0;
-`;
-
-const TotalFeeText = styled(Text) <{ error: boolean }>`
-  ${({ error, theme }) => (error ? `
-    color: ${theme.colors.error};
-  ` : '')}
 `;
 
 type SendScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.send>;
@@ -81,8 +64,6 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const { dispatchNotification } = useNotifications();
 
   const [firstRender, setFirstRender] = useState(true);
-
-  const { consolidatedCurrency } = useConsolidatedCurrency();
 
   const {
     biometricsEnabled,
@@ -97,6 +78,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   } = useBlockchainData();
 
   const {
+    address: fromAddress,
     walletPublicValues,
     walletPublicValuesLoading,
   } = useWalletPublicValues();
@@ -128,22 +110,17 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     onAddSuccess,
   });
 
-  const onSendFinish = (txHash: string) => addTx(txHash);
+  const onSendFinish = (txData: SenndTxReturn<WalletTx | undefined>) => addTx(txData);
 
   const {
-    estimatedTxInfo,
-    estimatedTxInfoLoading,
-    fetchestimateTxInfo,
+    estimatedTxFees,
+    estimatedTxFeesLoading,
+    estimatedTxFeesError,
+    fetchEstimateTxFees,
     sendTokenLoading,
     sendToken,
     sendTokenError,
   } = useTx({ onSendFinish });
-
-  const { convert } = useTokenConversions({
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-  });
 
   const {
     orderTokens,
@@ -166,10 +143,17 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   ), [blockchainBaseToken, tokenBalances]);
 
   const hasNotBalanceForGas = useMemo(() => (
-    estimatedTxInfo?.totalFee.gt(blockchainBaseTokenBalance) || false
-  ), [estimatedTxInfo, tokenBalances]);
+    estimatedTxFees?.totalFee.gt(blockchainBaseTokenBalance) || false
+  ), [estimatedTxFees, tokenBalances]);
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
+
+  const onAddressChange = (newAddress: string) => {
+    const isTheSameAddress = newAddress.toLowerCase() === fromAddress?.toLowerCase();
+    const addressError = isTheSameAddress || !isValidAddressToSend(blockchain, newAddress);
+    setAddressToSendError(!!newAddress && addressError);
+    setAddressToSend(newAddress);
+  };
 
   useEffect(() => {
     updateTxs();
@@ -179,21 +163,23 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     }
 
     setTokenToSend(null);
+    onAddressChange('');
   }, [blockchain]);
 
+  const estimateFees = () => {
+    if (!tokenToSend) return;
+    fetchEstimateTxFees(addressToSend, tokenToSend);
+  };
+
   useEffect(() => {
-    if (allDataSetted) fetchestimateTxInfo(addressToSend, tokenToSend.address);
-  }, [tokenToSend, addressToSend, addressToSendError]);
+    if (allDataSetted) estimateFees();
+  }, [tokenToSend, allDataSetted, addressToSend, addressToSendError]);
 
   useEffect(() => {
     if (sendTokenError) dispatchNotification('main.send.sendError', 'error');
   }, [sendTokenError]);
 
   const onTokenChange = (newToken: Option<TokenType>) => setTokenToSend(newToken.data);
-  const onAddressChange = (newAddress: string) => {
-    setAddressToSendError(!!newAddress && !ethers.utils.isAddress(newAddress));
-    setAddressToSend(newAddress);
-  };
 
   const openCalculator = () => setShowCalculator(true);
   const closeCalculator = () => setShowCalculator(false);
@@ -210,7 +196,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     }
 
     closeCalculator();
-    if (estimatedTxInfo?.totalFee.gt(blockchainBaseTokenBalance)) {
+    if (estimatedTxFees?.totalFee.gt(blockchainBaseTokenBalance)) {
       dispatchNotification('main.send.notFoundsForFeeNotification', 'error');
       return;
     }
@@ -218,9 +204,10 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   };
 
   const onScanQr = (qrCode: string) => {
-    const address = WALLET_ADDRESS_REGEX.exec(qrCode)?.[0] || '';
+    const addressRegex = getAddressRegex(blockchain);
+    const address = addressRegex.exec(qrCode)?.[0] || '';
 
-    const qrError = !ethers.utils.isAddress(address);
+    const qrError = !isValidAddressToSend(blockchain, address);
     if (qrError) {
       dispatchNotification('main.send.qr.invalidNotification', 'error');
       setAddressToSend('');
@@ -262,6 +249,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     navigation.goBack();
   };
 
+  const areTheSameAddresses = addressToSend.toLowerCase() === fromAddress?.toLowerCase();
+  const errorMessage = areTheSameAddresses
+    ? 'main.send.inputs.sameAddressError'
+    : 'main.send.inputs.addressError';
+
   return (
     <>
       <ScreenLayout
@@ -273,6 +265,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
       >
         <BlockchainSelector
           label="main.send.inputs.blockchainSelectorLabel"
+          disableBlockchainsWithoutAddress
           disabled={sendTokenLoading}
         />
         <StyledSelector
@@ -298,7 +291,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         <AddressToSendInput
           label="main.send.inputs.addressLabel"
           placeholder="main.send.inputs.addressPlaceholder"
-          errorMessage="main.send.inputs.addressError"
+          errorMessage={errorMessage}
           value={addressToSend}
           pressDisabled={sendTokenLoading}
           editable={!sendTokenLoading}
@@ -307,60 +300,19 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           icon="qrcode-scan"
           onPressIcon={openQrScanner}
         />
-        {allDataSetted && (
+        {allDataSetted && !areTheSameAddresses && (
           <>
-            <GasMessage
-              text="main.send.gasDescription"
+            {!estimatedTxFeesError && <FeeMessage text={`main.send.feeDescription.${blockchain}`} />}
+            <EstimatedTxFee
+              txFee={estimatedTxFees}
+              loading={estimatedTxFeesLoading}
+              onRetry={estimateFees}
             />
-            <Card>
-              <GasTitle text="main.send.gasFee" avoidTopMargin />
-              <Skeleton
-                isLoading={estimatedTxInfoLoading}
-                height={14}
-                width="90%"
-                quantity={2}
-              >
-                <Text
-                  text="main.send.gasUnits"
-                  i18nArgs={{
-                    units: estimatedTxInfo?.gasUnits.toNumber(),
-                  }}
-                />
-                <Text
-                  text="main.send.gasPrice"
-                  i18nArgs={{
-                    price: `${numberToFormattedString(estimatedTxInfo?.gasPrice || 0, {
-                      decimals: GWEI.toLowerCase(),
-                    })} ${GWEI}`,
-                  }}
-                />
-              </Skeleton>
-              <GasTitle text="main.send.totalFee" />
-              <Skeleton
-                isLoading={estimatedTxInfoLoading}
-                height={14}
-                width="90%"
-                quantity={2}
-              >
-                <TotalFeeText
-                  error={hasNotBalanceForGas}
-                  text={`≈ ${numberToFormattedString(estimatedTxInfo?.totalFee || 0, {
-                    decimals: blockchainBaseToken.decimals,
-                  })} ${blockchainBaseToken.symbol}`}
-                />
-                <Text
-                  text={numberToFiatBalance(
-                    convert(estimatedTxInfo?.totalFee || 0, blockchainBaseToken),
-                    consolidatedCurrency,
-                  )}
-                />
-              </Skeleton>
-            </Card>
           </>
         )}
         {!!walletPublicValues?.isHw && (
           <>
-            <HwMessage text="hw.guide" />
+            <HwMessage text={`hw.guide.${blockchain}`} />
             <HwConnectionSelector disabled={sendTokenLoading} />
           </>
         )}
@@ -370,8 +322,8 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           )}
           <Button
             text="common.continue"
-            disabled={!allDataSetted || hasNotBalanceForGas}
-            loading={estimatedTxInfoLoading
+            disabled={!allDataSetted || hasNotBalanceForGas || !!estimatedTxFeesError}
+            loading={estimatedTxFeesLoading
               || sendTokenLoading
               || isBlockchainInitialLoading
               || walletPublicValuesLoading
@@ -387,7 +339,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         tokenSymbol={tokenToSend?.symbol}
         onClose={closeCalculator}
         onEnd={onCalculatorEnd}
-        transactionFee={estimatedTxInfo?.totalFee}
+        transactionFee={estimatedTxFees?.totalFee}
       />
       <QrScanner
         visible={showQrScanner}

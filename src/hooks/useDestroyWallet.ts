@@ -13,7 +13,8 @@ const useDestroyWallet = (): UseDestroyWalletReturn => {
   const { removeItem: removePasswordAttemps } = useAsyncStorage(StorageKeys.PASSWORD_ATTEMPS);
   const { removeItem: removeBiometricsEnable } = useAsyncStorage(StorageKeys.BIOMETRICS);
 
-  const removePrivateKey = () => EncryptedStorage.removeItem(StorageKeys.WALLET_PRIVATE_KEY);
+  const removeErc20PrivateKey = () => EncryptedStorage.removeItem(StorageKeys.ERC20_WALLET_PRIVATE_KEY);
+  const removeTronPrivateKey = () => EncryptedStorage.removeItem(StorageKeys.TRON_WALLET_PRIVATE_KEY);
   const removePassword = () => EncryptedStorage.removeItem(StorageKeys.PASSWORD);
   const removeBiometrics = async () => {
     await toggleBiometrics(false);
@@ -26,7 +27,8 @@ const useDestroyWallet = (): UseDestroyWalletReturn => {
     await Promise.all([
       removeWalletPublicValues(),
       removePasswordAttemps(),
-      removePrivateKey(),
+      removeErc20PrivateKey(),
+      removeTronPrivateKey(),
       removePassword(),
       removeBiometrics(),
     ]);

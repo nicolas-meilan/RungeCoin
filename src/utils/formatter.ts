@@ -2,7 +2,6 @@ import { BigNumber, utils } from 'ethers';
 import { t } from 'i18next';
 
 import { FIAT_DECIMALS } from './constants';
-import { WALLET_ADRESS_LENGTH } from '@web3/wallet';
 
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 export const INPUT_NUMBER = /^(\d)*.?(\d)*$/;
@@ -36,9 +35,12 @@ export const numberToFormattedString = (
     fixedDecimals = 0,
   }: NumberToFormattedStringOptions = {},
 ): string => {
-  const numberAfterFirstIteration = decimals
+  const baseFormattedNumber = decimals
     ? utils.formatUnits(number, decimals)
     : number.toString();
+
+  const splittedNumber = baseFormattedNumber.split('.');
+  const numberAfterFirstIteration = Number(splittedNumber[1]) === 0 ? splittedNumber[0] : baseFormattedNumber;
 
   const numberAfterSecondIteration = fixedDecimals
     ? Number(numberAfterFirstIteration).toFixed(fixedDecimals).toString()
@@ -58,13 +60,12 @@ export const numberToFiatBalance = (
   `≈ ${numberToFormattedString(number, { fixedDecimals: FIAT_DECIMALS })}${symbol ? ` ${symbol}` : ''}`
 );
 
-export const formatAddress = (adress: string) => {
-  const { length } = adress;
-  if (length !== WALLET_ADRESS_LENGTH) return '';
+export const formatAddress = (address: string) => {
+  const { length } = address;
 
   const START_LENGTH = 6;
   const FINISH_LENGTH = 4;
   const SEPARATOR = '...';
 
-  return [adress.slice(0, START_LENGTH), adress.slice(length - FINISH_LENGTH, length)].join(SEPARATOR);
+  return [address.slice(0, START_LENGTH), address.slice(length - FINISH_LENGTH, length)].join(SEPARATOR);
 };

@@ -52,8 +52,9 @@ const scrollviewContentStyle: StyleProp<ViewStyle> = {
 };
 
 const Receive = ({ onPressAddress }: ReceiveProps) => {
-  const { walletPublicValues } = useWalletPublicValues();
-  const address = walletPublicValues!.address;
+  const { address } = useWalletPublicValues();
+
+  if (!address) return null;
 
   const onPress = () => onPressAddress?.(address);
 

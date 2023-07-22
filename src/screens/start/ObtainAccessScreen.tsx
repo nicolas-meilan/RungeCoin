@@ -10,6 +10,7 @@ import ScreenLayout from '@components/ScreenLayout';
 import Switch from '@components/Switch';
 import TextInput from '@components/TextInput';
 import useBiometrics from '@hooks/useBiometrics';
+import usePrivateKey from '@hooks/usePrivateKey';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
@@ -17,12 +18,14 @@ import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/formatter';
 import { hashFrom } from '@utils/security';
+import { Blockchains } from '@web3/constants';
 import {
   SEED_PHRASE_VALID_LENGTH,
   formatSeedPhrase,
   isValidSeedPhrase,
   createWalletFromSeedPhrase,
 } from '@web3/wallet';
+import { getTronAddressFromPrivateKey } from '@web3/wallet/wallet.tron';
 
 const PasswordInput = styled(TextInput)`
   margin: ${({ theme }) => theme.spacing(4)} 0;
@@ -48,6 +51,7 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
 
   const [loading, setLoading] = useState(false);
 
+  const { setPrivateKey } = usePrivateKey();
   const {
     walletPublicValues,
     setWalletPublicValues,
@@ -80,14 +84,19 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
   const canUseBiometrics = useMemo(deviceHasBiometrics, []);
 
   const obtainAccess = async () => {
-    const wallet = await createWalletFromSeedPhrase(seedPhrase);
+    const wallets = await createWalletFromSeedPhrase(seedPhrase);
 
+    const tronWalletPrivateKey = wallets.tronWallet.getPrivateKeyString().replace('0x', '');
     await Promise.all([
-      EncryptedStorage.setItem(StorageKeys.WALLET_PRIVATE_KEY, wallet.getPrivateKeyString()),
+      setPrivateKey(Blockchains.ETHEREUM, wallets.erc20Wallet.getPrivateKeyString()),
+      setPrivateKey(Blockchains.TRON, tronWalletPrivateKey),
       EncryptedStorage.setItem(StorageKeys.PASSWORD, await hashFrom(password)),
     ]);
 
-    setWalletPublicValues(wallet.getAddressString());
+    setWalletPublicValues({
+      erc20Address: wallets.erc20Wallet.getAddressString(),
+      tronAddress: getTronAddressFromPrivateKey(tronWalletPrivateKey),
+    });
   };
 
   useEffect(() => {

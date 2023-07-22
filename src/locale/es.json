@@ -7,6 +7,7 @@
     "send": "Enviar",
     "receive": "Recibir",
     "tryRefresh": "Pruebe a refrescar",
+    "free": "Gratis",
     "inputs": {
       "password": "Ingresa una contraseña",
       "passwordPH": "Nueva contraseña",
@@ -70,7 +71,7 @@
         "message": "Para volver a abrir la billetera necesitará ingresar las **palabras secretas**, si no las recuerda, **perderá el acceso**"
       },
       "labels": {
-        "blockchainSelector": "Cambiar Blockchain",
+        "blockchainSelector": "Cambiar red",
         "hwConnectionSelector": "Cambiar método de conexión de **Ledger**",
         "themeSwitcher": "Modo oscuro",
         "languageSelector": "Cambiar idioma",
@@ -97,10 +98,18 @@
     "send": {
       "title": "Enviar cryptos",
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
-      "gasDescription": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
-      "gasFee": "Comisiones",
+      "feeDescription": {
+        "ETHEREUM": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+        "POLYGON": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+        "BSC": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",
+        "TRON": "La comisión se calcula basándose en el **ancho de banda** y la **energía** que necesita la transacción"
+      },
+      "fee": "Comisiones",
       "gasUnits": "Unidades de gas: **{{units}}**",
       "gasPrice": "Precio de gas: ≈ **{{price}}**",
+      "bandwith": "Ancho de banda requerido: ≈ **{{bandwith}}**",
+      "energy": "Energía requerida: ≈ **{{energy}}**",
+      "activationAccountFee": "Comisión por activar cuenta destino: {{fee}}",
       "totalFee": "Total",
       "sendError": "Ha ocurrido un error al enviar la transacción",
       "miningPendingTxs": "Tienes transacciones pendientes de minado",
@@ -115,12 +124,13 @@
         "selectTokenPlaceholder": "Seleccione un token",
         "addressLabel": "Dirección de envío",
         "addressPlaceholder": "Ingresar dirección",
-        "addressError": "Dirección invalida"
+        "addressError": "Dirección invalida",
+        "sameAddressError": "La dirección de origen no debe coincidir con la dirección de destino"
       }
     },
     "calculator": {
       "exceededBalance": "Balance excedido",
-      "gasFee": "Costo de Gas: ≈ {{fee}}"
+      "fee": "Comisión de red: ≈ {{fee}}"
     },
     "token": {
       "price": "Precio",
@@ -149,7 +159,13 @@
     }
   },
   "hw": {
-    "guide": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+    "guide": {
+      "ETHEREUM": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+      "POLYGON": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+      "BSC": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Ethereum**",
+      "TRON": "Conecta el **Ledger** a tu smartphone mediante **USB o Bluetooth**, luego **desbloquealo** y abre la **app de Tron**"
+    },
+    "selectBlockchain": "Selecciona una red",
     "connectionOptions": {
       "USB": "Conectar **Ledger** mediante **USB**",
       "BLUETOOTH": "Conectar **Ledger** mediante **Bluetooth**"
@@ -158,7 +174,8 @@
   "blockchain": {
     "ETHEREUM": "Blockchain Ethereum",
     "POLYGON": "Blockchain Polygon",
-    "BSC": "Blockchain BSC"
+    "BSC": "Blockchain BNB",
+    "TRON": "Blockchain Tron"
   },
   "dateformat": {
     "date": "dd/MM/yyyy",

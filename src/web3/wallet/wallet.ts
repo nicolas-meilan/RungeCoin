@@ -1,5 +1,5 @@
-import { toBuffer } from '@ethereumjs/util';
 import AppEth from '@ledgerhq/hw-app-eth';
+import AppTrx from '@ledgerhq/hw-app-trx';
 import TransportHID from '@ledgerhq/react-native-hid';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import {
@@ -7,28 +7,46 @@ import {
   mnemonicToSeed,
   validateMnemonic,
 } from 'bip39';
-import Wallet, { hdkey } from 'ethereumjs-wallet';
-import { BigNumber, Contract } from 'ethers';
-import { zipObject } from 'lodash';
+import { hdkey } from 'ethereumjs-wallet';
 
-import { Blockchains } from './constants';
-import getProvider from './providers';
-import {
-  BALANCE_CHECKER_ADDRESS,
-  BALANCE_CHECKER_ABI,
-} from './smartContracts';
-import getTokens, { TokensBalance } from './tokens';
+import { GetBalance } from './types';
+import { ERC20_ADDRESS_REGEX, ETH_DERIVATION_PATH, getERC20WalletBalance } from './wallet.erc20';
+import { TRON_ADDRESS_REGEX, TRON_DERIVATION_PATH, getTronWalletBalance } from './wallet.tron';
+import { Blockchains } from '../constants';
 import { requestBluetoothScanPermission } from '@system/bluetooth';
+import { erc20BlockchainsConfigurationPropagation } from '@utils/web3';
 
-export const WALLET_ADRESS_LENGTH = 42;
-export const WALLET_ADDRESS_REGEX = /0x[a-fA-F0-9]{40}/;
+// export const BTC_DERIVATION_PATH = "m/44'/0'/0'/0"; // m/purpose'/coin_type'/account'/change/index
 export const SEED_PHRASE_VALID_LENGTH = [12, 15, 18, 21, 24];
-export const ETH_DERIVATION_PATH = "m/44'/60'/0'/0"; // m/purpose'/coin_type'/account'/change/index
 export const BASE_ADDRESS_INDEX = 0;
 const SEED_24_WORDS_STRENGTH = 256;
 const SEED_12_WORDS_STRENGTH = 128;
 
 const HW_BLUETOOTH_MAX_TIME = 20000;
+
+type BlockchainWalletConfig = {
+  [blockchain in Blockchains]: {
+    getWalletBalance: GetBalance;
+    addressRegex: RegExp;
+    derivationPath: string;
+    ledgerApp: typeof AppEth | typeof AppTrx;
+  }
+};
+
+const BLOCKCHAIN_WALLET_CONFIG: BlockchainWalletConfig = {
+  ...erc20BlockchainsConfigurationPropagation({
+    getWalletBalance: getERC20WalletBalance,
+    addressRegex: ERC20_ADDRESS_REGEX,
+    derivationPath: ETH_DERIVATION_PATH,
+    ledgerApp: AppEth,
+  }),
+  [Blockchains.TRON]: {
+    getWalletBalance: getTronWalletBalance,
+    addressRegex: TRON_ADDRESS_REGEX,
+    derivationPath: TRON_DERIVATION_PATH,
+    ledgerApp: AppTrx,
+  },
+};
 
 export const createSeedPhrase = (with24Words = false) => generateMnemonic(
   with24Words ? SEED_24_WORDS_STRENGTH : SEED_12_WORDS_STRENGTH,
@@ -43,32 +61,25 @@ export const createWalletFromSeedPhrase = async (mnemonic: string, index: number
 
   const seed = await mnemonicToSeed(mnemonic);
   const root = hdkey.fromMasterSeed(seed);
-  const wallet = root.derivePath(`${ETH_DERIVATION_PATH}/${walletIndex}`).getWallet();
+  const erc20Wallet = root.derivePath(`${ETH_DERIVATION_PATH}/${walletIndex}`).getWallet();
+  const tronWallet = root.derivePath(`${TRON_DERIVATION_PATH}/${walletIndex}`).getWallet();
 
-  return wallet;
+  return {
+    erc20Wallet,
+    tronWallet,
+  };
 };
 
-export const createWalletFromKey = (key: string, isPrivate: boolean = true) => {
-  const createWallet = isPrivate ? Wallet.fromPrivateKey : Wallet.fromPublicKey;
+export const getAddressRegex = (blockchain: Blockchains) => BLOCKCHAIN_WALLET_CONFIG[blockchain].addressRegex;
 
-  const bufferedKey = toBuffer(key);
-  const wallet = createWallet(bufferedKey);
+export const getDerivationPath = (blockchain: Blockchains) => BLOCKCHAIN_WALLET_CONFIG[blockchain].derivationPath;
 
-  return wallet;
-};
+export const getLedgerApp = (blockchain: Blockchains) => BLOCKCHAIN_WALLET_CONFIG[blockchain].ledgerApp;
 
-export const getWalletBalance = async (blockchain: Blockchains, walletAddress: string): Promise<TokensBalance> => {
-  const tokens = getTokens(blockchain);
-  const provider = getProvider(blockchain);
-
-  const tokenAddresses = Object.values(tokens).map(({ address }) => address);
-
-  const balanceChecker = new Contract(BALANCE_CHECKER_ADDRESS[blockchain], BALANCE_CHECKER_ABI, provider);
-
-  const balances: BigNumber[] = await balanceChecker.balances([walletAddress], tokenAddresses);
-
-  return zipObject(Object.keys(tokens), balances.map((balance: BigNumber) => balance)) as TokensBalance;
-};
+export const getWalletBalance: GetBalance = (
+  blockchain,
+  walletAddress,
+) => BLOCKCHAIN_WALLET_CONFIG[blockchain].getWalletBalance(blockchain, walletAddress);
 
 export const NO_LEDGER_CONNECTED_ERROR = 'No ledger connected';
 
@@ -119,22 +130,25 @@ export const connectHw = async (bluetoothConnection: boolean = false): Promise<T
   return transport;
 };
 
-export const getHwWalletAddress = async ({
-  index,
-  bluetoothConnection,
-}: {
-  index?: number;
-  bluetoothConnection?: boolean;
-} = {
-  index: BASE_ADDRESS_INDEX,
-  bluetoothConnection: false,
-}): Promise<string> => {
+export const getHwWalletAddress = async (
+  blockchain: Blockchains,
+  {
+    index,
+    bluetoothConnection,
+  }: {
+    index?: number;
+    bluetoothConnection?: boolean;
+  } = {
+    index: BASE_ADDRESS_INDEX,
+    bluetoothConnection: false,
+  }): Promise<string> => {
+  const walletConfig = BLOCKCHAIN_WALLET_CONFIG[blockchain];
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
-  const derivationPath = `${ETH_DERIVATION_PATH}/${walletIndex}`;
+  const derivationPath = `${walletConfig.derivationPath}/${walletIndex}`;
   const transport = await connectHw(bluetoothConnection);
 
-  const eth = new AppEth(transport);
-  const { address } = await eth.getAddress(derivationPath, true);
+  const ledgerApp = new (walletConfig.ledgerApp)(transport);
+  const { address } = await ledgerApp.getAddress(derivationPath, true);
   transport.close();
 
   return address;

@@ -19,6 +19,7 @@ import Title from '@components/Title';
 import TokenIcon from '@components/TokenIcon';
 import Modal from '@containers/Modal';
 import useBiometrics from '@hooks/useBiometrics';
+import useBlockchainData from '@hooks/useBlockchainData';
 import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useDestroyWallet from '@hooks/useDestroyWallet';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
@@ -26,7 +27,7 @@ import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { FiatCurrencies } from '@utils/constants';
 import {
   BASE_ADDRESS_INDEX,
-  ETH_DERIVATION_PATH,
+  getDerivationPath,
 } from '@web3/wallet';
 
 const Subtitle = styled(Title).attrs({
@@ -85,6 +86,7 @@ const ConfigurationScreen = () => {
   const { t, i18n } = useTranslation();
 
   const { walletPublicValues } = useWalletPublicValues();
+  const { blockchain } = useBlockchainData();
   const destroyWallet = useDestroyWallet();
 
   const {
@@ -186,7 +188,7 @@ const ConfigurationScreen = () => {
           <Info
             text="main.configuration.derivationPath"
             i18nArgs={{
-              derivationPath: `${ETH_DERIVATION_PATH}/${BASE_ADDRESS_INDEX}`,
+              derivationPath: `${getDerivationPath(blockchain)}/${BASE_ADDRESS_INDEX}`,
             }}
           />
           <Info

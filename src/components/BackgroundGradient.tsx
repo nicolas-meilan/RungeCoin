@@ -1,5 +1,4 @@
 import React from 'react';
-import { useWindowDimensions } from 'react-native';
 
 import Svg, {
   Defs,
@@ -9,21 +8,19 @@ import Svg, {
 } from 'react-native-svg';
 import styled, { useTheme } from 'styled-components/native';
 
-const GradientWrapper = styled.View<{
-  height: number;
-  width: number;
-}>`
+const GradientWrapper = styled.View`
   position: absolute;
-  height: ${({ width }) => width}px
-  height: ${({ height }) => height}px
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 `;
 
 const BackgrounGradient = () => {
   const theme = useTheme();
-  const { height, width } = useWindowDimensions();
 
   return (
-    <GradientWrapper height={height} width={width}>
+    <GradientWrapper>
       <Svg height="100%" width="100%">
         <Defs>
           <LinearGradient

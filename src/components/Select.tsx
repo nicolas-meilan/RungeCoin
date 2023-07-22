@@ -13,6 +13,7 @@ export type Option<DataType = undefined> = {
   value: string;
   label?: string;
   disabled?: boolean;
+  useDisabledItemStyle?: boolean;
   svg?: TextInputProps['leftSvg'];
   leftComponent?: TextInputProps['leftComponent'];
 };
@@ -30,6 +31,7 @@ export type SelectProps = {
   placeholder?: string;
   label?: string;
   fixScreenPadding?: boolean;
+  useDisabledItemStyle?: boolean;
   disabled?: boolean;
 };
 
@@ -47,8 +49,13 @@ const OptionText = styled(Text)<{ hasLeftComponent: boolean }>`
   font-size: ${({ theme }) => theme.fonts.size[16]};
 `;
 
-const OptionWrapper = styled.TouchableOpacity<{ isFirst: boolean }>`
+const OptionWrapper = styled.TouchableOpacity<{
+  isFirst: boolean;
+  useDisabledItemStyle?: boolean;
+}>`
   font-size: ${({ theme }) => theme.fonts.size[16]};
+  opacity: ${({ disabled, useDisabledItemStyle }) => (disabled && useDisabledItemStyle
+    ? 0.5 : 1)};
   margin-top: ${({ theme, isFirst }) => (isFirst
     ? '0' : `${theme.spacing(2)}`)};
 `;
@@ -61,6 +68,7 @@ const Select = ({
   onClose,
   style,
   options = [],
+  useDisabledItemStyle = false,
   disabled = false,
   selected: selectedValue = '',
   placeholder = '',
@@ -134,6 +142,7 @@ const Select = ({
               key={`SELECT_ITEM_${currentOption.value}_${keyExtractor?.(currentOption)}`}
               isFirst={!index}
               disabled={currentOption.disabled}
+              useDisabledItemStyle={useDisabledItemStyle}
               onPress={() => handleChange(currentOption)}
             >
               {optionComponent(currentOption, selectedValue === currentOption.value)}

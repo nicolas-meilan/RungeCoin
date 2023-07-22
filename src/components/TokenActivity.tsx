@@ -10,7 +10,7 @@ import TokenActivityItem from './TokenActivityItem';
 import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNotifications from '@hooks/useNotifications';
 import useWalletActivity from '@hooks/useWalletActivity';
-import { WalletTx } from '@http/tx';
+import type { WalletTx } from '@http/tx/types';
 import type { TokenType } from '@web3/tokens';
 
 type TokenActivityProps = {
