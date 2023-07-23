@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
@@ -16,6 +17,7 @@ import Text from '@components/Text';
 import Title from '@components/Title';
 import TokenBalances from '@components/TokenBalances';
 import TokenPrices from '@components/TokenPrices';
+import WalletWithoutAddress from '@components/WalletWithoutAddress';
 import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
@@ -52,6 +54,10 @@ const ActionButton = styled(Button) <{ margin?: boolean }>`
   ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
 `;
 
+const FullAnimatedView = styled(Animated.View)`
+  flex: 1;
+`;
+
 type HomeScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.home>;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
@@ -61,7 +67,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const { dispatchNotification } = useNotifications();
 
 
-  const { address } = useWalletPublicValues();
+  const { address, walletPublicValues } = useWalletPublicValues();
   const {
     tokens: tokensObj,
   } = useBlockchainData();
@@ -132,6 +138,11 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
   const toggleReceiveBottomSheet = (show: boolean) => setReceiveBottomSheet(show);
 
   const contentStyle = address ? undefined : { flex: 1 };
+  const availableRefreshControl = address ? refreshControl : undefined;
+
+  const noAddressComponent = walletPublicValues?.isHw
+    ? <HwWalletConnector onConnectionSuccess={onFinishHwConnection} />
+    : <WalletWithoutAddress />;
 
   return (
     <>
@@ -139,7 +150,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         hasBack={false}
         scroll
         keyboardAvoidingView
-        refreshControl={refreshControl}
+        refreshControl={availableRefreshControl}
         footerHeight={70}
         contentContainerStyle={contentStyle}
         footer={<TokenPrices />}
@@ -147,7 +158,11 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
         <HomeHeader />
         {address
           ? (
-            <>
+            <Animated.View
+              key="MAIN_HOME"
+              entering={FadeIn}
+              exiting={FadeOut}
+            >
               <ButtonsWrapper>
                 <ActionButton
                   margin
@@ -188,8 +203,16 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
                 retryError={refetch}
                 refreshLoading={tokenConversionsLoading}
               />
-            </>
-          ) : <HwWalletConnector onConnectionSuccess={onFinishHwConnection} />}
+            </Animated.View>
+          ) : (
+            <FullAnimatedView
+              key="NO_ADDRESS_HOME"
+              entering={FadeIn}
+              exiting={FadeOut}
+            >
+              {noAddressComponent}
+            </FullAnimatedView>
+          )}
       </ScreenLayout>
       <BottomSheet
         visible={receiveBottomSheet}

@@ -89,7 +89,8 @@
     },
     "home": {
       "title": "Mis cryptos",
-      "balance": "Balance total"
+      "balance": "Balance total",
+      "noAddressAlert": "Como nosotros no almacenamos tus **palabras secretas**, para activar la red **{{blockchain}}**, deberás **cerrar tu billetera** desde configuración y luego volver a abrirla usando tus **palabras secretas**."
     },
     "receive": {
       "title": "Recibir cryptos",

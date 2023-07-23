@@ -89,7 +89,8 @@
     },
     "home": {
       "title": "My cryptos",
-      "balance": "Total balance"
+      "balance": "Total balance",
+      "noAddressAlert": "As we do not store your **secret words**, to activate the **{{blockchain}}** blockchain, you will need to **close your wallet** from settings and then reopen it using your **secret words**."
     },
     "receive": {
       "title": "Receive cryptos",
