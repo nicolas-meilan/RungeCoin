@@ -8,12 +8,17 @@ import {
   validateMnemonic,
 } from 'bip39';
 import { hdkey } from 'ethereumjs-wallet';
+import { Observable } from 'rxjs';
 
 import { GetBalance } from './types';
 import { ERC20_ADDRESS_REGEX, ETH_DERIVATION_PATH, getERC20WalletBalance } from './wallet.erc20';
 import { TRON_ADDRESS_REGEX, TRON_DERIVATION_PATH, getTronWalletBalance } from './wallet.tron';
 import { Blockchains } from '../constants';
-import { requestBluetoothScanPermission } from '@system/bluetooth';
+import {
+  requestBluetoothScanPermission,
+  isBeEnabled,
+  BE_DISABLED,
+} from '@system/bluetooth';
 import { erc20BlockchainsConfigurationPropagation } from '@utils/web3';
 
 // export const BTC_DERIVATION_PATH = "m/44'/0'/0'/0"; // m/purpose'/coin_type'/account'/change/index
@@ -22,7 +27,7 @@ export const BASE_ADDRESS_INDEX = 0;
 const SEED_24_WORDS_STRENGTH = 256;
 const SEED_12_WORDS_STRENGTH = 128;
 
-const HW_BLUETOOTH_MAX_TIME = 20000;
+const HW_BLUETOOTH_MAX_TIME = 10000;
 
 type BlockchainWalletConfig = {
   [blockchain in Blockchains]: {
@@ -81,37 +86,54 @@ export const getWalletBalance: GetBalance = (
   walletAddress,
 ) => BLOCKCHAIN_WALLET_CONFIG[blockchain].getWalletBalance(blockchain, walletAddress);
 
-export const NO_LEDGER_CONNECTED_ERROR = 'No ledger connected';
+export const NO_LEDGER_CONNECTED_ERROR = 'hwConnectionError';
+
+type HwDevice = {
+  id: string;
+  name: string;
+};
 
 const getBluetoothHw = async () => {
   const permissions = await requestBluetoothScanPermission();
 
   if (!permissions) throw new Error(NO_LEDGER_CONNECTED_ERROR);
 
-  const ledgerList: any[] = [];
+  const beEnabled = await isBeEnabled();
+  if (!beEnabled) throw new Error(BE_DISABLED);
+
+  const ledgerList: HwDevice[] = [];
   await new Promise<void>((resolve, reject) => {
-    const suscription = TransportBLE.listen({
+    const suscription = new Observable(TransportBLE.listen).subscribe({
       complete: () => {
-        resolve();
         suscription.unsubscribe();
+        resolve();
       },
       error: (error) => {
-        reject(error);
         suscription.unsubscribe();
+        reject(error);
       },
       next: (event) => {
-        if (event.type === 'add') ledgerList.push(event.descriptor);
+        if (event.type === 'add') {
+          const alreadyAdded = ledgerList.some(({ id }) => id === event.descriptor.id);
+
+          if (!alreadyAdded) ledgerList.push(event.descriptor);
+
+          // TODO accept the first connected ledger for the moment
+          suscription.unsubscribe();
+          resolve();
+        }
       },
     });
 
     const timeRef = setTimeout(() => {
       suscription.unsubscribe();
       clearTimeout(timeRef);
-      reject(new Error(NO_LEDGER_CONNECTED_ERROR));
+      resolve();
     }, HW_BLUETOOTH_MAX_TIME);
   });
 
   return ledgerList;
+
 };
 
 export const connectHw = async (bluetoothConnection: boolean = false): Promise<TransportBLE | TransportHID> => {
@@ -147,9 +169,13 @@ export const getHwWalletAddress = async (
   const derivationPath = `${walletConfig.derivationPath}/${walletIndex}`;
   const transport = await connectHw(bluetoothConnection);
 
-  const ledgerApp = new (walletConfig.ledgerApp)(transport);
-  const { address } = await ledgerApp.getAddress(derivationPath, true);
-  transport.close();
-
-  return address;
+  try {
+    const ledgerApp = new (walletConfig.ledgerApp)(transport);
+    const { address } = await ledgerApp.getAddress(derivationPath, true);
+    transport.close();
+  
+    return address;    
+  } catch (error) {
+    throw new Error(NO_LEDGER_CONNECTED_ERROR);
+  }
 };

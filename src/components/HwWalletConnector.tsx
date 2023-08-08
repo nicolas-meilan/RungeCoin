@@ -39,21 +39,21 @@ const HwWalletConnector = ({
   hasBlockchainSelector = false,
 }: HwWalletConnectorProps) => {
   const { height } = useWindowDimensions();
-  const [hwWalletError, setHwWalletError] = useState(false);
+  const [hwWalletError, setHwWalletError] = useState('');
 
   const {
     walletPublicValues,
     setWalletPublicValuesHw,
     walletPublicValuesLoading,
   } = useWalletPublicValues({
-    onSetWalletPublicValuesHwError: () => setHwWalletError(true),
+    onSetWalletPublicValuesHwError: (error) => setHwWalletError(error),
     onSetWalletPublicValuesHwSuccess: onConnectionSuccess,
   });
 
   const { blockchain } = useBlockchainData();
 
   const hwWalletAction = () => {
-    setHwWalletError(false);
+    setHwWalletError('');
     setWalletPublicValuesHw(blockchain, walletPublicValues?.hwConnectedByBluetooth);
   };
 
@@ -74,8 +74,8 @@ const HwWalletConnector = ({
         svg={renderImage ? ledger : undefined}
         text={`hw.guide.${blockchain}`}
       />
-      {hwWalletError && (
-        <ErrorMessage text="access.connectHw.hwError" />
+      {!!hwWalletError && (
+        <ErrorMessage text={`error.${hwWalletError}`} />
       )}
       <StyledHwConnectionSelector initialized />
       {!hasBlockchainSelector && <Spacer />}

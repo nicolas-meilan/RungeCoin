@@ -48,7 +48,6 @@
     },
     "connectHw": {
       "title": "Conectar con Ledger",
-      "hwError": "No se pudo conectar al Ledger, siga los pasos y reintente",
       "connectButton": "Conectar"
     },
     "hwPassword": {
@@ -201,6 +200,8 @@
     "news": "Error al cargar las noticias",
     "tokenConversions": "Error al cargar los datos de conversiónes",
     "walletActivity": "Error al cargar la actividad del token",
-    "miningPendingTxs": "Error al cargar transacciones pendientes de minado"
+    "miningPendingTxs": "Error al cargar transacciones pendientes de minado",
+    "hwConnectionError": "No se pudo conectar al Ledger, siga los pasos y reintente",
+    "beDisabled": "Bluetooth desactivado"
   }
 }

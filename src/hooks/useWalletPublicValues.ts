@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -14,7 +14,7 @@ import { setTronAddress } from '@web3/wallet/wallet.tron';
 
 type UseWalletPublicValuesProps = {
   refetchOnMount?: boolean;
-  onSetWalletPublicValuesHwError?: () => void;
+  onSetWalletPublicValuesHwError?: (error: string) => void;
   onSetWalletPublicValuesHwSuccess?: () => void;
 };
 
@@ -79,6 +79,7 @@ const useWalletPublicValues = ({
 }: UseWalletPublicValuesProps = {
   refetchOnMount: false,
 }): UseWalletPublicValuesReturn => {
+  const [hwLoading, setHwLoading] = useState(false);
   const { getItem, setItem, removeItem } = useAsyncStorage(StorageKeys.WALLET);
   const queryClient = useQueryClient();
   const { blockchain } = useBlockchainData();
@@ -148,7 +149,9 @@ const useWalletPublicValues = ({
   const setWalletPublicValuesHw: UseWalletPublicValuesReturn['setWalletPublicValuesHw']
     = async (blockchainToConnect, bluetoothConnection = false) => {
       try {
+        setHwLoading(true);
         const address = await getHwWalletAddress(blockchainToConnect, { bluetoothConnection });
+
         const blockchainConfig = BLOCKCHAIN_PUBLIC_VALUES_CONFIG[blockchainToConnect];
         const walletToStore: Wallet = {
           ...(walletPublicValues || {}),
@@ -158,6 +161,7 @@ const useWalletPublicValues = ({
         };
 
         blockchainConfig.addressProcessor?.(address);
+        setHwLoading(false);
         return mutateSetWallet(walletToStore, {
           onSuccess: (savedWallet) => {
             queryClient.setQueryData([ReactQueryKeys.WALLET_PUBLIC_VALUES_KEY], savedWallet);
@@ -165,7 +169,8 @@ const useWalletPublicValues = ({
           },
         });
       } catch (error) {
-        onSetWalletPublicValuesHwError?.();
+        setHwLoading(false);
+        onSetWalletPublicValuesHwError?.((error as { message: string })?.message);
       }
     };
 
@@ -215,11 +220,14 @@ const useWalletPublicValues = ({
     address,
     allowWalletAccess,
     walletPublicValues,
-    walletPublicValuesLoading: isLoading || mutationLoading || removingMutationLoading,
     setWalletPublicValues,
     removeWalletPublicValues,
     setWalletPublicValuesHw,
     setHwConnection,
+    walletPublicValuesLoading: isLoading
+    || mutationLoading
+    || removingMutationLoading
+    || hwLoading,
   };
 };
 
