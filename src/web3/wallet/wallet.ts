@@ -103,11 +103,13 @@ const getBluetoothHw = async () => {
   if (!permissions) throw new Error(NO_LEDGER_CONNECTED_ERROR);
 
   const beEnabled = await isBeEnabled();
+
   if (!beEnabled) throw new Error(BE_DISABLED);
 
-  const hwList: (HwDevice & {
+  const hwList: {
+    device: HwDevice;
     tryConnection: boolean;
-  })[] = [];
+  }[] = [];
 
   const selectedHw = await new Promise<null | HwDevice>((resolve, reject) => {
     let procesingConnection = false;
@@ -123,9 +125,9 @@ const getBluetoothHw = async () => {
         suscription.unsubscribe();
         resolve(null);
       },
-      error: (error) => {
+      error: () => {
         suscription.unsubscribe();
-        reject(error);
+        reject(new Error(NO_LEDGER_CONNECTED_ERROR));
       },
       next: async (event) => {
         if (event.type === 'add') {
@@ -135,10 +137,10 @@ const getBluetoothHw = async () => {
             return;
           }
 
-          const alreadyAdded = hwList.some(({ id }) => id === event.descriptor.id);
+          const alreadyAdded = hwList.some(({ device }) => device.id === event.descriptor.id);
           if (!alreadyAdded) {
             hwList.push({
-              ...event.descriptor,
+              device: event.descriptor,
               tryConnection: true,
             });
           }
@@ -160,14 +162,14 @@ const getBluetoothHw = async () => {
 
             Alert.alert(
               t('access.connectHw.title'),
-              currentHw.name || currentHw.localName,
+              currentHw.device.name || currentHw.device.localName,
               [{
                 text: t('access.connectHw.continueSearchingHw') || '',
                 style: 'cancel',
                 onPress: onEndAlert,
               }, {
                 text: t('access.connectHw.connectButton') || '',
-                onPress: () => onSelectHw(currentHw, unsubscribeCallback),
+                onPress: () => onSelectHw(currentHw.device, unsubscribeCallback),
               }],
             );
           }
@@ -229,7 +231,7 @@ export const getHwWalletAddress = async (
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
   const derivationPath = `${walletConfig.derivationPath}/${walletIndex}`;
   const transport = await connectHw(bluetoothConnection);
-
+  
   try {
     const ledgerApp = new (walletConfig.ledgerApp)(transport);
     const { address } = await ledgerApp.getAddress(derivationPath, true);
