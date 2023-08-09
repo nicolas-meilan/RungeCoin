@@ -48,7 +48,8 @@
     },
     "connectHw": {
       "title": "Conectar con Ledger",
-      "connectButton": "Conectar"
+      "connectButton": "Conectar",
+      "continueSearchingHw": "Seguir buscando"
     },
     "hwPassword": {
       "title": "Contraseña de acceso"
