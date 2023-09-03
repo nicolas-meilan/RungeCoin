@@ -57,7 +57,7 @@ type TradingViewChartProps = {
 };
 
 // opacity 0.99 to fix webview crash with navigation animation
-const StyledWebView = styled(WebView) <{ isLoading: boolean }>`
+const StyledWebView = styled(WebView)<{ isLoading: boolean }>`
   flex: 1
   background-color: ${({ theme }) => theme.colors.background.primary};
   opacity: ${({ isLoading }) => (isLoading ? 0 : 0.99)};

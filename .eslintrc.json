@@ -1,6 +1,7 @@
 {
   "extends": [
-    "universe/native",
+    "@react-native",
+    "plugin:import/recommended",
     "airbnb-typescript"
   ],
   "parserOptions": {
@@ -21,6 +22,11 @@
     "react/prop-types": "off",
     "react/require-default-props": "off",
     "react/jsx-one-expression-per-line": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/no-unstable-nested-components": "off",
+    "import/namespace": "off",
+    "import/no-named-as-default": "off",
+    "curly": "off",
     "linebreak-style": [
       "error",
       "unix"

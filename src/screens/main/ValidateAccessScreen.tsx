@@ -31,9 +31,7 @@ const ContinueButton = styled(Button)`
   margin: ${({ theme }) => theme.spacing(4)} 0 ${({ theme }) => theme.spacing(10)} 0;
 `;
 
-const Fingerprint = styled(Icon).attrs({
-  name: 'fingerprint',
-})`
+const Fingerprint = styled(Icon)`
   color: ${({ theme }) => theme.colors.info};
   font-size: ${FINGERPRINT_SIZE}px;
 `;
@@ -161,7 +159,10 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
         onPress={validateWithBiometrics}
         disabled={!biometricsEnabled}
       >
-        <Fingerprint disabled={!biometricsEnabled} />
+        <Fingerprint
+          name="fingerprint"
+          disabled={!biometricsEnabled}
+        />
       </FingerprintCard>
     </ScreenLayout>
   );

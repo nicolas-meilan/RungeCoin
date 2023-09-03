@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Linking,
   ImageBackground,
@@ -59,7 +59,9 @@ const ArticleCard = ({
   article,
   style,
 }: ArticleCardProps) => {
-  const backgroundSrc = (article.imageUrl
+  const [error, setError] = useState(false);
+
+  const backgroundSrc = (article.imageUrl && !error
     ? { uri: article.imageUrl }
     : defaultArticleImage) as unknown as ImageBackgroundProps['source'];
 
@@ -69,6 +71,8 @@ const ArticleCard = ({
     <ArticleCardWrapper style={style} onPress={onPress}>
       <Background
         source={backgroundSrc}
+        loadingIndicatorSource={defaultArticleImage}
+        onError={() => setError(true)}
       >
         <Overlay />
         <Content>

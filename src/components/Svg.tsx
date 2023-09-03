@@ -67,7 +67,9 @@ const Svg = ({
   const [loading, setLoading] = useState(SvgComponent === SvgUri);
 
   // Workaround for Jest
-  if (typeof SVG === 'number') return <View testID={rest.testID} />;
+  if (typeof SVG === 'number') {
+    return <View testID={rest.testID} />;
+  }
 
   const svgFill = fill;
   const svgStroke = stroke;
@@ -85,7 +87,7 @@ const Svg = ({
 
   const content = (
     <View
-      style={[{ width: size, aspectRatio }, style]}
+      style={[{ width: size, aspectRatio } as ViewStyle, style]}
       {...rest}
     >
       <StyledSkeleton
@@ -112,11 +114,11 @@ const Svg = ({
   );
 
   if (align) {
-    const alignStyle = {
+    const alignStyle: ViewStyle = {
       width: '100%',
       alignItems: align,
     };
-  
+
     return <View style={alignStyle}>{content}</View>;
   }
 

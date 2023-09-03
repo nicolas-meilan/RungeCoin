@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 
 import Modal from './Modal';
+import Icon from '@components/Icon';
 
 const BASE_TOP_MARGIN = 150;
 const RADIUS = 30;
@@ -30,6 +31,9 @@ type BottomSheetProps = {
   topMargin?: number;
   animationDuration?: number;
   onOpenAnimationEnd?: () => void;
+  withoutMargins?: boolean;
+  headerOverlay?: boolean;
+  closeButton?: boolean;
 };
 
 const Overlay = styled.View <{
@@ -53,14 +57,26 @@ const BottomSheetContainer = styled(Animated.View) <{
   height: ${({ height }) => height}px;
   border-top-left-radius: ${RADIUS}px;
   border-top-right-radius: ${RADIUS}px;
+  overflow: hidden;
   background-color: ${({ theme }) => theme.colors.background.secondary};
+`;
+
+const Header = styled.View<{ headerOverlay: boolean }>`
+  width: 100%;
+  margin: ${({ theme }) => theme.spacing(2)};
+  ${({ headerOverlay }) => (headerOverlay
+    ? `
+      position: absolute;
+      z-index: 100;
+    `
+    : '')}
 `;
 
 const TopLine = styled.View`
   width: 20%;
   align-self: center;
   height: ${({ theme }) => theme.spacing(1)};
-  margin: ${({ theme }) => theme.spacing(6)} 0 ${({ theme }) => theme.spacing(2)} 0;
+  margin-top: ${({ theme }) => theme.spacing(6)};
   border-radius: ${({ theme }) => theme.borderRadius};
   background-color: ${({ theme }) => theme.colors.text.primary};
 `;
@@ -69,9 +85,12 @@ const Content = styled(SafeAreaView)`
   flex: 1;
 `;
 
-const ChildrenWrapper = styled.View`
+const ChildrenWrapper = styled.View<{ withoutMargins: boolean }>`
   flex: 1;
-  padding: ${({ theme }) => theme.spacing(6)};
+  padding: ${({ theme, withoutMargins }) => (withoutMargins
+    ? '0px'
+    : theme.spacing(6)
+  )};
 `;
 
 const BottomSheetContent = ({
@@ -82,6 +101,9 @@ const BottomSheetContent = ({
   topMargin = BASE_TOP_MARGIN,
   animationDuration = ANIMATION_DURATION,
   visible = false,
+  closeButton = false,
+  withoutMargins = false,
+  headerOverlay = false,
 }: BottomSheetProps) => {
   const [neverWasVisible, setNeverWasVisible] = useState(true);
 
@@ -174,9 +196,11 @@ const BottomSheetContent = ({
       toggleBottomSheet(!hideBottomSheet, hideBottomSheet);
     });
 
+  const closeBottomSheet = () => toggleBottomSheet(false, true);
+
   return (
     <>
-      <TouchableWithoutFeedback onPress={() => toggleBottomSheet(false, true)}>
+      <TouchableWithoutFeedback onPress={closeBottomSheet}>
         <Overlay
           width={width}
           height={height}
@@ -189,8 +213,13 @@ const BottomSheetContent = ({
           style={animatedStyle}
         >
           <Content>
-            <TopLine />
-            <ChildrenWrapper>
+            <Header headerOverlay={headerOverlay}>
+              {closeButton
+                ? <Icon name="close" onPress={closeBottomSheet} />
+                : <TopLine />
+              }
+            </Header>
+            <ChildrenWrapper withoutMargins={withoutMargins}>
               {children}
             </ChildrenWrapper>
           </Content>

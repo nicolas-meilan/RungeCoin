@@ -68,3 +68,6 @@ app-configuration/
 
 # linter
 .eslintcache
+
+# testing
+/coverage

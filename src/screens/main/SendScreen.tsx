@@ -209,7 +209,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
 
     const qrError = !isValidAddressToSend(blockchain, address);
     if (qrError) {
-      dispatchNotification('main.send.qr.invalidNotification', 'error');
+      dispatchNotification('main.send.invalidQr', 'error');
       setAddressToSend('');
       closeQrScanner();
       return;
@@ -345,8 +345,6 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         visible={showQrScanner}
         onClose={closeQrScanner}
         onScan={onScanQr}
-        title="main.send.qr.title"
-        message="main.send.qr.message"
       />
     </>
   );
