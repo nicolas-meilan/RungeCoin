@@ -187,8 +187,8 @@
     "es": "Spanish"
   },
   "links": {
-    "pp": "https://rungecoin-crypto-wallet.web.app/en.html#privacyPolicies",
-    "tyc": "https://rungecoin-crypto-wallet.web.app/en.html#tyc"
+    "pp": "https://rungecoin.web.app/en.html#privacyPolicies",
+    "tyc": "https://rungecoin.web.app/en.html#tyc"
   },
   "error": {
     "loadError": "Failed to load",
