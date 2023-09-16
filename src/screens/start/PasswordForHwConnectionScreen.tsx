@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
@@ -12,9 +11,8 @@ import useBiometrics from '@hooks/useBiometrics';
 import useDestroyWallet from '@hooks/useDestroyWallet';
 import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
-import StorageKeys from '@system/storageKeys';
 import { PASSWORD_REGEX } from '@utils/formatter';
-import { hashFrom } from '@utils/security';
+import { storePassword } from '@utils/security';
 import { delay } from '@utils/time';
 
 const PasswordInput = styled(TextInput)`
@@ -52,7 +50,7 @@ const PasswordForHwConnectionScreen = ({ navigation }: PasswordForHwConnectionSc
   const [enableBiometricsAuth, setEnableBiometricsAuth] = useState(false);
 
   const onDataSetted = async () => {
-    await EncryptedStorage.setItem(StorageKeys.PASSWORD, await hashFrom(password));
+    await storePassword(password);
     navigation.navigate(ScreenName.connectWithHw);
   };
 

@@ -11,4 +11,5 @@ declare module '@env' {
   export const HTTP_TRON_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY: string;
   export const DEV_WALLET_SEED_PHRASE: string;
   export const PUBLIC_KEY_TO_TEST: string;
+  export const HASH_SALT: string;
 }

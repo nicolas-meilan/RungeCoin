@@ -84,7 +84,7 @@
       "inputs": {
         "password": "Enter your password",
         "passwordPH": "Password",
-        "passwordError": "Wrong password, you have 4 attempts left."
+        "passwordError": "Wrong password, you have {{remainingAttemps}} attempts left."
       }
     },
     "home": {

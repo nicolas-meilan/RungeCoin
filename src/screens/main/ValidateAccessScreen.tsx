@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
@@ -15,7 +14,7 @@ import useDestroyWallet from '@hooks/useDestroyWallet';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import StorageKeys from '@system/storageKeys';
-import { hashFrom } from '@utils/security';
+import { comparePassword } from '@utils/security';
 
 const FINGERPRINT_SIZE = 40;
 const MAX_PASSWORD_ATTEMPS = 5;
@@ -55,7 +54,6 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
   const [password, setPassword] = useState('');
   const [passwordAttemps, setPasswordAttemps] = useState(0);
   const [passwordError, setPasswordError] = useState(false);
-  const [userPassword, setUserPassword] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const comesFromBackground = route.params?.comesFromBackground;
@@ -84,8 +82,6 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
     getStoredPasswordAttemps().then((newPasswordAttemps) => (
       setPasswordAttemps(parseInt(newPasswordAttemps || '0', 10))
     ));
-    EncryptedStorage.getItem(StorageKeys.PASSWORD)
-      .then((newUserPassword) => setUserPassword(newUserPassword));
   }, []);
 
   useEffect(() => {
@@ -95,23 +91,27 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
   }, []);
 
   useEffect(() => {
-    if (passwordAttemps >= MAX_PASSWORD_ATTEMPS) destroyWallet();
-  }, [passwordAttemps]);
-
-  useEffect(() => {
     if (biometricsEnabled && transitionEnd) validateWithBiometrics();
   }, [biometricsEnabled, transitionEnd]);
+
+  const remainingAttemps = MAX_PASSWORD_ATTEMPS - passwordAttemps;
+
+  useEffect(() => {
+    if (remainingAttemps <= 0) destroyWallet();
+  }, [remainingAttemps]);
 
   const onPasswordChange = (newPassword: string) => {
     setPassword(newPassword);
     setPasswordError(false);
   };
 
+  const disableContunue = passwordError || !password;
   const onPressContinue = async () => {
+    if (disableContunue) return;
+
     setLoading(true);
-    const hashedPassword = await hashFrom(password);
-    const invalidPassword = userPassword !== hashedPassword;
-    if (invalidPassword) {
+    const isValidPassword = await comparePassword(password);
+    if (!isValidPassword) {
       const newPasswordAttemps = passwordAttemps + 1;
       await storagePasswordAttemps(newPasswordAttemps.toString());
       setPasswordAttemps(newPasswordAttemps);
@@ -125,11 +125,9 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
     goToNextScreen();
   };
 
-  const remainingAttemps = MAX_PASSWORD_ATTEMPS - passwordAttemps;
-
   return (
     <ScreenLayout
-      title='main.validateAccess.title'
+      title="main.validateAccess.title"
       bigTitle
       hasBack={false}
       scroll
@@ -149,7 +147,7 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
         onSubmitEditing={onPressContinue}
       />
       <ContinueButton
-        disabled={passwordError || !password || !userPassword}
+        disabled={disableContunue}
         loading={loading}
         text="common.continue"
         onPress={onPressContinue}

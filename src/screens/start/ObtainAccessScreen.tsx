@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { DEV_WALLET_SEED_PHRASE } from '@env';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
@@ -14,10 +13,9 @@ import usePrivateKey from '@hooks/usePrivateKey';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { StartNavigatorType } from '@navigation/StartNavigator';
-import StorageKeys from '@system/storageKeys';
 import { isDev } from '@utils/config';
 import { PASSWORD_REGEX } from '@utils/formatter';
-import { hashFrom } from '@utils/security';
+import { storePassword } from '@utils/security';
 import { Blockchains } from '@web3/constants';
 import {
   SEED_PHRASE_VALID_LENGTH,
@@ -90,7 +88,7 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
     await Promise.all([
       setPrivateKey(Blockchains.ETHEREUM, wallets.erc20Wallet.getPrivateKeyString()),
       setPrivateKey(Blockchains.TRON, tronWalletPrivateKey),
-      EncryptedStorage.setItem(StorageKeys.PASSWORD, await hashFrom(password)),
+      storePassword(password),
     ]);
 
     setWalletPublicValues({
