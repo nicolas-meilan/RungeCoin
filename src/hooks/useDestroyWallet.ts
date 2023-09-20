@@ -10,9 +10,9 @@ type UseDestroyWalletReturn = () => Promise<void>;
 
 const useDestroyWallet = (): UseDestroyWalletReturn => {
   const { removeItem: removeWalletPublicValues } = useAsyncStorage(StorageKeys.WALLET);
-  const { removeItem: removePasswordAttemps } = useAsyncStorage(StorageKeys.PASSWORD_ATTEMPS);
   const { removeItem: removeBiometricsEnable } = useAsyncStorage(StorageKeys.BIOMETRICS);
 
+  const removePasswordAttemps = () => EncryptedStorage.removeItem(StorageKeys.PASSWORD_ATTEMPS);
   const removeErc20PrivateKey = () => EncryptedStorage.removeItem(StorageKeys.ERC20_WALLET_PRIVATE_KEY);
   const removeTronPrivateKey = () => EncryptedStorage.removeItem(StorageKeys.TRON_WALLET_PRIVATE_KEY);
   const removePassword = () => EncryptedStorage.removeItem(StorageKeys.PASSWORD);

@@ -4,8 +4,8 @@ import { BigNumber, utils } from 'ethers';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components/native';
 
+import NumericKeyboard from './NumericKeyboard';
 import Button from '@components/Button';
-import Icon from '@components/Icon';
 import Pill from '@components/Pill';
 import Skeleton from '@components/Skeleton';
 import Text from '@components/Text';
@@ -29,56 +29,14 @@ type CalculatorProps = {
 const ANIMATION_DURATION = 1000;
 const TOUCH_VELOCITY = 150;
 const TOP_MARGIN = 50;
-const BUTTONS_SIZE = 50;
 const PERCENTAGES = [
   25, 50, 75, 100,
 ];
 const DELETE_BUTTON = 'x';
-const KEYBOARD_BUTTONS = [
-  '1', '2', '3',
-  '4', '5', '6',
-  '7', '8', '9',
-  DELETE_BUTTON, '0', 'number.decimalSeparator',
-];
 
 const Content = styled.View`
   flex-grow: 1;
   margin-bottom: ${({ theme }) => theme.spacing(2)};
-`;
-
-const Keyboard = styled.View`
-  flex-wrap: wrap;
-  flex-direction: row;
-  margin-bottom: ${({ theme }) => theme.spacing(6)};
-`;
-
-const ButtonWrapper = styled.View`
-  width: 33%;
-  padding: ${({ theme }) => theme.spacing(2)};
-  align-items: center;
-  justify-content: center;
-`;
-
-const KeyboardButton = styled.View`
-  width: ${BUTTONS_SIZE}px;
-  height: ${BUTTONS_SIZE}px;
-  border-radius: ${BUTTONS_SIZE / 2}px;
-  border: 1px solid ${({ theme }) => theme.colors.primary};
-  align-items: center;
-  justify-content: center;
-`;
-
-const TouchableWrapper = styled.TouchableOpacity``;
-
-const KeyboardButtonText = styled(Text)`
-  font-size: ${({ theme }) => theme.fonts.size[28]};
-  color: ${({ theme }) => theme.colors.primary};
-`;
-
-const DeleteIconWrapper = styled.View``;
-
-const DeleteIcon = styled(Icon)`
-  color: ${({ theme }) => theme.colors.primary};
 `;
 
 const Token = styled.View`
@@ -253,35 +211,10 @@ const Calculator = ({
   ), [token, maxAmount]);
 
   const keyboard = useMemo(() => (
-    <Keyboard>
-      {KEYBOARD_BUTTONS.map((key) => (
-        <ButtonWrapper key={`KEYBOARD_${key}`}>
-          {key === DELETE_BUTTON ? (
-            <DeleteIconWrapper
-              onTouchStart={() => onTouchStart(key)}
-              onTouchEnd={onTouchEnd}
-              onTouchCancel={onTouchEnd}
-            >
-              <DeleteIcon
-                name="backspace-outline"
-                hitSlop={BUTTONS_SIZE / 2}
-                onPress={() => { }} // I need the touchable feedback
-              />
-            </DeleteIconWrapper>
-          ) : (
-            <TouchableWrapper>
-              <KeyboardButton
-                onTouchStart={() => onTouchStart(key)}
-                onTouchEnd={onTouchEnd}
-                onTouchCancel={onTouchEnd}
-              >
-                <KeyboardButtonText text={key} />
-              </KeyboardButton>
-            </TouchableWrapper>
-          )}
-        </ButtonWrapper>
-      ))}
-    </Keyboard>
+    <NumericKeyboard
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    />
   ), [token]);
 
   return (

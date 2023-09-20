@@ -142,7 +142,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     tokenBalances?.[blockchainBaseToken.symbol] || 0
   ), [blockchainBaseToken, tokenBalances]);
 
-  const hasNotBalanceForGas = useMemo(() => (
+  const hasNotBalanceForFee = useMemo(() => (
     estimatedTxFees?.totalFee.gt(blockchainBaseTokenBalance) || false
   ), [estimatedTxFees, tokenBalances]);
 
@@ -304,6 +304,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           <>
             {!estimatedTxFeesError && <FeeMessage text={`main.send.feeDescription.${blockchain}`} />}
             <EstimatedTxFee
+              hasNotBalanceForFee={hasNotBalanceForFee}
               txFee={estimatedTxFees}
               loading={estimatedTxFeesLoading}
               onRetry={estimateFees}
@@ -322,7 +323,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
           )}
           <Button
             text="common.continue"
-            disabled={!allDataSetted || hasNotBalanceForGas || !!estimatedTxFeesError}
+            disabled={!allDataSetted || hasNotBalanceForFee || !!estimatedTxFeesError}
             loading={estimatedTxFeesLoading
               || sendTokenLoading
               || isBlockchainInitialLoading

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
@@ -41,11 +41,6 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
   const destroyWallet = useDestroyWallet();
 
   const {
-    getItem: getStoredPasswordAttemps,
-    setItem: storagePasswordAttemps,
-  } = useAsyncStorage(StorageKeys.PASSWORD_ATTEMPS);
-
-  const {
     biometricsEnabled,
     dispatchBiometrics,
   } = useBiometrics();
@@ -60,7 +55,7 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
 
   const goToNextScreen = () => {
     setPasswordAttemps(0);
-    storagePasswordAttemps('0');
+    EncryptedStorage.setItem(StorageKeys.PASSWORD_ATTEMPS, '0');
     if (comesFromBackground) {
       navigation.goBack();
       return;
@@ -79,9 +74,10 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
   };
 
   useEffect(() => {
-    getStoredPasswordAttemps().then((newPasswordAttemps) => (
-      setPasswordAttemps(parseInt(newPasswordAttemps || '0', 10))
-    ));
+    EncryptedStorage.getItem(StorageKeys.PASSWORD_ATTEMPS)
+      .then((newPasswordAttemps) => (
+        setPasswordAttemps(parseInt(newPasswordAttemps || '0', 10))
+      ));
   }, []);
 
   useEffect(() => {
@@ -113,7 +109,7 @@ const ValidateAccessScreen = ({ navigation, route }: ValidateAccessScreenProps) 
     const isValidPassword = await comparePassword(password);
     if (!isValidPassword) {
       const newPasswordAttemps = passwordAttemps + 1;
-      await storagePasswordAttemps(newPasswordAttemps.toString());
+      await EncryptedStorage.setItem(StorageKeys.PASSWORD_ATTEMPS, newPasswordAttemps.toString());
       setPasswordAttemps(newPasswordAttemps);
       setPasswordError(true);
       setLoading(false);
