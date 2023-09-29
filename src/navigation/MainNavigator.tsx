@@ -21,7 +21,7 @@ export type MainNavigatorType = {
   [ScreenName.send]: { tokenToSendSymbol?: TokenSymbol } | undefined;
   [ScreenName.token]: { tokenSymbol: TokenSymbol };
   [ScreenName.tx]: { token: TokenType; tx: WalletTx; forceHome?: boolean };
-  [ScreenName.configuration]: undefined;
+  [ScreenName.configuration]: { activateDoubleEncrytion?: boolean } | undefined;
 };
 
 type ScreenProps = {

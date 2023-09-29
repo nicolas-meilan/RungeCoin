@@ -6,12 +6,14 @@
     "next": "Next",
     "send": "Send",
     "receive": "Receive",
+    "activate": "Activate",
+    "activateLater": "Activate later",
     "tryRefresh": "Try refreshing",
     "free": "Free",
     "inputs": {
       "password": "Enter a password",
       "passwordPH": "New password",
-      "passwordError": "Password must has 8 characters long.\nAt least 1 upper case.\nAt least 1 number.\nSpecial character are not allowed",
+      "passwordError": "Password must has 8 characters long.\nAt least 1 upper case.\nAt least 1 number.\nSpecial character are not allowed"
     }
   },
   "notifications": {
@@ -60,6 +62,13 @@
     }
   },
   "main": {
+    "pin": {
+      "enterPin": "Enter your PIN",
+      "createPin": "Create your PIN",
+      "reEnterPin": "Re-enter your PIN",
+      "newPinError": "The entered PIN in incorrect",
+      "pinError": "Wrong pin, you have {{remainingAttemps}} attempts left."
+    },
     "configuration": {
       "title": "Configuration",
       "WalletSectionTitle": "Wallet",
@@ -76,7 +85,8 @@
         "themeSwitcher": "Dark mode",
         "languageSelector": "Change language",
         "consolidatedCurrencySelector": "Change consolidated currency",
-        "changePassword": "To change the password you must close the wallet"
+        "changePassword": "To change the password you must close the wallet",
+        "doublePrivateKeyEncryption": "Use double private key encryption"
       }
     },
     "validateAccess": {
@@ -86,6 +96,9 @@
         "passwordPH": "Password",
         "passwordError": "Wrong password, you have {{remainingAttemps}} attempts left."
       }
+    },
+    "privateKeyDoubleEncryption": {
+      "message": "Currently, your cryptocurrency keys are encrypted and securely stored. However, we want to offer you double encryption, which involves adding a personalized PIN that will be required to unlock your cryptocurrency keys and perform transactions."
     },
     "home": {
       "title": "My cryptos",

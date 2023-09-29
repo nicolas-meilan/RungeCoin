@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled, { useTheme } from 'styled-components/native';
@@ -15,11 +15,16 @@ import Text from '@components/Text';
 import TextInput from '@components/TextInput';
 import TokenIcon from '@components/TokenIcon';
 import TokenItem from '@components/TokenItem';
+import DoublePrivateKeyEncryptionFlow, {
+  DoublePrivateKeyEncryptionFlowRef,
+  PrivateKeyEncryptionFlows,
+} from '@containers/DoublePrivateKeyEncryptionFlow';
 import useBalances, { TokensBalanceArrayItem } from '@hooks/useBalances';
 import useBiometrics from '@hooks/useBiometrics';
 import useBlockchainData from '@hooks/useBlockchainData';
 import useMiningPendingTxs from '@hooks/useMiningPendingTxs';
 import useNotifications from '@hooks/useNotifications';
+import usePrivateKeyConfig from '@hooks/usePrivateKeyConfig';
 import useTx from '@hooks/useTx';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import type { WalletTx } from '@http/tx/types';
@@ -64,6 +69,9 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   const { dispatchNotification } = useNotifications();
 
   const [firstRender, setFirstRender] = useState(true);
+  const doubleEncryptionFlowRef = useRef<DoublePrivateKeyEncryptionFlowRef>(null);
+
+  const { hasDoubleEncryption } = usePrivateKeyConfig();
 
   const {
     biometricsEnabled,
@@ -200,7 +208,17 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
       dispatchNotification('main.send.notFoundsForFeeNotification', 'error');
       return;
     }
-    sendToken(addressToSend, tokenToSend, amount);
+    const sendTokenNow = (pin?: string) => sendToken(addressToSend, tokenToSend, amount, pin);
+
+    if (hasDoubleEncryption) {
+      doubleEncryptionFlowRef.current?.startFlow(
+        PrivateKeyEncryptionFlows.DECRYPTION_FLOW,
+        sendTokenNow,
+      );
+      return;
+    }
+
+    sendTokenNow();
   };
 
   const onScanQr = (qrCode: string) => {
@@ -347,6 +365,11 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         onClose={closeQrScanner}
         onScan={onScanQr}
       />
+      {hasDoubleEncryption && (
+        <DoublePrivateKeyEncryptionFlow
+          ref={doubleEncryptionFlowRef}
+        />
+      )}
     </>
   );
 };

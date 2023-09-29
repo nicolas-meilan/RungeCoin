@@ -11,6 +11,7 @@ export enum ReactQueryKeys {
   BLOCKCHAIN = 'blockchain',
   MINING_PENDING_TXS = 'miningPendingTxs',
   CONSOLIDATED_CURRENCY = 'consolidatedCurrency',
+  PRIVATE_KEY_CONFIG = 'privateKeyConfig',
 }
 
 export enum FiatCurrencies {

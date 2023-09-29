@@ -4,7 +4,7 @@ import { BigNumber, utils } from 'ethers';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components/native';
 
-import NumericKeyboard from './NumericKeyboard';
+import NumericKeyboard, { DELETE_BUTTON } from './NumericKeyboard';
 import Button from '@components/Button';
 import Pill from '@components/Pill';
 import Skeleton from '@components/Skeleton';
@@ -32,7 +32,6 @@ const TOP_MARGIN = 50;
 const PERCENTAGES = [
   25, 50, 75, 100,
 ];
-const DELETE_BUTTON = 'x';
 
 const Content = styled.View`
   flex-grow: 1;

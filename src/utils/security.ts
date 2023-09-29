@@ -15,9 +15,35 @@ import {
 
 import StorageKeys from '@system/storageKeys';
 
+const ENCRYPTION_ALGORITHM = 'aes-256-cbc';
+
+export type EncryptedData = {
+  cipher: string;
+  iv: string;
+};
+
 export const hashFrom = (toHash: string, useSalt: boolean = true) => {
   const valueToHash = useSalt ? `${HASH_SALT}${toHash}${HASH_SALT}` : toHash;
   return Aes.sha256(valueToHash);
+};
+
+export const encrypt = async (value: string, key: string = ''): Promise<EncryptedData> => {
+  if (!key) return { cipher: value, iv: '' };
+
+  const hashedKey = await hashFrom(key);
+  const iv = await Aes.randomKey(16);
+  const cipher = await Aes.encrypt(value, hashedKey, iv, ENCRYPTION_ALGORITHM);
+
+  return { cipher, iv };
+};
+
+export const decrypt = async (value: string, iv: string = '', key: string = '') => {
+  if (!key || !iv) return value;
+
+  const hashedKey = await hashFrom(key);
+  const decryptedValue = await Aes.decrypt(value, hashedKey, iv, ENCRYPTION_ALGORITHM);
+
+  return decryptedValue;
 };
 
 export const deviceHasBiometrics = async () => {
@@ -54,6 +80,8 @@ export const obtainBiometrics = (title?: string | null, cancel?: string | null) 
   } : {}),
 });
 
+export const getStoredPassword = () => EncryptedStorage.getItem(StorageKeys.PASSWORD);
+
 export const storePassword = async (password: string) => {
   const hashedPassword = await hashFrom(password);
 
@@ -61,7 +89,7 @@ export const storePassword = async (password: string) => {
 };
 
 export const comparePassword = async (password: string) => {
-  const storedPassword = await EncryptedStorage.getItem(StorageKeys.PASSWORD);
+  const storedPassword = await getStoredPassword();
 
   const hashedPassword = await hashFrom(password);
 

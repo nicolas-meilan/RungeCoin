@@ -26,7 +26,7 @@ export type LanguageLocaleType = Exclude<typeof LanguageLocale, 'fromDevice'>;
 
 const initializeI18nConfig = async () => {
   const storedLng = await AsyncStorage.getItem(StorageKeys.LANGUAGE);
-  
+
   const deviceLocale = getDeviceLocale().split('_')[0];
   const baseLng = Object.values(LanguageLocale).includes(deviceLocale)
     ? deviceLocale : defaultLocale;
@@ -41,6 +41,13 @@ const initializeI18nConfig = async () => {
     },
     fallbackLng: defaultLocale,
   });
+};
+
+export const changeLanguage = async (newLanguage: Languages) => {
+  await Promise.all([
+    i18next.changeLanguage(newLanguage),
+    AsyncStorage.setItem(StorageKeys.LANGUAGE, newLanguage),
+  ]);
 };
 
 export default initializeI18nConfig;

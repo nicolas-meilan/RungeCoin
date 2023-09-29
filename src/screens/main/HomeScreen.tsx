@@ -6,6 +6,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
+import DoublePrivateKeyEncryptionMessage from '@components/DoublePrivateKeyEncryptionMessage';
 import ErrorWrapper from '@components/ErrorWrapper';
 import HomeHeader from '@components/HomeHeader';
 import HwWalletConnector from '@components/HwWalletConnector';
@@ -220,6 +221,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
       >
         <Receive onPressAddress={onPressAdress} />
       </BottomSheet>
+      <DoublePrivateKeyEncryptionMessage />
     </>
   );
 };

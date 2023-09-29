@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -7,19 +8,20 @@ import Text from './Text';
 
 const BUTTONS_SIZE = 50;
 
-const DELETE_BUTTON = 'x';
+export const DELETE_BUTTON = 'x';
 const DECIMAL_BUTTON = 'number.decimalSeparator';
 const KEYBOARD_BUTTONS = [
   '1', '2', '3',
   '4', '5', '6',
   '7', '8', '9',
-  DELETE_BUTTON, '0', DECIMAL_BUTTON,
+  DECIMAL_BUTTON, '0', DELETE_BUTTON,
 ];
 
 type NumericKeyboardProps = {
   allowDecimals?: boolean;
   onTouchStart?: (key: typeof KEYBOARD_BUTTONS[number]) => void;
   onTouchEnd?: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
 const Keyboard = styled.View`
@@ -29,8 +31,8 @@ const Keyboard = styled.View`
 `;
 
 const ButtonWrapper = styled.View`
-  width: 33%;
-  padding: ${({ theme }) => theme.spacing(2)};
+  width: ${100 / 3}%;
+  padding: ${({ theme }) => theme.spacing(2)} 0;
   align-items: center;
   justify-content: center;
 `;
@@ -60,6 +62,7 @@ const DeleteIconWrapper = styled.View``;
 const NumericKeyboard = ({
   onTouchStart,
   onTouchEnd,
+  style,
   allowDecimals = true,
 }: NumericKeyboardProps) => {
 
@@ -78,7 +81,7 @@ const NumericKeyboard = ({
   );
 
   return (
-    <Keyboard>
+    <Keyboard style={style}>
       {KEYBOARD_BUTTONS.map((key) => (
         <ButtonWrapper key={`KEYBOARD_${key}`}>
           {key === DECIMAL_BUTTON && decimalButton(key)}

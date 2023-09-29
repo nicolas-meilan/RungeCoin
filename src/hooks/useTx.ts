@@ -21,7 +21,7 @@ type UseTxReturn = {
   estimatedTxFeesLoading: boolean;
   estimatedTxFeesError: boolean;
   fetchEstimateTxFees: (toAddress: string, token: TokenType) => void;
-  sendToken: (toAddress: string, token: TokenType, amount: BigNumber | number | string) => void;
+  sendToken: (toAddress: string, token: TokenType, amount: BigNumber | number | string, encryptionKey?: string) => void;
   sendTokenLoading: boolean;
   sendTokenError: boolean;
 };
@@ -56,11 +56,11 @@ const useTx = ({ onSendFinish }: UseTxProps = {}): UseTxReturn => {
     setEstimatedTxFeesLoading(false);
   };
 
-  const sendToken: UseTxReturn['sendToken'] = async (toAddress, token, amount) => {
+  const sendToken: UseTxReturn['sendToken'] = async (toAddress, token, amount, encryptionKey) => {
     setSendTokenLoading(true);
     setSendTokenError(false);
     try {
-      const privateKey = await getPrivateKey(blockchain);
+      const privateKey = await getPrivateKey(blockchain, encryptionKey);
 
       if (!walletPublicValues || !address) {
         setSendTokenLoading(false);

@@ -132,7 +132,7 @@ ref: React.Ref<CarouselRef>) => {
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = event.nativeEvent.contentOffset.x;
-    
+
     setCurrentIndex(Math.floor(offset / itemWidth));
   };
 
@@ -147,7 +147,7 @@ ref: React.Ref<CarouselRef>) => {
         keyExtractor={(item, index) => `CAROUSEL_${(item as CarouselItem).key}_${index}`}
         onLayout={onListLayout}
         snapToInterval={itemWidth}
-        snapToAlignment='center'
+        snapToAlignment="center"
         decelerationRate={0}
         scrollEnabled={autoEnd}
         onEndReached={onRenderLastItem}

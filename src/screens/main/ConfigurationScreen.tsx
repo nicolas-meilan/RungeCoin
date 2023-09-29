@@ -1,11 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { getVersion } from 'react-native-device-info';
 import styled from 'styled-components/native';
 
 
-import { Languages } from '../../locale/i18nConfig';
+import { Languages, changeLanguage } from '../../locale/i18nConfig';
 import { AvailableThemes } from '../../theme/themes';
 import BlockchainSelector from '@components/BlockchainSelector';
 import Button from '@components/Button';
@@ -17,13 +18,17 @@ import Switch from '@components/Switch';
 import Text from '@components/Text';
 import Title from '@components/Title';
 import TokenIcon from '@components/TokenIcon';
+import DoublePrivateKeyEncryptionFlow, { DoublePrivateKeyEncryptionFlowRef, PrivateKeyEncryptionFlows } from '@containers/DoublePrivateKeyEncryptionFlow';
 import Modal from '@containers/Modal';
 import useBiometrics from '@hooks/useBiometrics';
 import useBlockchainData from '@hooks/useBlockchainData';
 import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useDestroyWallet from '@hooks/useDestroyWallet';
+import usePrivateKeyConfig from '@hooks/usePrivateKeyConfig';
 import useThemeConfiguration from '@hooks/useThemeConfiguration';
 import useWalletPublicValues from '@hooks/useWalletPublicValues';
+import { ScreenName } from '@navigation/constants';
+import { MainNavigatorType } from '@navigation/MainNavigator';
 import { FiatCurrencies } from '@utils/constants';
 import {
   BASE_ADDRESS_INDEX,
@@ -80,14 +85,26 @@ const CloseWalletModalButtons = styled.View`
   flex-direction: row;
 `;
 
-const ConfigurationScreen = () => {
+type ConfigurationScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.configuration>;
+
+const ConfigurationScreen = ({
+  route,
+}: ConfigurationScreenProps) => {
+  const activateDoubleEncryptionOnMount = route.params?.activateDoubleEncrytion;
+
+  const doubleEncryptionFlowRef = useRef<DoublePrivateKeyEncryptionFlowRef>(null);
   const [closeWalletModalVisible, setCloseWalletModalVisible] = useState(false);
 
   const { t, i18n } = useTranslation();
 
+  const destroyWallet = useDestroyWallet();
   const { walletPublicValues } = useWalletPublicValues();
   const { blockchain } = useBlockchainData();
-  const destroyWallet = useDestroyWallet();
+
+  const {
+    hasDoubleEncryption,
+    privateKeyConfigLoading,
+  } = usePrivateKeyConfig();
 
   const {
     themeMode,
@@ -122,10 +139,22 @@ const ConfigurationScreen = () => {
     data: undefined,
   })), []);
 
+  const togglePrivateKeyDoubleEncryption = () => doubleEncryptionFlowRef.current
+    ?.startFlow(hasDoubleEncryption
+      ? PrivateKeyEncryptionFlows.DISABLE_ENCRYPTION_FLOW
+      : PrivateKeyEncryptionFlows.ENABLE_ENCRYPTION_FLOW);
+
   const toggleCloseWalletModal = (visible: boolean) => setCloseWalletModalVisible(visible);
+
+  useEffect(() => {
+    if (activateDoubleEncryptionOnMount) togglePrivateKeyDoubleEncryption();
+  }, []);
 
   return (
     <>
+      <DoublePrivateKeyEncryptionFlow
+        ref={doubleEncryptionFlowRef}
+      />
       <ScreenLayout
         title="main.configuration.title"
         bigTitle
@@ -144,9 +173,19 @@ const ConfigurationScreen = () => {
               onChange={(option) => setConsolidatedCurrency(option.value as FiatCurrencies)}
             />
           </ConfigurationItem>
-          {walletPublicValues?.isHw && (
+          {!!walletPublicValues?.isHw && (
             <ConfigurationItem>
               <HwConnectionSelector label="main.configuration.labels.hwConnectionSelector" />
+            </ConfigurationItem>
+          )}
+          {!walletPublicValues?.isHw && (
+            <ConfigurationItem>
+              <Switch
+                value={hasDoubleEncryption}
+                label="main.configuration.labels.doublePrivateKeyEncryption"
+                loading={privateKeyConfigLoading}
+                onChange={togglePrivateKeyDoubleEncryption}
+              />
             </ConfigurationItem>
           )}
           <Subtitle title="main.configuration.appSectionTitle" />
@@ -174,7 +213,7 @@ const ConfigurationScreen = () => {
               label="main.configuration.labels.languageSelector"
               options={languages}
               selected={i18n.language}
-              onChange={(option) => i18n.changeLanguage(option.value)}
+              onChange={(option) => changeLanguage(option.value as Languages)}
             />
           </ConfigurationItem>
           <Info text="main.configuration.labels.changePassword" />
@@ -209,12 +248,12 @@ const ConfigurationScreen = () => {
         </CloseWalletModalContent>
         <CloseWalletModalButtons>
           <Button
-            type='tertiary'
+            type="tertiary"
             text="common.cancel"
             onPress={() => toggleCloseWalletModal(false)}
           />
           <Button
-            type='error'
+            type="error"
             text="common.continue"
             onPress={destroyWallet}
           />

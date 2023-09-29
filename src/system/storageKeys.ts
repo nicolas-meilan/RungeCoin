@@ -7,9 +7,13 @@ enum StorageKeys {
   PASSWORD = 'password',
   BIOMETRICS = 'biometrics',
   PASSWORD_ATTEMPS = 'passwordAttemps',
+  PIN_ATTEMPS = 'pinAttemps',
   BLOCKCHAIN = 'blockchain',
   MINING_PENDING_TXS = 'miningPendingTxs',
   CONSOLIDATED_CURRENCY = 'consolidatedCurrency',
+  PRIVATE_KEY_CONFIG = 'privateKeyConfig',
+  PIN_FLAG_VALUE = 'pinFlagValue',
+  DOUBLE_ENCRYPTION_PRIVATE_KEY_FLAG = 'doubleEncryptionPrivateKeyFlag',
 }
 
 export default StorageKeys;
