@@ -17,6 +17,10 @@ module.exports = function (api) {
             '@utils': './src/utils',
             '@http': './src/http',
             '@assets': './assets',
+            '@ledgerhq/domain-service': '@ledgerhq/domain-service/lib', // Fix @ledgerhq/hw-app-eth
+            '@ledgerhq/evm-tools': '@ledgerhq/evm-tools/lib', // Fix @ledgerhq/hw-app-eth
+            '@ledgerhq/cryptoassets': '@ledgerhq/cryptoassets/lib', // Fix @ledgerhq/hw-app-eth
+            '@ledgerhq/live-network': '@ledgerhq/live-network/lib', // Fix @ledgerhq/hw-app-eth
           },
           extensions: [
             '.ios.ts',
