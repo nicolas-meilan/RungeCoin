@@ -70,7 +70,7 @@ const useMiningPendingTxs = ({
     const txsToAddNew = currentTxs.length
       ? currentTxs
       : (await getTxs());
-    
+
     const tx = await processTxToSave({
       hash: txData.hash,
       tx: txData.tx,
@@ -82,7 +82,7 @@ const useMiningPendingTxs = ({
     const newTxs = [...txsToAddNew, tx];
     await setItem(JSON.stringify(newTxs));
     setCurrentTxs(newTxs);
-  
+
     return newTxs;
   };
 
@@ -104,7 +104,7 @@ const useMiningPendingTxs = ({
     const txsToRemove = currentTxs.length
       ? currentTxs
       : (await getTxs());
-    
+
     const indexOfTxToRemove = txsToRemove.findIndex(({ hash }) => txHash === hash);
 
     delete txsToRemove[indexOfTxToRemove];
@@ -119,7 +119,7 @@ const useMiningPendingTxs = ({
     const allTxs = currentTxs.length
       ? currentTxs
       : (await getTxs());
-  
+
     const updatedTxs = await Promise.all(allTxs.map((currentTx) => processTxToSave({
       hash: currentTx.hash,
       blockchain,

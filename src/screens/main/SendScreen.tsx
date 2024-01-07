@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import styled, { useTheme } from 'styled-components/native';
@@ -97,16 +97,20 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     tokens.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
   );
 
-  const onAddError = () => navigation.navigate(ScreenName.home);
-  const onAddSuccess = (txData: WalletTx) => {
-    if (!tokenToSend || !txData) return;
+  const goToHome = useCallback(() => navigation.navigate(ScreenName.home), []);
+
+  const onAddSuccess = useCallback((txData: WalletTx) => {
+    if (!tokenToSend || !txData) {
+      goToHome();
+      return;
+    }
 
     navigation.navigate(ScreenName.tx, {
       token: tokenToSend,
       tx: txData,
       forceHome: true,
     });
-  };
+  }, [tokenToSend]);
 
   const {
     addTx,
@@ -114,7 +118,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     txs,
     txsLoading,
   } = useMiningPendingTxs({
-    onAddError,
+    onAddError: goToHome,
     onAddSuccess,
   });
 
