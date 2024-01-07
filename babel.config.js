@@ -1,7 +1,7 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['module:metro-react-native-babel-preset'],
+    presets: ['module:@react-native/babel-preset'],
     plugins: [
       [
         'module-resolver',
@@ -17,6 +17,10 @@ module.exports = function (api) {
             '@utils': './src/utils',
             '@http': './src/http',
             '@assets': './assets',
+            '@ledgerhq/domain-service': '@ledgerhq/domain-service/lib', // Fix @ledgerhq/hw-app-eth
+            '@ledgerhq/evm-tools': '@ledgerhq/evm-tools/lib', // Fix @ledgerhq/hw-app-eth
+            '@ledgerhq/cryptoassets': '@ledgerhq/cryptoassets/lib', // Fix @ledgerhq/hw-app-eth
+            '@ledgerhq/live-network': '@ledgerhq/live-network/lib', // Fix @ledgerhq/hw-app-eth
           },
           extensions: [
             '.ios.ts',
