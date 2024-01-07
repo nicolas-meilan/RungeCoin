@@ -1,6 +1,6 @@
 {
   "name": "rungecoin",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "private": true,
   "scripts": {
     "postinstall": "./node_modules/.bin/rn-nodeify --hack --install 'crypto,buffer,stream,http,https' --hack && patch-package",
