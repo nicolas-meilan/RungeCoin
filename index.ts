@@ -1,8 +1,6 @@
 import 'react-native-reanimated';
-import 'react-native-get-random-values';
 
-import '@ethersproject/shims';
-import './shim';
+import './ethetsInitializer';
 
 import { AppRegistry } from 'react-native';
 

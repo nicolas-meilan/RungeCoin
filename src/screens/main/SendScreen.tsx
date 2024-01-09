@@ -30,6 +30,7 @@ import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import type { WalletTx } from '@http/tx/types';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
+import { isZero } from '@utils/number';
 import { TokenSymbol, TokenType } from '@web3/tokens';
 import { isValidAddressToSend } from '@web3/tx';
 import { SenndTxReturn } from '@web3/tx/types';
@@ -97,11 +98,14 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     tokens.find(({ symbol }) => (symbol === route.params?.tokenToSendSymbol)) || null,
   );
 
-  const goToHome = useCallback(() => navigation.navigate(ScreenName.home), []);
+  const goToHomeAfterSendTx = useCallback(() => {
+    dispatchNotification('main.send.successNotification', 'success');
+    navigation.navigate(ScreenName.home);
+  }, []);
 
   const onAddSuccess = useCallback((txData: WalletTx) => {
     if (!tokenToSend || !txData) {
-      goToHome();
+      goToHomeAfterSendTx();
       return;
     }
 
@@ -118,7 +122,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     txs,
     txsLoading,
   } = useMiningPendingTxs({
-    onAddError: goToHome,
+    onAddError: goToHomeAfterSendTx,
     onAddSuccess,
   });
 
@@ -155,7 +159,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
   ), [blockchainBaseToken, tokenBalances]);
 
   const hasNotBalanceForFee = useMemo(() => (
-    estimatedTxFees?.totalFee.gt(blockchainBaseTokenBalance) || false
+    (estimatedTxFees?.totalFee || 0n) > blockchainBaseTokenBalance || false
   ), [estimatedTxFees, tokenBalances]);
 
   const allDataSetted = !addressToSendError && !!addressToSend && !!tokenToSend?.symbol;
@@ -208,7 +212,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     }
 
     closeCalculator();
-    if (estimatedTxFees?.totalFee.gt(blockchainBaseTokenBalance)) {
+    if ((estimatedTxFees?.totalFee || 0n) > blockchainBaseTokenBalance) {
       dispatchNotification('main.send.notFoundsForFeeNotification', 'error');
       return;
     }
@@ -233,12 +237,12 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
     if (qrError) {
       dispatchNotification('main.send.invalidQr', 'error');
       setAddressToSend('');
+      setAddressToSendError(false);
       closeQrScanner();
       return;
     }
 
-    setAddressToSendError(false);
-    setAddressToSend(address);
+    onAddressChange(address);
     closeQrScanner();
   };
 
@@ -260,7 +264,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         data: token,
         label: token.name,
         leftComponent: <TokenIcon tokenSymbol={token.symbol} size={24} />,
-        disabled: !tokenBalances || tokenBalances?.[token.symbol].isZero(),
+        disabled: !tokenBalances || isZero(tokenBalances?.[token.symbol]),
       };
     });
   }, [tokenBalances]);
@@ -302,7 +306,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
               withoutMargin
               withBorders={selected}
               borderColor={theme.colors.success}
-              disabled={tokenBalances?.[option.data.symbol].isZero()}
+              disabled={isZero(tokenBalances?.[option.data.symbol])}
               balanceLoading={tokenBalancesLoading}
               balance={tokenBalances?.[option.data.symbol]}
               {...option.data}

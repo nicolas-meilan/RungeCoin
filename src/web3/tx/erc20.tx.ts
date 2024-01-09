@@ -1,9 +1,20 @@
-import type { SignatureLike } from '@ethersproject/bytes';
 import AppEth, { ledgerService } from '@ledgerhq/hw-app-eth';
-import { BigNumber, Contract, VoidSigner, Wallet, providers, utils } from 'ethers';
+import {
+  Contract,
+  VoidSigner,
+  Wallet,
+  Provider,
+  TransactionRequest,
+  parseUnits,
+  resolveProperties,
+  Transaction,
+  isAddress,
+  SignatureLike,
+} from 'ethers';
 
 import { ERC20TxFees, EstimateFees, NO_TX_TO_SIGN_ERROR, ProcessTxToSave, SendTx } from './types';
 import { ERC20WalletTx } from '@http/tx/types';
+import { isBigInt } from '@utils/number';
 import { BLOCKCHAINS_CONFIG, Blockchains } from '@web3/constants';
 import getProvider from '@web3/providers';
 import { BASE_TOKENS_TRANSFER_ABI } from '@web3/smartContracts';
@@ -13,17 +24,17 @@ import { BASE_ADDRESS_INDEX, connectHw, getDerivationPath } from '@web3/wallet';
 
 export type TxInfo = {
   chainId: number;
-  maxFeePerGas: BigNumber;
-  maxPriorityFeePerGas: BigNumber;
-  gasPrice: BigNumber;
-  gasUnits: BigNumber;
-  totalFee: BigNumber;
+  maxFeePerGas: bigint;
+  maxPriorityFeePerGas: bigint;
+  gasPrice: bigint;
+  gasUnits: bigint;
+  totalFee: bigint;
 };
 
 
 const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
-  maxFeePerGas: BigNumber;
-  maxPriorityFeePerGas: BigNumber;
+  maxFeePerGas: bigint;
+  maxPriorityFeePerGas: bigint;
   chainId: number;
 }> = async (
   blockchain,
@@ -31,7 +42,7 @@ const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
   toAddress,
   token,
 ): Promise<TxInfo> => {
-  const provider = getProvider(blockchain) as providers.Provider;
+  const provider = getProvider(blockchain) as Provider;
   const blockchainConfig = BLOCKCHAINS_CONFIG[blockchain];
 
   const [
@@ -44,7 +55,7 @@ const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
 
   const voidSigner = new VoidSigner(fromAddress, provider);
 
-  const tx: utils.Deferrable<providers.TransactionRequest> = {
+  const tx: TransactionRequest = {
     from: fromAddress,
     to: toAddress,
     gasLimit: 0,
@@ -66,28 +77,28 @@ const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
   }
 
   const gasLimit = (await voidSigner.estimateGas(tx))
-    .mul(utils.parseUnits(gasLimitTolerance.toString(), offsetDecimals))
-    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
+    * (parseUnits(gasLimitTolerance.toString(), offsetDecimals))
+    / (BigInt(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
-  const maxFeePerGas = (feeData.maxFeePerGas || feeData.gasPrice || BigNumber.from(0))
-    .mul(utils.parseUnits(feePerGasOffset.toString(), offsetDecimals))
-    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
+  const maxFeePerGas = (feeData.maxFeePerGas || feeData.gasPrice || 0n)
+    * (parseUnits(feePerGasOffset.toString(), offsetDecimals))
+    / (BigInt(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
-  const maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas || feeData.gasPrice || BigNumber.from(0))
-    .mul(utils.parseUnits(feePerGasOffset.toString(), offsetDecimals))
-    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
+  const maxPriorityFeePerGas = (feeData.maxPriorityFeePerGas || feeData.gasPrice || 0n)
+    * (parseUnits(feePerGasOffset.toString(), offsetDecimals))
+    / (BigInt(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
-  const gasPrice = (feeData.gasPrice || BigNumber.from(0))
-    .mul(utils.parseUnits(feePerGasOffset.toString(), offsetDecimals))
-    .div(BigNumber.from(`1${new Array(offsetDecimals).fill(0).join('')}`));
+  const gasPrice = (feeData.gasPrice || 0n)
+    * (parseUnits(feePerGasOffset.toString(), offsetDecimals))
+    / (BigInt(`1${new Array(offsetDecimals).fill(0).join('')}`));
 
   const totalFee = (blockchainConfig.hasMaxFeePerGas
     ? maxFeePerGas
     : gasPrice
-  ).mul(gasLimit);
+  ) * gasLimit;
 
   return {
-    chainId,
+    chainId: Number(chainId),
     maxFeePerGas,
     maxPriorityFeePerGas,
     gasPrice,
@@ -157,7 +168,7 @@ export const erc20send: SendTx<undefined> = async (
     privateKey: '',
   },
 ) => {
-  const provider = getProvider(blockchain) as providers.Provider;
+  const provider = getProvider(blockchain) as Provider;
 
   const blockchainConfig = BLOCKCHAINS_CONFIG[blockchain];
 
@@ -171,10 +182,10 @@ export const erc20send: SendTx<undefined> = async (
     provider.getTransactionCount(fromAddress, 'pending'),
   ]);
 
-  const gasLimit = txEstimations.gasUnits.toNumber();
-  const amount = BigNumber.isBigNumber(quantity)
+  const gasLimit = Number(txEstimations.gasUnits);
+  const amount = isBigInt(quantity)
     ? quantity
-    : utils.parseUnits(quantity.toString(), token.decimals);
+    : parseUnits(quantity.toString(), token.decimals);
 
   const txFees = blockchainConfig.hasMaxFeePerGas ? {
     maxFeePerGas: txEstimations.maxFeePerGas,
@@ -184,8 +195,9 @@ export const erc20send: SendTx<undefined> = async (
     gasPrice: txEstimations.gasPrice,
   };
 
-  const tx: Omit<utils.Deferrable<providers.TransactionRequest>, 'nonce'> & {
+  const tx: Omit<TransactionRequest, 'nonce' | 'to'> & {
     nonce: number;
+    to: string;
   } = {
     from: fromAddress,
     to: toAddress,
@@ -204,15 +216,20 @@ export const erc20send: SendTx<undefined> = async (
   }
   if (isHw) {
     const { from, ...txToResolveProperties } = tx;
-    const txToSerialize = await utils.resolveProperties(txToResolveProperties);
-    const unsignedTx = utils.serializeTransaction(txToSerialize).substring(2);
+    const txToSerialize = await resolveProperties(txToResolveProperties);
+    const unsignedTx = Transaction.from(txToSerialize).serialized.substring(2);
 
     const sig = await erc20SignTxWithLedger(blockchain, {
       bluetoothConnection: hwBluetooth,
       tx: unsignedTx,
     });
 
-    const { hash } = await provider.sendTransaction(utils.serializeTransaction(txToSerialize, sig));
+    const serializedTx = Transaction.from({
+      ...txToSerialize,
+      signature: sig,
+    }).serialized;
+
+    const { hash } = await provider.broadcastTransaction(serializedTx);
 
     return { hash };
   }
@@ -223,24 +240,26 @@ export const erc20send: SendTx<undefined> = async (
 };
 
 export const erc20ProcessTxToSave: ProcessTxToSave<ERC20WalletTx> = async ({ hash, blockchain }) => {
-  const provider = getProvider(blockchain) as providers.Provider;
+  const provider = getProvider(blockchain) as Provider;
 
   const txData = await provider.getTransaction(hash);
 
   if (!txData) return null;
 
+  const confirmations = await txData.confirmations();
+
   const walletTx = {
     blockchain,
-    confirmations: txData.confirmations,
+    confirmations,
     contractAddress: BASE_TOKEN_ADDRESS,
     from: txData.from,
     to: txData.to || '',
-    gasPrice: (txData.gasPrice || txData.maxFeePerGas || BigNumber.from(0)).toString(),
+    gasPrice: (txData.gasPrice || txData.maxFeePerGas || 0n).toString(),
     hash: txData.hash,
     isError: false,
     timeStamp: (new Date()).getTime().toString(),
     value: (txData.value).toString(),
-    gasUsed: txData.gasLimit.toNumber(),
+    gasUsed: Number(txData.gasLimit),
   };
 
   const voidData = '0x';
@@ -248,7 +267,7 @@ export const erc20ProcessTxToSave: ProcessTxToSave<ERC20WalletTx> = async ({ has
 
   const txContract = new Contract(txData.to || '', BASE_TOKENS_TRANSFER_ABI);
   const decodedTxData = txContract.interface
-    .decodeFunctionData('transferFrom', txData.data) as [string, string, BigNumber];
+    .decodeFunctionData('transferFrom', txData.data) as unknown as [string, string, BigInt];
 
   walletTx.value = decodedTxData[2].toString();
   walletTx.to = decodedTxData[1];
@@ -258,4 +277,4 @@ export const erc20ProcessTxToSave: ProcessTxToSave<ERC20WalletTx> = async ({ has
   return walletTx;
 };
 
-export const erc20IsValidAddressToSend = (address: string) => utils.isAddress(address);
+export const erc20IsValidAddressToSend = (address: string) => isAddress(address);

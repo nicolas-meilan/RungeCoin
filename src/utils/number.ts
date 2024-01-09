@@ -1,12 +1,9 @@
-import { BigNumber, utils } from 'ethers';
+export const isBigInt = (value: any) => typeof value === 'bigint';
 
-export const bigNumberMulNumber = (number: BigNumber, mul: number, decimals: number): number => {
-  try {
-    return number.mul(mul).toNumber();
+export const toBigInt = (number: bigint | number | string = 0) => (
+  isBigInt(number)
+    ? number as bigint
+    : BigInt(number)
+);
 
-  } catch (error) {
-    const balanceNormalNumber = Number(utils.formatUnits(number, decimals));
-
-    return balanceNormalNumber * mul;
-  }
-};
+export const isZero = (number: bigint | number | string = 0) => toBigInt(number) === 0n;

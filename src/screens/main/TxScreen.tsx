@@ -3,7 +3,6 @@ import { Linking } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BigNumber } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import Card from '@components/Card';
@@ -22,6 +21,7 @@ import { TX_URL } from '@http/tx';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { formatAddress, numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
+import { isZero } from '@utils/number';
 import { formatDate } from '@utils/time';
 import { isSendTx, txStatus } from '@utils/web3';
 import { GWEI } from '@web3/tokens';
@@ -122,13 +122,13 @@ const TxScreen = ({
     forceHome,
   } = route.params;
 
-  const txGasTotal = useMemo(() => BigNumber.from(tx.gasPrice || '0').mul(tx.gasUsed || 0), [tx]);
+  const txGasTotal = useMemo(() => BigInt(tx.gasPrice || '0') * (BigInt(tx.gasUsed || 0) || 0n), [tx]);
   const status = txStatus(tx);
   const isSending = isSendTx(tx, address);
   const txIcon = isSending ? 'arrow-right' : 'arrow-left';
   const txIconColor = isSending ? theme.colors.error : theme.colors.success;
   const txAddress = isSending ? tx.to : tx.from;
-  const balance = BigNumber.from(tx.value);
+  const balance = BigInt(tx.value);
 
   const balanceFormatted = numberToFormattedString(balance || 0, { decimals: token.decimals });
   const balanceConverted = numberToFiatBalance(convert(balance || 0, token), consolidatedCurrency);
@@ -189,7 +189,7 @@ const TxScreen = ({
             </AmountSkeleton>
           </AmountSkeletonWrapper>
         </Amount>
-        {!txGasTotal.isZero() && (
+        {!isZero(txGasTotal) && (
           <Gas>
             <Subtitle text="main.token.activity.tx.rows.gasTitle" />
             <RowData text="main.token.activity.tx.rows.gasUsed" i18nArgs={{ gasUsed: tx.gasUsed || 0 }} />

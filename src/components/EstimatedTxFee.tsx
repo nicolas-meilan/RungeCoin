@@ -11,6 +11,7 @@ import useBlockchainData from '@hooks/useBlockchainData';
 import useConsolidatedCurrency from '@hooks/useConsolidatedCurrency';
 import useTokenConversions from '@hooks/useTokenConversions';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
+import { isZero } from '@utils/number';
 import { GWEI } from '@web3/tokens';
 import { TxFees } from '@web3/tx/types';
 
@@ -85,13 +86,12 @@ const EstimatedTxFee = ({
           width="90%"
           quantity={5}
         >
-
-          {isErc20Fee && (
+          {!!isErc20Fee && (
             <>
               <Text
                 text="main.send.gasUnits"
                 i18nArgs={{
-                  units: txFee.gasUnits.toNumber(),
+                  units: Number(txFee.gasUnits),
                 }}
               />
               <Text
@@ -113,7 +113,7 @@ const EstimatedTxFee = ({
                     bandwith: numberToFormattedString(txFee.bandwithNeeded),
                   }}
                 />
-                {txFee.bandwithFee.isZero() && <StyledPill text="common.free" type="success" withSpacing />}
+                {isZero(txFee.bandwithFee) && <StyledPill text="common.free" type="success" withSpacing />}
               </FeeTextWrapper>
               {!!txFee.energyNeeded && (
                 <FeeTextWrapper withMargin>
@@ -123,10 +123,10 @@ const EstimatedTxFee = ({
                       energy: numberToFormattedString(txFee.energyNeeded),
                     }}
                   />
-                  {txFee.energyFee.isZero() && <StyledPill text="common.free" type="success" withSpacing />}
+                  {isZero(txFee.energyFee) && <StyledPill text="common.free" type="success" withSpacing />}
                 </FeeTextWrapper>
               )}
-              {!txFee.activationFee.isZero() && (
+              {!isZero(txFee.activationFee) && (
                 <FeeTextWrapper withMargin>
                   <Text
                     text="main.send.activationAccountFee"
@@ -140,7 +140,7 @@ const EstimatedTxFee = ({
               )}
             </>
           )}
-          {!txFee?.totalFee.isZero() && (
+          {!isZero(txFee?.totalFee) && (
             <>
               <GasTitle text="main.send.totalFee" />
               <TotalFeeText

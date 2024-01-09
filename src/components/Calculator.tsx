@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import { BigNumber, utils } from 'ethers';
+import { parseUnits } from 'ethers';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components/native';
 
@@ -14,6 +14,7 @@ import BottomSheet from '@containers/Bottomsheet';
 import useBalances from '@hooks/useBalances';
 import useBlockchainData from '@hooks/useBlockchainData';
 import { INPUT_NUMBER, localizeNumber, numberToFormattedString } from '@utils/formatter';
+import { isZero } from '@utils/number';
 import type { TokenSymbol } from '@web3/tokens';
 
 type CalculatorProps = {
@@ -23,7 +24,7 @@ type CalculatorProps = {
   loading?: boolean;
   disabled?: boolean;
   tokenSymbol?: TokenSymbol;
-  transactionFee?: BigNumber;
+  transactionFee?: bigint;
 };
 
 const ANIMATION_DURATION = 1000;
@@ -99,7 +100,7 @@ const Calculator = ({
   loading = false,
   visible = false,
   disabled = false,
-  transactionFee = BigNumber.from(0),
+  transactionFee = 0n,
 }: CalculatorProps) => {
   const { t } = useTranslation();
 
@@ -126,11 +127,11 @@ const Calculator = ({
   const maxAmount = useMemo(() => {
     const balance = token ? tokenBalances?.[token.symbol] : null;
 
-    if (token?.symbol !== blockchainBaseToken.symbol) return balance || BigNumber.from(0);
+    if (token?.symbol !== blockchainBaseToken.symbol) return balance || 0n;
 
-    const max = balance?.sub(transactionFee) || BigNumber.from(0);
+    const max = (balance || 0n) - transactionFee;
 
-    return max.isNegative() ? BigNumber.from(0) : max;
+    return max < 0n ? 0n : max;
   }, [tokenBalances, token, transactionFee]);
 
   const resetState = () => {
@@ -145,8 +146,8 @@ const Calculator = ({
   useEffect(() => {
     if (!token || !tokenBalances) return;
 
-    const amountBN = utils.parseUnits(amount, token.decimals);
-    setBalanceExceeded(amountBN.gt(maxAmount));
+    const amountBN = parseUnits(amount, token.decimals);
+    setBalanceExceeded(amountBN > maxAmount);
   }, [amount, tokenBalances, token]);
 
   const onKeyPress = (key: string) => setAmount((prevAmount) => {
@@ -178,9 +179,9 @@ const Calculator = ({
   };
 
   const onPressPill = (percentage: number) => {
-    if (!token || !tokenBalances || maxAmount.isZero()) return;
+    if (!token || !tokenBalances || isZero(maxAmount)) return;
 
-    const newAmount = maxAmount.mul(percentage).div(100);
+    const newAmount = (maxAmount * BigInt(percentage)) / 100n;
     setAmount(numberToFormattedString(newAmount, {
       decimals: token.decimals,
       localize: false,
@@ -252,7 +253,7 @@ const Calculator = ({
           noI18n
         />
         {balanceExceeded && <ExceededError text="main.calculator.exceededBalance" />}
-        {!transactionFee.isZero() && (
+        {!isZero(transactionFee) && (
           <Fee
             text="main.calculator.fee"
             i18nArgs={{

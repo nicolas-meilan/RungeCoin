@@ -1,9 +1,10 @@
 import AppTrx from '@ledgerhq/hw-app-trx';
-import { BigNumber, utils } from 'ethers';
+import { parseUnits } from 'ethers';
 
 import { EstimateFees, NO_TX_TO_SIGN_ERROR, ProcessTxToSave, SendTx, TronTxFees } from './types';
 import { getTronTxConfirmations } from '@http/tx/tron.tx';
 import { TronWalletTx } from '@http/tx/types';
+import { isBigInt } from '@utils/number';
 import { Blockchains } from '@web3/constants';
 import { tronProvider } from '@web3/providers';
 import { BASE_TOKEN_ADDRESS, TOKENS_TRON, TokenType } from '@web3/tokens';
@@ -53,11 +54,11 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
 
   const accountResources = await tronProvider.trx.getAccountResources(fromAddress);
 
-  const amount = BigNumber.isBigNumber(quantity)
+  const amount = isBigInt(quantity)
     ? quantity
-    : utils.parseUnits(quantity.toString(), token.decimals);
+    : parseUnits(quantity.toString(), token.decimals);
 
-  let activationFee = BigNumber.from(0);
+  let activationFee = 0n;
   let unsignedTx = null;
   let energyNeeded = 0;
   if (isMainToken) {
@@ -71,7 +72,7 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
     unsignedTx = newUnsignedTx;
     const needsDestinationAccountActivation = !Object.keys(toResources).length;
     if (needsDestinationAccountActivation) {
-      activationFee = utils.parseUnits((ACTIVATION_FEE).toString(), TOKENS_TRON.TRX?.decimals);
+      activationFee = parseUnits((ACTIVATION_FEE).toString(), TOKENS_TRON.TRX?.decimals);
     }
   } else {
     const functionSelector = 'transfer(address,uint256)';
@@ -112,10 +113,10 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
     ? Math.abs(accountEnergy - energyNeeded)
     : 0;
 
-  const bandwithFee = utils.parseUnits((bandwithMissing * BANDWITH_PRICE).toString(), 0);
-  const energyFee = utils.parseUnits((energyMissing * ENERGY_PRICE).toString(), 0);
+  const bandwithFee = parseUnits((bandwithMissing * BANDWITH_PRICE).toString(), 0);
+  const energyFee = parseUnits((energyMissing * ENERGY_PRICE).toString(), 0);
 
-  const totalFee = bandwithFee.add(energyFee).add(activationFee);
+  const totalFee = bandwithFee + energyFee + activationFee;
 
   return {
     bandwithNeeded,
@@ -173,9 +174,9 @@ export const tronSend: SendTx<TronWalletTx> = async (
     privateKey: '',
   },
 ) => {
-  const amount = BigNumber.isBigNumber(quantity)
+  const amount = isBigInt(quantity)
     ? quantity
-    : utils.parseUnits(quantity.toString(), token.decimals);
+    : parseUnits(quantity.toString(), token.decimals);
 
   let unsignedTx = null;
   if (token.address === BASE_TOKEN_ADDRESS) {
@@ -188,7 +189,7 @@ export const tronSend: SendTx<TronWalletTx> = async (
     ];
 
     const estimatedContractEnergy = await estimateTrc20TokenTxEnergyRequired(token, toAddress);
-    
+
     const contractOptions = {
       feeLimit: estimatedContractEnergy * ENERGY_PRICE,
     };

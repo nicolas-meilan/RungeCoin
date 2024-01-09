@@ -111,6 +111,7 @@
     },
     "send": {
       "title": "Send cryptos",
+      "successNotification": "Transaction completed",
       "notFoundsForFeeNotification": "You do not have funds to pay shipping fee",
       "feeDescription": {
         "ETHEREUM": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",

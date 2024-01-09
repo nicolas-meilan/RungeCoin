@@ -111,6 +111,7 @@
     },
     "send": {
       "title": "Enviar cryptos",
+      "successNotification": "Transacción finalizada",
       "notFoundsForFeeNotification": "No posee fondos para pagar las comisiones de envió",
       "feeDescription": {
         "ETHEREUM": "El **gas** es el peaje que se utiliza para realizar operaciones en la **blockchain**.",

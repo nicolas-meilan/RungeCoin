@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BigNumber } from 'ethers';
 import styled from 'styled-components/native';
 
 import Button from '@components/Button';
@@ -30,6 +29,7 @@ import useWalletPublicValues from '@hooks/useWalletPublicValues';
 import { ScreenName } from '@navigation/constants';
 import { MainNavigatorType } from '@navigation/MainNavigator';
 import { numberToFiatBalance, numberToFormattedString } from '@utils/formatter';
+import { isZero } from '@utils/number';
 
 const TokenBaseInfo = styled.View`
   flex-direction: row;
@@ -120,16 +120,13 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
   } = useMiningPendingTxs();
 
   const tokenBalance = useMemo(() => {
-    const zero = BigNumber.from(0);
-    if (!token) return zero;
+    if (!token) return 0n;
 
-    return tokenBalances?.[token.symbol] || zero;
+    return tokenBalances?.[token.symbol] || 0n;
   }, [tokenSymbol]);
 
   const tokenBalanceConverted = useMemo(() => {
-    const zero = BigNumber.from(0);
-
-    if (!token) return zero;
+    if (!token) return 0n;
 
     return convert(tokenBalance, token);
   }, [tokenBalance, tokenConversions]);
@@ -221,7 +218,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
         bigTitle
       >
         <ButtonsWrapper>
-          {!tokenBalance.isZero() && (
+          {!isZero(tokenBalance) && (
             <ActionButton
               margin
               icon="arrow-top-right"

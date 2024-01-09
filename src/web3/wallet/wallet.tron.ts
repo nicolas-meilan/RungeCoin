@@ -1,4 +1,4 @@
-import { BigNumber, utils } from 'ethers';
+import { parseUnits } from 'ethers';
 import { zipObject } from 'lodash';
 
 import { GetBalance } from './types';
@@ -17,7 +17,7 @@ export const getTronWalletBalance: GetBalance = async (
   const tokenAddresses = Object.values(tokens).map(({ address }) => address);
 
   const trxBalanceResponse = await tronProvider.trx.getBalance(walletAddress);
-  const trxBalance = utils.parseUnits(trxBalanceResponse.toString(), 0);
+  const trxBalance = parseUnits(trxBalanceResponse.toString(), 0);
 
   const otherTokensAddresses = tokenAddresses.filter((address) => address !== BASE_TOKEN_ADDRESS);
 
@@ -27,13 +27,13 @@ export const getTronWalletBalance: GetBalance = async (
       const contract = tronProvider.contract(abi.entrys, tAddress);
       const balance = await contract.balanceOf(walletAddress).call();
 
-      return utils.parseUnits(balance.toString(), 0);
+      return parseUnits(balance.toString(), 0);
     }),
   );
 
   return zipObject(
     Object.keys(tokens),
-    [trxBalance, ...otherBalances].map((balance: BigNumber) => balance),
+    [trxBalance, ...otherBalances].map((balance: bigint) => balance),
   ) as TokensBalance;
 };
 

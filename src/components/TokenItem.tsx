@@ -1,6 +1,5 @@
 import React from 'react';
 
-import type { BigNumber } from 'ethers';
 import styled from 'styled-components/native';
 
 import Icon from './Icon';
@@ -16,7 +15,7 @@ import {
 import { TokenType } from '@web3/tokens';
 
 type TokenItemProps = Omit<TokenType, 'address'> & {
-  balance?: BigNumber;
+  balance?: bigint;
   balanceLoading?: boolean;
   withoutMargin?: boolean;
   fullName?: boolean;
