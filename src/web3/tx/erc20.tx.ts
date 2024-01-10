@@ -217,7 +217,7 @@ export const erc20send: SendTx<undefined> = async (
   if (isHw) {
     const { from, ...txToResolveProperties } = tx;
     const txToSerialize = await resolveProperties(txToResolveProperties);
-    const unsignedTx = Transaction.from(txToSerialize).serialized.substring(2);
+    const unsignedTx = Transaction.from(txToSerialize).unsignedSerialized.substring(2);
 
     const sig = await erc20SignTxWithLedger(blockchain, {
       bluetoothConnection: hwBluetooth,
