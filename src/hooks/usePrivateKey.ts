@@ -40,7 +40,7 @@ const usePrivateKey = (): UsePrivateKeyReturn => {
 
   const setPrivateKey: UsePrivateKeyReturn['setPrivateKey'] = async (blockchain, newPrivateKey, encryptionKey) => {
     if (hasDoubleEncryption) {
-      const encryptedData = await encrypt(newPrivateKey, encryptionKey);
+      const encryptedData = encrypt(newPrivateKey, encryptionKey);
       EncryptedStorage.setItem(PRIVATE_KEYS_CONFIG[blockchain], JSON.stringify(encryptedData));
       return;
     }
@@ -55,9 +55,7 @@ const usePrivateKey = (): UsePrivateKeyReturn => {
       blockchains.map((blockchain) => getPrivateKey(blockchain)),
     );
 
-    const encryptedPrivateKeys = await Promise.all(
-      privateKeys.map((currentPrivateKey) => encrypt(currentPrivateKey || '', encryptionKey)),
-    );
+    const encryptedPrivateKeys = privateKeys.map((currentPrivateKey) => encrypt(currentPrivateKey || '', encryptionKey));
 
     await Promise.all(
       encryptedPrivateKeys.map((currentEncryptedData, index) => (
