@@ -49,6 +49,7 @@ react {
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
+    entryFile = file("../../index.ts")
 }
 
 /**
@@ -80,8 +81,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         resConfigs "en", "es"
-        versionCode 16
-        versionName "1.5.1"
+        versionCode 17
+        versionName "1.5.2"
     }
     signingConfigs {
         release {
