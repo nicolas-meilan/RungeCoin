@@ -41,14 +41,14 @@ export const encrypt = (value: string, key: string = ''): EncryptedData => {
   encryptor.end();
 
   const cipher = encryptor.read().toString('base64');
-  return { cipher, iv: iv.toString('base64') };
+  return { cipher, iv: iv.toString('hex') };
 };
 
 export const decrypt = (value: string, iv: string = '', key: string = '') => {
   if (!key || !iv) return value;
 
   const hashedKey = hashFrom(key);
-  const decrypter = createDecipheriv(ENCRYPTION_ALGORITHM, hashedKey, Buffer.from(iv, 'base64'));
+  const decrypter = createDecipheriv(ENCRYPTION_ALGORITHM, hashedKey, Buffer.from(iv, 'hex'));
 
   decrypter.write(Buffer.from(value, 'base64'));
   decrypter.end();
@@ -93,7 +93,7 @@ export const obtainBiometrics = (title?: string | null, cancel?: string | null) 
 export const getStoredPassword = () => EncryptedStorage.getItem(StorageKeys.PASSWORD);
 
 export const storePassword = async (password: string) => {
-  const hashedPassword = hashFrom(password, 'sha512').toString('base64');
+  const hashedPassword = hashFrom(password).toString('hex');
 
   await EncryptedStorage.setItem(StorageKeys.PASSWORD, hashedPassword);
 };
@@ -101,7 +101,7 @@ export const storePassword = async (password: string) => {
 export const comparePassword = async (password: string) => {
   const storedPassword = await getStoredPassword();
 
-  const hashedPassword = hashFrom(password, 'sha512').toString('base64');
+  const hashedPassword = hashFrom(password).toString('hex');
 
   return storedPassword === hashedPassword;
 };
