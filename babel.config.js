@@ -17,10 +17,15 @@ module.exports = function (api) {
             '@utils': './src/utils',
             '@http': './src/http',
             '@assets': './assets',
+            'crypto': 'react-native-quick-crypto',
+            'stream': 'stream-browserify',
+            'buffer': '@craftzdog/react-native-buffer',
+            'http': '@tradle/react-native-http',
+            'https': 'https-browserify',
             '@ledgerhq/domain-service': '@ledgerhq/domain-service/lib', // Fix @ledgerhq/hw-app-eth
-            '@ledgerhq/evm-tools': '@ledgerhq/evm-tools/lib', // Fix @ledgerhq/hw-app-eth
-            '@ledgerhq/cryptoassets': '@ledgerhq/cryptoassets/lib', // Fix @ledgerhq/hw-app-eth
-            '@ledgerhq/live-network': '@ledgerhq/live-network/lib', // Fix @ledgerhq/hw-app-eth
+            '@ledgerhq/evm-tools': '@ledgerhq/evm-tools/lib',
+            '@ledgerhq/cryptoassets': '@ledgerhq/cryptoassets/lib',
+            '@ledgerhq/live-network': '@ledgerhq/live-network/lib',
           },
           extensions: [
             '.ios.ts',

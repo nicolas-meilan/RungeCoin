@@ -18,9 +18,9 @@ const ETHEREUM_NETWORK_MAIN = 'mainnet';
 const ETHEREUM_NETWORK = isDev() ? ETHEREUM_NETWORK_DEV : ETHEREUM_NETWORK_MAIN;
 const TRON_PROVIDER = isDev() ? WEB3_TRON_TESTNET_PROVIDER_VENDOR : WEB3_TRON_PROVIDER_VENDOR;
 
-export const ethereumProvider = new ethers.providers.InfuraProvider(ETHEREUM_NETWORK, WEB3_ETH_PROVIDER_VENDOR);
-export const polygonProvider = new ethers.providers.JsonRpcProvider(WEB3_POLYGON_PROVIDER_VENDOR);
-export const bscProvider = new ethers.providers.JsonRpcProvider(WEB3_BSC_PROVIDER_VENDOR);
+export const ethereumProvider = new ethers.InfuraProvider(ETHEREUM_NETWORK, WEB3_ETH_PROVIDER_VENDOR);
+export const polygonProvider = new ethers.JsonRpcProvider(WEB3_POLYGON_PROVIDER_VENDOR);
+export const bscProvider = new ethers.JsonRpcProvider(WEB3_BSC_PROVIDER_VENDOR);
 export const tronProvider = new TronWeb({
   fullHost: TRON_PROVIDER,
   headers: { 'TRON-PRO-API-KEY': WEB3_TRON_PROVIDER_VENDOR_KEY },

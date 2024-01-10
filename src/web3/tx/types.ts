@@ -1,5 +1,3 @@
-import { BigNumber } from 'ethers';
-
 import { WalletTx } from '@http/tx/types';
 import { Blockchains } from '@web3/constants';
 import { TokenType } from '@web3/tokens';
@@ -20,14 +18,14 @@ export type SendTx<T> = (
   fromAddress: string,
   toAddress: string,
   token: TokenType,
-  quantity: BigNumber | number | string,
+  quantity: bigint | number | string,
   signOptions: SignOptions,
 ) => Promise<SenndTxReturn<T>>;
 
 export type ERC20TxFees = {
-  gasPrice: BigNumber;
-  gasUnits: BigNumber;
-  totalFee: BigNumber;
+  gasPrice: bigint;
+  gasUnits: bigint;
+  totalFee: bigint;
   bandwithNeeded?: null;
   energyNeeded?: null;
   accountEnergy?: null;
@@ -46,10 +44,10 @@ export type TronTxFees = {
   accountBandwidth: number;
   bandwithPrice: number;
   energyPrice: number;
-  bandwithFee: BigNumber;
-  energyFee: BigNumber;
-  activationFee: BigNumber;
-  totalFee: BigNumber;
+  bandwithFee: bigint;
+  energyFee: bigint;
+  activationFee: bigint;
+  totalFee: bigint;
   gasPrice?: null;
   gasUnits?: null;
 };
@@ -61,7 +59,7 @@ export type EstimateFees<T> = (
   fromAddress: string,
   toAddress: string,
   token: TokenType,
-  quantity?: BigNumber | number | string,
+  quantity?: bigint | number | string,
 ) => Promise<T>;
 
 export type ProcessTxToSave<T> = (config: {

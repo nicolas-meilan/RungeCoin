@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { providers } from 'ethers';
+import { Provider } from 'ethers';
 import { zipObject } from 'lodash';
 
 import StorageKeys from '@system/storageKeys';
@@ -29,7 +29,7 @@ type UseBlockchainDataReturn = {
     [blockchain in Blockchains]: TokenSymbol;
   };
   blockchain: Blockchains;
-  blockchainProvider: providers.Provider | typeof tronProvider;
+  blockchainProvider: Provider | typeof tronProvider;
   tokens: TokensStruct;
   blockchainBaseToken: TokenType;
 };

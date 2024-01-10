@@ -1,4 +1,4 @@
-import { BigNumber, Contract, providers } from 'ethers';
+import { Contract, Provider } from 'ethers';
 import { zipObject } from 'lodash';
 
 import { GetBalance } from './types';
@@ -20,12 +20,12 @@ export const getERC20WalletBalance: GetBalance = async (
   const balanceChecker = new Contract(
     BALANCE_CHECKER_ADDRESS[blockchain as keyof typeof BALANCE_CHECKER_ADDRESS],
     BALANCE_CHECKER_ABI,
-    provider as providers.Provider,
+    provider as Provider,
   );
   const walletBalances = await balanceChecker.balances([walletAddress], tokenAddresses);
 
   return zipObject(
     Object.keys(tokens),
-    walletBalances.map((balance: BigNumber) => balance),
+    walletBalances.map((balance: bigint) => balance),
   ) as TokensBalance;
 };

@@ -1,5 +1,7 @@
+import { Buffer } from 'buffer';
+import { createHash, randomBytes, createCipheriv, createDecipheriv } from 'crypto';
+
 import { HASH_SALT } from '@env';
-import Aes from 'react-native-aes-crypto';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {
   getSupportedBiometryType,
@@ -22,28 +24,36 @@ export type EncryptedData = {
   iv: string;
 };
 
-export const hashFrom = (toHash: string, useSalt: boolean = true) => {
-  const valueToHash = useSalt ? `${HASH_SALT}${toHash}${HASH_SALT}` : toHash;
-  return Aes.sha256(valueToHash);
+export const hashFrom = (toHash: string, algorithm = 'sha256') => {
+  const valueToHash = `${HASH_SALT}${toHash}${HASH_SALT}`;
+
+  return createHash(algorithm).update(valueToHash).digest();
 };
 
-export const encrypt = async (value: string, key: string = ''): Promise<EncryptedData> => {
+export const encrypt = (value: string, key: string = ''): EncryptedData => {
   if (!key) return { cipher: value, iv: '' };
 
-  const hashedKey = await hashFrom(key);
-  const iv = await Aes.randomKey(16);
-  const cipher = await Aes.encrypt(value, hashedKey, iv, ENCRYPTION_ALGORITHM);
+  const hashedKey = hashFrom(key);
+  const iv = Buffer.from(randomBytes(16));
+  const encryptor = createCipheriv(ENCRYPTION_ALGORITHM, hashedKey, iv);
 
-  return { cipher, iv };
+  encryptor.write(value);
+  encryptor.end();
+
+  const cipher = encryptor.read().toString('base64');
+  return { cipher, iv: iv.toString('hex') };
 };
 
-export const decrypt = async (value: string, iv: string = '', key: string = '') => {
+export const decrypt = (value: string, iv: string = '', key: string = '') => {
   if (!key || !iv) return value;
 
-  const hashedKey = await hashFrom(key);
-  const decryptedValue = await Aes.decrypt(value, hashedKey, iv, ENCRYPTION_ALGORITHM);
+  const hashedKey = hashFrom(key);
+  const decrypter = createDecipheriv(ENCRYPTION_ALGORITHM, hashedKey, Buffer.from(iv, 'hex'));
 
-  return decryptedValue;
+  decrypter.write(Buffer.from(value, 'base64'));
+  decrypter.end();
+
+  return decrypter.read().toString('utf8');
 };
 
 export const deviceHasBiometrics = async () => {
@@ -83,25 +93,15 @@ export const obtainBiometrics = (title?: string | null, cancel?: string | null) 
 export const getStoredPassword = () => EncryptedStorage.getItem(StorageKeys.PASSWORD);
 
 export const storePassword = async (password: string) => {
-  const hashedPassword = await hashFrom(password);
+  const hashedPassword = hashFrom(password).toString('hex');
 
-  EncryptedStorage.setItem(StorageKeys.PASSWORD, hashedPassword);
+  await EncryptedStorage.setItem(StorageKeys.PASSWORD, hashedPassword);
 };
 
 export const comparePassword = async (password: string) => {
   const storedPassword = await getStoredPassword();
 
-  const hashedPassword = await hashFrom(password);
+  const hashedPassword = hashFrom(password).toString('hex');
 
-  if (storedPassword === hashedPassword) return true;
-
-  const oldVersionHashedPassword = await hashFrom(password, false);
-
-  if (storedPassword === oldVersionHashedPassword) {
-    // Update the stored password if it comes from old app versions
-    await EncryptedStorage.setItem(StorageKeys.PASSWORD, hashedPassword);
-    return true;
-  }
-
-  return false;
+  return storedPassword === hashedPassword;
 };

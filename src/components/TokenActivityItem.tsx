@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { BigNumber } from 'ethers';
 import styled, { useTheme } from 'styled-components/native';
 
 import Icon from './Icon';
@@ -104,7 +103,7 @@ const TokenActivityItem = ({
     ))
     : blockchainBaseToken;
 
-  const balance = BigNumber.from(activityItem.value);
+  const balance = BigInt(activityItem.value);
   const isSending = isSendTx(activityItem, address);
   const txIcon = isSending ? 'arrow-top-right' : 'arrow-bottom-left';
   const txIconColor = isSending ? theme.colors.error : theme.colors.success;

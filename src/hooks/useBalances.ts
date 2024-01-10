@@ -1,17 +1,17 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { BigNumber } from 'ethers';
 
 import useBlockchainData from './useBlockchainData';
 import useNotifications from './useNotifications';
 import useWalletPublicValues from './useWalletPublicValues';
 import { ReactQueryKeys } from '@utils/constants';
+import { isZero } from '@utils/number';
 import { Blockchains } from '@web3/constants';
 import type { TokensBalance, TokenSymbol } from '@web3/tokens';
 import { getWalletBalance } from '@web3/wallet';
 
 export type TokensBalanceArrayItem = {
   symbol: TokenSymbol;
-  balance: BigNumber;
+  balance: bigint;
 };
 
 type UseBalancesReturn = {
@@ -73,7 +73,7 @@ const useBalances = (options: UseBalancesProps = {}): UseBalancesReturn => {
         symbol,
         balance,
       };
-      if (balance.isZero()) {
+      if (isZero(balance)) {
         acc.zeroBalances.push(item as TokensBalanceArrayItem);
       } else {
         acc.balances.push(item as TokensBalanceArrayItem);

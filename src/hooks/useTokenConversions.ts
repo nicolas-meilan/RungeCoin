@@ -1,11 +1,12 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { BigNumber, utils } from 'ethers';
+import { parseUnits } from 'ethers';
 
 import useConsolidatedCurrency from './useConsolidatedCurrency';
 import useNotifications from './useNotifications';
 import { getTokenConversions, TokenConversionsEndpointResponse } from '@http/tokens';
 import { ReactQueryKeys } from '@utils/constants';
 import { numberToFormattedString } from '@utils/formatter';
+import { isZero, toBigInt } from '@utils/number';
 import type { TokenType } from '@web3/tokens';
 
 type TokenConversion = TokenConversionsEndpointResponse['data'];
@@ -13,7 +14,7 @@ type TokenConversion = TokenConversionsEndpointResponse['data'];
 type UseTokenConversionssReturn = {
   tokenConversions?: TokenConversion | null;
   tokenConversionsLoading: boolean;
-  convert: (balance: number | BigNumber, from: Omit<TokenType, 'name' | 'address'>) => number;
+  convert: (balance: number | bigint, from: Omit<TokenType, 'name' | 'address'>) => number;
   refetchTokenConversions: () => Promise<void>;
 };
 
@@ -46,16 +47,16 @@ const useTokenConversions = (options: UseTokenConversionsProps = {}): UseTokenCo
   };
 
   const convert: UseTokenConversionssReturn['convert'] = (balance, from) => {
-    const balanceToConvert = BigNumber.isBigNumber(balance) ? balance : BigNumber.from(balance);
+    const balanceToConvert = toBigInt(balance);
 
-    if (!tokenConversions || balanceToConvert.isZero()) return 0;
+    if (!tokenConversions || isZero(balanceToConvert)) return 0;
 
-    const to = tokenConversions[from.symbol]?.[consolidatedCurrency!] || 0;
+    const to = tokenConversions[from .symbol]?.[consolidatedCurrency!] || 0;
     const toDecimals = to.toString().split('.')?.[1]?.length || 0;
 
     const convertedBalance = balanceToConvert
-      .mul(utils.parseUnits(to.toString(), toDecimals)) // add extra decimals for multiplication
-      .div(BigNumber.from(`1${new Array(toDecimals).fill(0).join('')}`)); // remove extra decimals
+      * (parseUnits(to.toString(), toDecimals)) // add extra decimals for multiplication
+      / (BigInt(`1${new Array(toDecimals).fill(0).join('')}`)); // remove extra decimals
 
     return Number(numberToFormattedString(convertedBalance, {
       decimals: from.decimals,

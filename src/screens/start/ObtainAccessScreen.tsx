@@ -84,15 +84,15 @@ const ObtainAccessScreen = ({ navigation, route }: ObtainAccessScreenProps) => {
   const obtainAccess = async () => {
     const wallets = await createWalletFromSeedPhrase(seedPhrase);
 
-    const tronWalletPrivateKey = wallets.tronWallet.getPrivateKeyString().replace('0x', '');
+    const tronWalletPrivateKey = wallets.tronWallet.privateKey.replace('0x', '');
     await Promise.all([
-      setPrivateKey(Blockchains.ETHEREUM, wallets.erc20Wallet.getPrivateKeyString()),
+      setPrivateKey(Blockchains.ETHEREUM, wallets.erc20Wallet.privateKey),
       setPrivateKey(Blockchains.TRON, tronWalletPrivateKey),
       storePassword(password),
     ]);
 
     setWalletPublicValues({
-      erc20Address: wallets.erc20Wallet.getAddressString(),
+      erc20Address: wallets.erc20Wallet.address,
       tronAddress: getTronAddressFromPrivateKey(tronWalletPrivateKey),
     });
   };

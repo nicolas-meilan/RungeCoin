@@ -1,7 +1,5 @@
 import { useState } from 'react';
 
-import { BigNumber } from 'ethers';
-
 import useBlockchainData from './useBlockchainData';
 import usePrivateKey from './usePrivateKey';
 import useWalletPublicValues from './useWalletPublicValues';
@@ -21,7 +19,7 @@ type UseTxReturn = {
   estimatedTxFeesLoading: boolean;
   estimatedTxFeesError: boolean;
   fetchEstimateTxFees: (toAddress: string, token: TokenType) => void;
-  sendToken: (toAddress: string, token: TokenType, amount: BigNumber | number | string, encryptionKey?: string) => void;
+  sendToken: (toAddress: string, token: TokenType, amount: bigint | number | string, encryptionKey?: string) => void;
   sendTokenLoading: boolean;
   sendTokenError: boolean;
 };

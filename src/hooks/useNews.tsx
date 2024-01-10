@@ -1,5 +1,4 @@
 import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { BigNumber } from 'ethers';
 import { useTranslation } from 'react-i18next';
 
 import useNotifications from './useNotifications';
@@ -7,11 +6,6 @@ import { Languages } from '../locale/i18nConfig';
 import { ArticleResponse, getLatestNews } from '@http/news';
 import { ReactQueryKeys } from '@utils/constants';
 import type { TokenSymbol, TokenType } from '@web3/tokens';
-
-export type TokensBalanceArrayItem = {
-  symbol: TokenSymbol;
-  balance: BigNumber;
-};
 
 type UseNewsReturn = {
   news?: ArticleResponse[] | null;

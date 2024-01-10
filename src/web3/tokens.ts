@@ -1,5 +1,3 @@
-import type { BigNumber } from 'ethers';
-
 import { Blockchains, DEFAULT_BLOCKCHAIN } from './constants';
 import { isDev } from '@utils/config';
 
@@ -30,7 +28,7 @@ export type TokensStruct = {
 };
 
 export type TokensBalance = {
-  [token in TokenSymbol]: BigNumber;
+  [token in TokenSymbol]: bigint;
 };
 
 const TOKENS_ETH_MAINNET: TokensStruct = {

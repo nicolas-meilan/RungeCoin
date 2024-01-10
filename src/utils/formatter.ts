@@ -1,7 +1,8 @@
-import { BigNumber, utils } from 'ethers';
+import { formatUnits } from 'ethers';
 import { t } from 'i18next';
 
 import { FIAT_DECIMALS } from './constants';
+import { toBigInt } from './number';
 
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 export const INPUT_NUMBER = /^(\d)*.?(\d)*$/;
@@ -28,7 +29,7 @@ export const localizeNumber = (number: string): string => {
 };
 
 export const numberToFormattedString = (
-  number: BigNumber | number | string,
+  number: bigint | number | string,
   {
     decimals = 0,
     localize = true,
@@ -36,7 +37,7 @@ export const numberToFormattedString = (
   }: NumberToFormattedStringOptions = {},
 ): string => {
   const baseFormattedNumber = decimals
-    ? utils.formatUnits(number, decimals)
+    ? formatUnits(toBigInt(number), decimals)
     : number.toString();
 
   const splittedNumber = baseFormattedNumber.split('.');
@@ -54,7 +55,7 @@ export const numberToFormattedString = (
 };
 
 export const numberToFiatBalance = (
-  number: BigNumber | number,
+  number: bigint | number,
   symbol?: string,
 ): string => (
   `≈ ${numberToFormattedString(number, { fixedDecimals: FIAT_DECIMALS })}${symbol ? ` ${symbol}` : ''}`

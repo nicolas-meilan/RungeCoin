@@ -9,7 +9,7 @@ import {
   mnemonicToSeed,
   validateMnemonic,
 } from 'bip39';
-import { hdkey } from 'ethereumjs-wallet';
+import { HDNodeWallet } from 'ethers';
 import { t } from 'i18next';
 import { Observable } from 'rxjs';
 
@@ -68,9 +68,9 @@ export const createWalletFromSeedPhrase = async (mnemonic: string, index: number
   const walletIndex = index > 0 ? index : 0;
 
   const seed = await mnemonicToSeed(mnemonic);
-  const root = hdkey.fromMasterSeed(seed);
-  const erc20Wallet = root.derivePath(`${ETH_DERIVATION_PATH}/${walletIndex}`).getWallet();
-  const tronWallet = root.derivePath(`${TRON_DERIVATION_PATH}/${walletIndex}`).getWallet();
+  const root = HDNodeWallet.fromSeed(seed);
+  const erc20Wallet = root.derivePath(`${ETH_DERIVATION_PATH}/${walletIndex}`);
+  const tronWallet = root.derivePath(`${TRON_DERIVATION_PATH}/${walletIndex}`);
 
   return {
     erc20Wallet,
