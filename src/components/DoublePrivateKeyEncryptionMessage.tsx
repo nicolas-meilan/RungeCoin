@@ -61,7 +61,7 @@ const DoublePrivateKeyEncryptionMessage = () => {
     <Modal
       visible={messageVisible}
       transparent
-      animationType="none"
+      animationType="fade"
       onClose={onCloseModal}
     >
       <Main>
