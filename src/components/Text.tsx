@@ -109,6 +109,7 @@ const Text = ({
         onPressOut={onPressOut}
         onPress={onPress}
         disabled={disabled}
+        maxFontSizeMultiplier={1}
         {...props}
       >
         {splittedText.map((currentText, index) => (
@@ -117,6 +118,7 @@ const Text = ({
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             onPress={onPress}
+            maxFontSizeMultiplier={1}
             style={[{ fontWeight: weightForIndex(index) }, style, getStyleForIndex(index), animatedStyle]}
             {...props}
           >

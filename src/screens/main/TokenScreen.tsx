@@ -97,7 +97,9 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
     newsLoading,
   } = useNews({
     token,
-    withResponse: false,
+    options: {
+      enabled: false,
+    },
   });
 
   const {

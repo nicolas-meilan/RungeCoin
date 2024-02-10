@@ -1,7 +1,7 @@
 import AppTrx from '@ledgerhq/hw-app-trx';
 import { parseUnits } from 'ethers';
 
-import { EstimateFees, NO_TX_TO_SIGN_ERROR, ProcessTxToSave, SendTx, TronTxFees } from './types';
+import { AccountResources, EstimateFees, NO_TX_TO_SIGN_ERROR, ProcessTxToSave, SendTx, TronTxFees } from './types';
 import { getTronTxConfirmations } from '@http/tx/tron.tx';
 import { TronWalletTx } from '@http/tx/types';
 import { isBigInt } from '@utils/number';
@@ -43,6 +43,25 @@ const estimateTrc20TokenTxEnergyRequired = async (token: TokenType, toAddress: s
   return contractConstants.energy_used;
 };
 
+export const getAccountResources = async (address: string): Promise<AccountResources | null> => {
+  const accountResources = await tronProvider.trx.getAccountResources(address);
+
+  if (!Object.keys(accountResources).length) return null;
+
+  const totalEnergy = accountResources.EnergyLimit || 0;
+  const accountEnergy = totalEnergy - (accountResources.EnergyUsed || 0);
+  const totalBandwidth = (accountResources.freeNetLimit || 0) + (accountResources.NetLimit || 0);
+  const totalBandwidthUsed = (accountResources.NetUsed || 0) + (accountResources.freeNetUsed || 0);
+  const accountBandwidth = totalBandwidth - totalBandwidthUsed;
+
+  return {
+    totalEnergy,
+    accountEnergy,
+    totalBandwidth,
+    accountBandwidth,
+  };
+};
+
 export const estimateTronFees: EstimateFees<TronTxFees> = async (
   _,
   fromAddress,
@@ -52,7 +71,7 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
 ) => {
   const isMainToken = token.address === BASE_TOKEN_ADDRESS;
 
-  const accountResources = await tronProvider.trx.getAccountResources(fromAddress);
+  const accountResources = await getAccountResources(fromAddress);
 
   const amount = isBigInt(quantity)
     ? quantity
@@ -66,12 +85,12 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
       toResources,
       newUnsignedTx,
     ] = await Promise.all([
-      tronProvider.trx.getAccountResources(toAddress),
+      getAccountResources(toAddress),
       tronProvider.transactionBuilder.sendTrx(toAddress, amount.toString(), fromAddress),
     ]);
     unsignedTx = newUnsignedTx;
-    const needsDestinationAccountActivation = !Object.keys(toResources).length;
-    if (needsDestinationAccountActivation) {
+
+    if (!toResources) {
       activationFee = parseUnits((ACTIVATION_FEE).toString(), TOKENS_TRON.TRX?.decimals);
     }
   } else {
@@ -98,19 +117,14 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
     energyNeeded = newEnergyNeeded;
   }
 
-  const accountEnergy = (accountResources.EnergyLimit || 0) - (accountResources.EnergyUsed || 0);
-  const totalBandwidth = (accountResources.freeNetLimit || 0) + (accountResources.NetLimit || 0);
-  const totalBandwidthUsed = (accountResources.NetUsed || 0) + (accountResources.freeNetUsed || 0);
-  const accountBandwidth = totalBandwidth - totalBandwidthUsed;
-
   const bandwithNeeded = calculateTronTxBandwithNeeded(unsignedTx);
 
-  const bandwithMissing = accountBandwidth < bandwithNeeded
+  const bandwithMissing = (accountResources?.accountBandwidth || 0) < bandwithNeeded
     ? bandwithNeeded
     : 0;
 
-  const energyMissing = (accountEnergy - energyNeeded) < 0
-    ? Math.abs(accountEnergy - energyNeeded)
+  const energyMissing = ((accountResources?.accountEnergy || 0) - energyNeeded) < 0
+    ? Math.abs((accountResources?.accountEnergy || 0) - energyNeeded)
     : 0;
 
   const bandwithFee = parseUnits((bandwithMissing * BANDWITH_PRICE).toString(), 0);
@@ -121,8 +135,8 @@ export const estimateTronFees: EstimateFees<TronTxFees> = async (
   return {
     bandwithNeeded,
     energyNeeded,
-    accountEnergy,
-    accountBandwidth,
+    accountEnergy: accountResources?.accountEnergy || 0,
+    accountBandwidth: accountResources?.accountBandwidth || 0,
     bandwithPrice: BANDWITH_PRICE,
     energyPrice: ENERGY_PRICE,
     bandwithFee,

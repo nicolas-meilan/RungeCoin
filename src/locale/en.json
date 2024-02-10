@@ -103,7 +103,11 @@
     "home": {
       "title": "My cryptos",
       "balance": "Total balance",
-      "noAddressAlert": "As we do not store your **secret words**, to activate the **{{blockchain}}** blockchain, you will need to **close your wallet** from settings and then reopen it using your **secret words**."
+      "noAddressAlert": "As we do not store your **secret words**, to activate the **{{blockchain}}** blockchain, you will need to **close your wallet** from settings and then reopen it using your **secret words**.",
+      "blockchainExtraData": {
+        "energy": "Energy",
+        "bandwith": "Bandwith"
+      }
     },
     "receive": {
       "title": "Receive cryptos",
@@ -211,6 +215,7 @@
     "news": "Error loading news",
     "tokenConversions": "Error loading conversion data",
     "walletActivity": "Error loading activity token",
+    "accountResources": "Error loading wallet data",
     "miningPendingTxs": "Error loading mining pending transactions",
     "hwConnectionError": "Failed to connect to the ledger, please follow the steps and try again",
     "beDisabled": "Bluetooth disabled"

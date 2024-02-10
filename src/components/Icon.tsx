@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ForwardedRef } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import type { IconProps as IconPropsRN } from 'react-native-vector-icons/Icon';
@@ -14,13 +14,14 @@ const StyledIcon = styled(IconRN)`
   font-size: ${({ theme }) => theme.fonts.size[32]};
 `;
 
-const Icon = ({
+const Icon = React.forwardRef(({
   onPress,
   disabled,
   style,
   hitSlop,
   ...props
-}: IconProps) => {
+}: IconProps,
+ref: ForwardedRef<IconRN>) => {
   const theme = useTheme();
 
   const disabledStyle = disabled ? {
@@ -28,7 +29,12 @@ const Icon = ({
   } : {};
 
   const iconComponent = (
-    <StyledIcon {...props} style={[style, disabledStyle]} maxFontSizeMultiplier={1} />
+    <StyledIcon
+      {...props}
+      ref={ref}
+      style={[style, disabledStyle]}
+      maxFontSizeMultiplier={1}
+    />
   );
 
   if (!onPress) return iconComponent;
@@ -46,6 +52,6 @@ const Icon = ({
       {iconComponent}
     </TouchableOpacity>
   );
-};
+});
 
 export default Icon;
