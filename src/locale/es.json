@@ -103,7 +103,11 @@
     "home": {
       "title": "Mis cryptos",
       "balance": "Balance total",
-      "noAddressAlert": "Como nosotros no almacenamos tus **palabras secretas**, para activar la red **{{blockchain}}**, deberás **cerrar tu billetera** desde configuración y luego volver a abrirla usando tus **palabras secretas**."
+      "noAddressAlert": "Como nosotros no almacenamos tus **palabras secretas**, para activar la red **{{blockchain}}**, deberás **cerrar tu billetera** desde configuración y luego volver a abrirla usando tus **palabras secretas**.",
+      "blockchainExtraData": {
+        "energy": "Energía",
+        "bandwith": "Ancho de banda"
+      }
     },
     "receive": {
       "title": "Recibir cryptos",
@@ -211,6 +215,7 @@
     "news": "Error al cargar las noticias",
     "tokenConversions": "Error al cargar los datos de conversiónes",
     "walletActivity": "Error al cargar la actividad del token",
+    "accountResources": "Error al cargar datos de la billetera",
     "miningPendingTxs": "Error al cargar transacciones pendientes de minado",
     "hwConnectionError": "No se pudo conectar al Ledger, siga los pasos y reintente",
     "beDisabled": "Bluetooth desactivado"

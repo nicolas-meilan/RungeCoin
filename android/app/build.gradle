@@ -81,8 +81,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         resConfigs "en", "es"
-        versionCode 17
-        versionName "1.5.2"
+        versionCode 18
+        versionName "1.6.0"
     }
     signingConfigs {
         release {
@@ -101,6 +101,7 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            applicationIdSuffix '.debug'
         }
         release {
             // Caution! In production, you need to generate your own keystore file.

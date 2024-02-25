@@ -69,4 +69,11 @@ export type ProcessTxToSave<T> = (config: {
   needsUpdate?: boolean;
 }) => Promise<T | null>;
 
+export type AccountResources = {
+  totalEnergy: number;
+  accountEnergy: number;
+  totalBandwidth: number;
+  accountBandwidth: number;
+};
+
 export const NO_TX_TO_SIGN_ERROR = 'NO_TX_TO_SIGN';

@@ -3,8 +3,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import styled from 'styled-components/native';
+import styled, { useTheme } from 'styled-components/native';
 
+import BlockchainExtraData from '@components/BlockchainExtraData';
 import Button from '@components/Button';
 import DoublePrivateKeyEncryptionMessage from '@components/DoublePrivateKeyEncryptionMessage';
 import ErrorWrapper from '@components/ErrorWrapper';
@@ -14,6 +15,7 @@ import Pill from '@components/Pill';
 import Receive from '@components/Receive';
 import ScreenLayout from '@components/ScreenLayout';
 import Skeleton from '@components/Skeleton';
+import { Spacer } from '@components/Spacer';
 import Text from '@components/Text';
 import Title from '@components/Title';
 import TokenBalances from '@components/TokenBalances';
@@ -52,7 +54,6 @@ const BalanceSkeleton = styled(Skeleton)`
 
 const ActionButton = styled(Button) <{ margin?: boolean }>`
   flex: 1;
-  ${({ margin, theme }) => (margin ? `margin-right: ${theme.spacing(2)};` : '')}
 `;
 
 const FullAnimatedView = styled(Animated.View)`
@@ -62,6 +63,7 @@ const FullAnimatedView = styled(Animated.View)`
 type HomeScreenProps = NativeStackScreenProps<MainNavigatorType, ScreenName.home>;
 
 const HomeScreen = ({ navigation }: HomeScreenProps) => {
+  const theme = useTheme();
   const [receiveBottomSheet, setReceiveBottomSheet] = useState(false);
   const [addressUpdated, setAddressUpdated] = useState(false);
 
@@ -164,13 +166,14 @@ const HomeScreen = ({ navigation }: HomeScreenProps) => {
               entering={FadeIn}
               exiting={FadeOut}
             >
+              <BlockchainExtraData />
               <ButtonsWrapper>
                 <ActionButton
-                  margin
                   icon="arrow-top-right"
                   text="common.send"
                   onPress={onPressSend}
                 />
+                <Spacer size={theme.spacingNative(2)} horizontal />
                 <ActionButton
                   icon="arrow-bottom-left"
                   text="common.receive"

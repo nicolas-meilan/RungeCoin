@@ -12,6 +12,7 @@ export enum ReactQueryKeys {
   MINING_PENDING_TXS = 'miningPendingTxs',
   CONSOLIDATED_CURRENCY = 'consolidatedCurrency',
   PRIVATE_KEY_CONFIG = 'privateKeyConfig',
+  TRON_ACCOUNT_RESOURCES = 'tronAccountResources',
 }
 
 export enum FiatCurrencies {
