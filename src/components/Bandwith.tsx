@@ -181,6 +181,7 @@ const Bandwith = ({
       <StyledSvg>
         <Circle
           strokeLinecap="round"
+          fill="none"
           cx={circleSize}
           cy={circleSize}
           r={circleRadius}

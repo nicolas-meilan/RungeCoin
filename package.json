@@ -1,6 +1,6 @@
 {
   "name": "rungecoin",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "private": true,
   "scripts": {
     "postinstall": "patch-package",
@@ -40,7 +40,7 @@
     "react": "18.2.0",
     "react-content-loader": "^6.2.0",
     "react-i18next": "^12.1.5",
-    "react-native": "0.73.4",
+    "react-native": "0.73.5",
     "react-native-ble-manager": "^10.1.2",
     "react-native-ble-plx": "^2.0.3",
     "react-native-camera-kit": "^13.0.0",

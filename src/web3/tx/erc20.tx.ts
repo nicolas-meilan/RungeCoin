@@ -144,7 +144,6 @@ export const erc20SignTxWithLedger = async (
   const signedTx: SignedTx = await eth.signTransaction(derivationPath, tx, resolution);
   transport.close();
 
-
   return {
     v: parseInt(`0x${signedTx.v}`, 16),
     r: `0x${signedTx.r}`,
