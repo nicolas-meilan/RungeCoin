@@ -20,6 +20,6 @@ We do not save user data to maintain anonymity.
 
 ## Links
 
-- [Website](https://rungecoin-crypto-wallet.web.app)
+- [Website](https://rungecoin.web.app)
 - [Android App](https://play.google.com/store/apps/details?id=com.RungeCoin&hl=en&gl=US)
 - [rungecoin@gmail.com](mailto:rungecoin@gmail.com)
