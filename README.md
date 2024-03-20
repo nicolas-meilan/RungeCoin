@@ -2,6 +2,8 @@
 
 Manage your cryptos in an easy, secure and decentralized way. To maintain maximum privacy, we do not store any personal data. We also guarantee maximum security by allowing you to connect your hardware wallet.
 
+![RungeCoin](https://github.com/nicolas-meilan/RungeCoin/assets/5504853/4adf82bf-197d-4598-b736-e3acd6f289cb)
+
 ## OUR APP FEATURES
 
 Our features are designed focusing on the ease of management, security and privacy of your crypto wallet.
