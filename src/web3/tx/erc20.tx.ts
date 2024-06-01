@@ -31,6 +31,7 @@ export type TxInfo = {
   totalFee: bigint;
 };
 
+const CONTRACT_TRANSFER_METHOD = 'transfer';
 
 const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
   maxFeePerGas: bigint;
@@ -69,9 +70,9 @@ const estimateErc20TxInfo: EstimateFees<ERC20TxFees & {
   const feePerGasOffset = 1;
   let gasLimitTolerance = 1;
 
-  if (token.address !== BASE_TOKEN_ADDRESS) { // is not ETH
+  if (token.address !== BASE_TOKEN_ADDRESS) { // is not a native token
     const txContract = new Contract(token.address, BASE_TOKENS_TRANSFER_ABI, voidSigner);
-    tx.data = txContract.interface.encodeFunctionData('transferFrom', [fromAddress, toAddress, 0]);
+    tx.data = txContract.interface.encodeFunctionData(CONTRACT_TRANSFER_METHOD, [toAddress, 0]);
     tx.to = token.address;
     gasLimitTolerance = 2; // the gas limit estimated for a smart contract can be unexacted.
   }
@@ -211,7 +212,7 @@ export const erc20send: SendTx<undefined> = async (
     const txContract = new Contract(token.address, BASE_TOKENS_TRANSFER_ABI);
     tx.to = token.address;
     tx.value = 0;
-    tx.data = txContract.interface.encodeFunctionData('transferFrom', [fromAddress, toAddress, amount]);
+    tx.data = txContract.interface.encodeFunctionData(CONTRACT_TRANSFER_METHOD, [toAddress, amount]);
   }
   if (isHw) {
     const { from, ...txToResolveProperties } = tx;
@@ -266,7 +267,7 @@ export const erc20ProcessTxToSave: ProcessTxToSave<ERC20WalletTx> = async ({ has
 
   const txContract = new Contract(txData.to || '', BASE_TOKENS_TRANSFER_ABI);
   const decodedTxData = txContract.interface
-    .decodeFunctionData('transferFrom', txData.data) as unknown as [string, string, BigInt];
+    .decodeFunctionData(CONTRACT_TRANSFER_METHOD, txData.data) as unknown as [string, string, BigInt];
 
   walletTx.value = decodedTxData[2].toString();
   walletTx.to = decodedTxData[1];
