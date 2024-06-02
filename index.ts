@@ -1,6 +1,6 @@
 import 'react-native-reanimated';
 
-import './ethetsInitializer';
+import './ethersInitializer';
 
 import { AppRegistry } from 'react-native';
 

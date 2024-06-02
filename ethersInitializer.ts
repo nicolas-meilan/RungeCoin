@@ -1,12 +1,15 @@
 import { ethers } from 'ethers';
 import crypto from 'react-native-quick-crypto';
+import { install } from 'react-native-quick-crypto';
+
+install(); // patch Buffer
 
 ethers.randomBytes.register((length) => {
   return new Uint8Array(crypto.randomBytes(length));
 });
 
 ethers.computeHmac.register((algo, key, data) => {
-  return crypto.createHmac(algo, key).update(data).digest();
+    return crypto.createHmac(algo, key).update(data).digest();
 });
 
 ethers.pbkdf2.register((passwd, salt, iter, keylen, algo) => {
