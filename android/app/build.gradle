@@ -81,8 +81,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         resConfigs "en", "es"
-        versionCode 20
-        versionName "1.6.2"
+        versionCode 21
+        versionName "1.6.3"
     }
     signingConfigs {
         release {
