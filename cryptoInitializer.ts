@@ -1,6 +1,7 @@
-import { ethers } from 'ethers';
-import crypto from 'react-native-quick-crypto';
+import { BytesLike, ethers } from 'ethers';
+import crypto, { install } from 'react-native-quick-crypto';
 
+install();
 ethers.randomBytes.register((length) => {
   return new Uint8Array(crypto.randomBytes(length));
 });
@@ -10,7 +11,7 @@ ethers.computeHmac.register((algo, key, data) => {
 });
 
 ethers.pbkdf2.register((passwd, salt, iter, keylen, algo) => {
-  return crypto.pbkdf2Sync(passwd, salt, iter, keylen, algo);
+  return crypto.pbkdf2Sync(passwd, salt, iter, keylen, algo) as BytesLike;
 });
 
 ethers.sha256.register((data) => {
