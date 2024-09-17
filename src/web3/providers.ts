@@ -12,7 +12,7 @@ import TronWeb from 'tronweb';
 import { Blockchains, DEFAULT_BLOCKCHAIN } from './constants';
 import { isDev } from '@utils/config';
 
-const ETHEREUM_NETWORK_DEV = 'goerli';
+const ETHEREUM_NETWORK_DEV = 'sepolia';
 const ETHEREUM_NETWORK_MAIN = 'mainnet';
 
 const ETHEREUM_NETWORK = isDev() ? ETHEREUM_NETWORK_DEV : ETHEREUM_NETWORK_MAIN;

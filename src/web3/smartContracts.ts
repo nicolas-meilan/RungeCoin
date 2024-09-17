@@ -3,7 +3,7 @@ import { isDev } from '@utils/config';
 
 export const BALANCE_CHECKER_ADDRESS = {
   [Blockchains.ETHEREUM]: isDev()
-    ? '0x9788C4E93f9002a7ad8e72633b11E8d1ecd51f9b'
+    ? '0xBfbCed302deD369855fc5f7668356e123ca4B329'
     : '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39',
   [Blockchains.POLYGON]: '0x2352c63A83f9Fd126af8676146721Fa00924d7e4',
   [Blockchains.BSC]: '0x2352c63A83f9Fd126af8676146721Fa00924d7e4',

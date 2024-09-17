@@ -45,7 +45,7 @@ const TOKENS_ETH_MAINNET: TokensStruct = {
     decimals: 18,
   },
   [TokenSymbol.BNB]: {
-    name: 'Token BNB',
+    name: 'BNB',
     symbol: TokenSymbol.BNB,
     address: '0xB8c77482e45F1F44dE1745F52C74426C631bDD52',
     decimals: 18,
@@ -64,35 +64,29 @@ const TOKENS_ETH_MAINNET: TokensStruct = {
   },
 };
 
-const TOKENS_ETH_GOERLI: TokensStruct = {
+const TOKENS_ETH_TESTNET: TokensStruct = {
   [TokenSymbol.ETH]: {
     name: 'Ether',
     symbol: TokenSymbol.ETH,
     address: BASE_TOKEN_ADDRESS,
     decimals: 18,
   },
-  [TokenSymbol.MATIC]: {
-    name: 'Matic',
-    symbol: TokenSymbol.MATIC,
-    address: '0x88eC360e09A9cD9B37Df80c4cd587Ee375409f8C',
-    decimals: 18,
-  },
   [TokenSymbol.BNB]: {
-    name: 'Token BNB',
+    name: 'BNB',
     symbol: TokenSymbol.BNB,
-    address: '0xfb501A48aFFC39aa4b4C83A025D4F0b5C1ca4A6C',
+    address: '0x871ACbEabBaf8Bed65c22ba7132beCFaBf8c27B5',
     decimals: 18,
   },
   [TokenSymbol.DAI]: {
     name: 'Dai Stablecoin',
     symbol: TokenSymbol.DAI,
-    address: '0xf2edF1c091f683E3fb452497d9a98A49cBA84666',
+    address: '0x82fb927676b53b6eE07904780c7be9b4B50dB80b',
     decimals: 18,
   },
   [TokenSymbol.USDT]: {
     name: 'Tether USD',
     symbol: TokenSymbol.USDT,
-    address: '0xC51FceEc013cD34aE2e95E6D64E9858F2aC28fFf',
+    address: '0xA1d7f71cbBb361A77820279958BAC38fC3667c1a',
     decimals: 6,
   },
   [TokenSymbol.UNI]: {
@@ -103,7 +97,7 @@ const TOKENS_ETH_GOERLI: TokensStruct = {
   },
 };
 
-export const TOKENS_ETH = isDev() ? TOKENS_ETH_GOERLI : TOKENS_ETH_MAINNET;
+export const TOKENS_ETH = isDev() ? TOKENS_ETH_TESTNET : TOKENS_ETH_MAINNET;
 
 export const TOKENS_POLYGON: TokensStruct = {
   [TokenSymbol.MATIC]: {
@@ -119,7 +113,7 @@ export const TOKENS_POLYGON: TokensStruct = {
     decimals: 18,
   },
   [TokenSymbol.BNB]: {
-    name: 'Token BNB',
+    name: 'BNB',
     symbol: TokenSymbol.BNB,
     address: '0x3BA4c387f786bFEE076A58914F5Bd38d668B42c3',
     decimals: 18,
@@ -140,7 +134,7 @@ export const TOKENS_POLYGON: TokensStruct = {
 
 export const TOKENS_BSC: TokensStruct = {
   [TokenSymbol.BNB]: {
-    name: 'Token BNB',
+    name: 'BNB',
     symbol: TokenSymbol.BNB,
     address: BASE_TOKEN_ADDRESS,
     decimals: 18,

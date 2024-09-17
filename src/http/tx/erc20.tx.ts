@@ -14,7 +14,7 @@ import { BASE_TOKEN_ADDRESS } from '@web3/tokens';
 const ERC20_API_CONFIG = {
   [Blockchains.ETHEREUM]: {
     url: isDev()
-      ? 'https://api-goerli.etherscan.io/api'
+      ? 'https://api-sepolia.etherscan.io/api'
       : 'https://api.etherscan.io/api',
     apiKey: HTTP_ETH_BLOCKCHAIN_INFO_PROVIDER_VENDOR_KEY,
   }, [Blockchains.POLYGON]: {
@@ -28,7 +28,7 @@ const ERC20_API_CONFIG = {
 
 export const ERC20_TX_URL = {
   [Blockchains.ETHEREUM]: isDev()
-    ? 'https://goerli.etherscan.io/tx/'
+    ? 'https://sepolia.etherscan.io/tx/'
     : 'https://etherscan.io/tx/',
   [Blockchains.POLYGON]: 'https://polygonscan.com/tx/',
   [Blockchains.BSC]: 'https://bscscan.com/tx/',
