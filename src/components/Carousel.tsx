@@ -4,7 +4,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import type {
+import {
   FlatList,
   LayoutChangeEvent,
   NativeScrollEvent,
@@ -42,9 +42,6 @@ const Item = styled.View`
 
 const Wrapper = styled.View`
   flex: 1;
-`;
-
-const CarouselList = styled.FlatList`
 `;
 
 const DotsWrapper = styled.View`
@@ -138,7 +135,7 @@ ref: React.Ref<CarouselRef>) => {
 
   return (
     <Wrapper style={style}>
-      <CarouselList
+      <FlatList
         horizontal
         ref={listRef}
         showsHorizontalScrollIndicator={false}

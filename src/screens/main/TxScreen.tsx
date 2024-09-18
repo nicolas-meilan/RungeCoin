@@ -48,7 +48,7 @@ const Subtitle = styled(Text)`
 
 const FromToIcon = styled(Icon) <{ color: string }>`
   color: ${({ color }) => color};
-  margin-horizontal: ${({ theme }) => theme.spacing(3)};
+  margin: 0 ${({ theme }) => theme.spacing(3)};
 `;
 
 const RowData = styled(Text) <{ color?: string }>`
@@ -57,7 +57,7 @@ const RowData = styled(Text) <{ color?: string }>`
 
 const Hash = styled(Text)`
   color: ${({ theme }) => theme.colors.info};
-  textDecorationLine: underline;
+  text-decoration-line: underline;
 `;
 
 const AmountData = styled(Text) <{ color: string }>`
@@ -67,7 +67,7 @@ const AmountData = styled(Text) <{ color: string }>`
 `;
 
 const Amount = styled.View`
-  margin-vertical: ${({ theme }) => theme.spacing(4)};
+  margin: ${({ theme }) => theme.spacing(4)} 0;
 `;
 
 const AmountSkeleton = styled(Skeleton)`

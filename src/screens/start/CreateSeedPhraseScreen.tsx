@@ -20,7 +20,7 @@ const SeedPhraseCard = styled(Card)`
 
 const WordPill = styled(Pill)`
   background-color: ${({ theme }) => theme.colors.background.secondary};
-  border: 0px;
+  border: 0;
   margin: 0 ${({ theme }) => theme.spacing(2)} ${({ theme }) => theme.spacing(2)} 0;
   font-size: ${({ theme }) => theme.fonts.size[16]};
   color: ${({ theme }) => theme.colors.text.primary};

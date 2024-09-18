@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import styled from 'styled-components/native';
 
@@ -55,10 +55,6 @@ const KeyboardButtonText = styled(Text)`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
-const TouchableWrapper = styled.TouchableOpacity``;
-
-const DeleteIconWrapper = styled.View``;
-
 const NumericKeyboard = ({
   onTouchStart,
   onTouchEnd,
@@ -68,7 +64,7 @@ const NumericKeyboard = ({
 
   const decimalButton = (key: typeof KEYBOARD_BUTTONS[number]) => (
     allowDecimals ? (
-      <TouchableWrapper>
+      <TouchableOpacity>
         <KeyboardButton
           onTouchStart={() => onTouchStart?.(key)}
           onTouchEnd={onTouchEnd}
@@ -76,7 +72,7 @@ const NumericKeyboard = ({
         >
           <KeyboardButtonText text={key} />
         </KeyboardButton>
-      </TouchableWrapper>
+      </TouchableOpacity>
     ) : <></>
   );
 
@@ -86,7 +82,7 @@ const NumericKeyboard = ({
         <ButtonWrapper key={`KEYBOARD_${key}`}>
           {key === DECIMAL_BUTTON && decimalButton(key)}
           {key === DELETE_BUTTON && (
-            <DeleteIconWrapper
+            <View
               onTouchStart={() => onTouchStart?.(key)}
               onTouchEnd={onTouchEnd}
               onTouchCancel={onTouchEnd}
@@ -96,10 +92,10 @@ const NumericKeyboard = ({
                 hitSlop={BUTTONS_SIZE / 2}
                 onPress={() => { }} // I need the touchable feedback
               />
-            </DeleteIconWrapper>
+            </View>
           )}
           {key !== DELETE_BUTTON && key !== DECIMAL_BUTTON && (
-            <TouchableWrapper>
+            <TouchableOpacity>
               <KeyboardButton
                 onTouchStart={() => onTouchStart?.(key)}
                 onTouchEnd={onTouchEnd}
@@ -107,7 +103,7 @@ const NumericKeyboard = ({
               >
                 <KeyboardButtonText text={key} />
               </KeyboardButton>
-            </TouchableWrapper>
+            </TouchableOpacity>
           )}
         </ButtonWrapper>
       ))}

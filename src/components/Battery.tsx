@@ -2,8 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
 import Animated, { interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { useTheme } from 'styled-components';
-import styled from 'styled-components/native';
+import styled, { useTheme } from 'styled-components/native';
 
 import Skeleton from './Skeleton';
 import LineLayout from './Skeleton/LineLayout';
@@ -30,7 +29,7 @@ const BatteryHeader = styled.View`
   width: ${HEADER_WIDTH}px;
   height: ${HEADER_HEIGHT}px;
   border: 1px solid ${({ theme }) => theme.colors.disabled};
-  border-left-width: 0px;
+  border-left-width: 0;
   border-radius: 1px;
 `;
 

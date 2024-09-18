@@ -52,9 +52,6 @@ const Balance = styled(Text)`
   margin-bottom: ${({ theme }) => theme.spacing(1)};
 `;
 
-const FiatBalanceSkeleton = styled(Skeleton)`
-`;
-
 const FiatBalance = styled(Text)`
   font-size: ${({ theme }) => theme.fonts.size[16]};
   color: ${({ theme }) => theme.colors.text.secondary};
@@ -246,12 +243,12 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
                   decimals: token?.decimals,
                 })} ${token?.symbol}`} />
               </BalanceSkeleton>
-              <FiatBalanceSkeleton
+              <Skeleton
                 isLoading={!tokenBalances || !tokenConversions}
                 height={25}
               >
                 <FiatBalance text={numberToFiatBalance(tokenBalanceConverted, consolidatedCurrency)} />
-              </FiatBalanceSkeleton>
+              </Skeleton>
             </BalanceWrapper>
           </ErrorWrapper>
         </TokenBaseInfo>
