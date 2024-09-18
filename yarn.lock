@@ -3216,7 +3216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/hw-app-eth@npm:^6.35.4":
+"@ledgerhq/hw-app-eth@npm:^6.38.1":
   version: 6.38.1
   resolution: "@ledgerhq/hw-app-eth@npm:6.38.1"
   dependencies:
@@ -3237,7 +3237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/hw-app-trx@npm:^6.28.3":
+"@ledgerhq/hw-app-trx@npm:^6.29.3":
   version: 6.29.3
   resolution: "@ledgerhq/hw-app-trx@npm:6.29.3"
   dependencies:
@@ -3286,7 +3286,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/react-native-hid@npm:^6.31.3":
+"@ledgerhq/react-native-hid@npm:^6.32.3":
   version: 6.32.3
   resolution: "@ledgerhq/react-native-hid@npm:6.32.3"
   dependencies:
@@ -3301,7 +3301,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/react-native-hw-transport-ble@npm:^6.32.2":
+"@ledgerhq/react-native-hw-transport-ble@npm:^6.33.3":
   version: 6.33.3
   resolution: "@ledgerhq/react-native-hw-transport-ble@npm:6.33.3"
   dependencies:
@@ -13245,10 +13245,10 @@ __metadata:
     "@eslint/js": ^9.10.0
     "@formatjs/intl-locale": ^4.0.0
     "@formatjs/intl-pluralrules": ^5.2.14
-    "@ledgerhq/hw-app-eth": ^6.35.4
-    "@ledgerhq/hw-app-trx": ^6.28.3
-    "@ledgerhq/react-native-hid": ^6.31.3
-    "@ledgerhq/react-native-hw-transport-ble": ^6.32.2
+    "@ledgerhq/hw-app-eth": ^6.38.1
+    "@ledgerhq/hw-app-trx": ^6.29.3
+    "@ledgerhq/react-native-hid": ^6.32.3
+    "@ledgerhq/react-native-hw-transport-ble": ^6.33.3
     "@noble/secp256k1": ^2.1.0
     "@react-native-async-storage/async-storage": ^2.0.0
     "@react-native-clipboard/clipboard": ^1.14.2
