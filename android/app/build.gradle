@@ -85,7 +85,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         resConfigs "en", "es"
         versionCode 22
-        versionName "1.6.4"
+        versionName "1.7.0"
     }
     signingConfigs {
         release {
