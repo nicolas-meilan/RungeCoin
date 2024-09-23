@@ -8,7 +8,7 @@ import useBlockchainData from '@hooks/useBlockchainData';
 import useWalletPublicValues, {
   BLOCKCHAIN_PUBLIC_VALUES_CONFIG,
 } from '@hooks/useWalletPublicValues';
-import { Blockchains } from '@web3/constants';
+import { Blockchains, BLOCKCHAINS_CONFIG } from '@web3/constants';
 
 type BlockchainSelectorProps = {
   label?: SelectProps['label'];
@@ -38,7 +38,11 @@ const BlockchainSelector = ({
   ).map((blockchainKey) => ({
     value: blockchainKey,
     label: t(`blockchain.${blockchainKey}`),
-    leftComponent: <TokenIcon tokenSymbol={blockchainsBaseTokenSymbols[blockchainKey]} size={24} />,
+    leftComponent: (
+      <TokenIcon
+        size={24}
+        tokenSymbol={BLOCKCHAINS_CONFIG[blockchainKey].blockchainSymbol || blockchainsBaseTokenSymbols[blockchainKey]}
+      />),
     data: undefined,
     disabled: disableBlockchainsWithoutAddress
       ? !walletPublicValues?.[BLOCKCHAIN_PUBLIC_VALUES_CONFIG[blockchainKey].addressProp]

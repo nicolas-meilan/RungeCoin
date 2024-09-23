@@ -1,12 +1,18 @@
 import { Blockchains } from './constants';
 import { isDev } from '@utils/config';
 
-export const BALANCE_CHECKER_ADDRESS = {
+export const BALANCE_CHECKER_ADDRESS: {
+  [key in Blockchains]: string;
+} = {
   [Blockchains.ETHEREUM]: isDev()
     ? '0xBfbCed302deD369855fc5f7668356e123ca4B329'
     : '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39',
   [Blockchains.POLYGON]: '0x2352c63A83f9Fd126af8676146721Fa00924d7e4',
+  [Blockchains.ARBITRUM]: isDev()
+    ? 'TODO'
+    : '0x151E24A486D7258dd7C33Fb67E4bB01919B7B32c',
   [Blockchains.BSC]: '0x2352c63A83f9Fd126af8676146721Fa00924d7e4',
+  [Blockchains.TRON]: 'TN8RtFXeQZyFHGmH1iiSRm5r4CRz1yWkCf', // TODO use it instead of manual fetchs
 };
 
 export const BALANCE_CHECKER_ABI = [

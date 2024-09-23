@@ -1,7 +1,10 @@
+import type { TokenSymbol } from './tokens';
+
 export enum Blockchains {
   ETHEREUM = 'ETHEREUM',
   POLYGON = 'POLYGON',
   BSC = 'BSC',
+  ARBITRUM = 'ARBITRUM',
   TRON = 'TRON',
 }
 
@@ -9,6 +12,7 @@ export const BLOCKCHAINS_CONFIG: {
   [blockchain in Blockchains]: {
     hasMaxFeePerGas: boolean;
     isERC20Compatible: boolean;
+    blockchainSymbol?: TokenSymbol;
   }
 } = {
   [Blockchains.ETHEREUM]: {
@@ -22,6 +26,11 @@ export const BLOCKCHAINS_CONFIG: {
   [Blockchains.BSC]: {
     hasMaxFeePerGas: false,
     isERC20Compatible: true,
+  },
+  [Blockchains.ARBITRUM]: {
+    hasMaxFeePerGas: false,
+    isERC20Compatible: true,
+    blockchainSymbol: 'ARBI' as TokenSymbol,
   },
   [Blockchains.TRON]: {
     hasMaxFeePerGas: true,
