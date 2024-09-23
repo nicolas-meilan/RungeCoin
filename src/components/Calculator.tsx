@@ -118,7 +118,7 @@ const Calculator = ({
     refetchOnWindowFocus: false,
   });
 
-  const intervalRef = useRef<NodeJS.Timer | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [amount, setAmount] = useState('0');
   const [balanceExceeded, setBalanceExceeded] = useState(false);
 

@@ -24,8 +24,10 @@ jobs:
           distribution: 'zulu'
           java-version: 17.0.9
 
-      - name: Install App center
-        run: npm install -g appcenter-cli
+      - name: Set up JS global packages
+        run: |
+          corepack enable
+          npm install -g appcenter-cli
 
       - name: Obtain config
         uses: actions/checkout@v3
@@ -39,7 +41,7 @@ jobs:
         run: mv ./app-configuration/.env.${{ github.event.inputs.environment }} ./.env
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Build android
         run: npm run build-android-release

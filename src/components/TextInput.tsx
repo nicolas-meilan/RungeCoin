@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import type {
-  TextInputProps as TextInputPropsRN,
-  NativeSyntheticEvent,
-  TextInputFocusEventData,
+import {
+  type TextInputProps as TextInputPropsRN,
+  type NativeSyntheticEvent,
+  type TextInputFocusEventData,
+  TouchableOpacity,
 } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
@@ -32,8 +33,6 @@ export type TextInputProps = TextInputPropsRN & {
   leftComponent?: React.ReactNode;
   pressDisabled?: boolean;
 };
-
-const Wrapper = styled.TouchableOpacity``;
 
 const InputWrapper = styled.View<{ color: string; multiline?: boolean }>`
   flex-direction: row;
@@ -68,7 +67,6 @@ const StyledTextInput = styled.TextInput<{
   vertical-align: ${({ multiline }) => (multiline ? 'top' : 'middle')};
   font-size: ${({ multiline, theme }) => theme.fonts.size[multiline ? 20 : 16]};
   color: ${({ theme }) => theme.colors.text.primary};
-  font-size: ${({ theme }) => theme.fonts.size[16]};
   flex: 1;
 `;
 
@@ -134,7 +132,7 @@ const TextInput = ({
   const left = leftComponent || <Svg svg={leftSvg} size={24} />;
 
   return (
-    <Wrapper
+    <TouchableOpacity
       style={style}
       onPress={onPress}
       disabled={!onPress || pressDisabled}
@@ -161,7 +159,7 @@ const TextInput = ({
         )}
       </InputWrapper>
       {renderError && <ErrorMessage text={errorMessage} i18nArgs={errorI18nArgs} />}
-    </Wrapper>
+    </TouchableOpacity>
   );
 };
 

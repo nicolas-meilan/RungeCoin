@@ -1,0 +1,28 @@
+{
+    "extends": [
+        "stylelint-config-standard"
+    ],
+    "customSyntax": "postcss-styled-syntax",
+    "plugins": [
+        "stylelint-order",
+        "stylelint-react-native"
+    ],
+    "rules": {
+        "declaration-block-no-redundant-longhand-properties": null,
+        "property-no-unknown": [
+            true,
+            {
+                "ignoreProperties": [
+                    "padding-vertical",
+                    "padding-horizontal",
+                    "margin-horizontal",
+                    "margin-vertical",
+                    "link-color",
+                    "vertical-align",
+                    "justify-self",
+                    "place-self"
+                ]
+            }
+        ]
+    }
+}

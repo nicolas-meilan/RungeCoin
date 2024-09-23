@@ -121,6 +121,7 @@
         "ETHEREUM": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
         "POLYGON": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
         "BSC": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
+        "ARBITRUM": "The **gas** is the toll that is used to carry out operations on the **blockchain**.",
         "TRON": "The fee is calculated using the **bandwidth** and **energy** needed by the transactions"
       },
       "fee": "Fees",
@@ -178,6 +179,7 @@
       "ETHEREUM": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
       "POLYGON": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
       "BSC": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
+      "ARBITRUM": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Ethereum app**",
       "TRON": "Connect the **Ledger** to your smartphone via **USB or Bluetooth**, then **unlock** it and open the **Tron app**"
     },
     "selectBlockchain": "Select blockchain",
@@ -190,6 +192,7 @@
     "ETHEREUM": "Ethereum blockchain",
     "POLYGON": "Polygon blockchain",
     "BSC": "BNB Chain",
+    "ARBITRUM": "Arbitrum One",
     "TRON": "Tron Blockchain"
   },
   "dateformat": {

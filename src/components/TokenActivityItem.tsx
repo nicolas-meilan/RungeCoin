@@ -49,7 +49,7 @@ const Data = styled.View`
 `;
 
 const BalanceData = styled.View`
-  maxWidth: 60%;
+  max-width: 60%;
 `;
 
 const Description = styled(Text) <{ alignRight?: boolean }>`

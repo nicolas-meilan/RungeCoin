@@ -56,7 +56,6 @@ const StyledSvg = styled(Svg)`
 const Image = styled.Image`
   height: 100%;
   width: 100%;
-  resize-mode: center;
 `;
 
 const Message = ({
@@ -72,7 +71,7 @@ const Message = ({
 }: MessageProps) => {
   const media = svg
     ? <StyledSvg svg={svg} color={svgColor} size={imageSize}/>
-    : (!!image && <ImageWrapper imageSize={imageSize}><Image source={image} /></ImageWrapper>);
+    : (!!image && <ImageWrapper imageSize={imageSize}><Image source={image} resizeMode="center" /></ImageWrapper>);
 
   const content = (
     <>
