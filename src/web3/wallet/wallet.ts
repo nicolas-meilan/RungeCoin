@@ -22,6 +22,7 @@ import {
   isBeEnabled,
   BE_DISABLED,
 } from '@system/bluetooth';
+import { delay } from '@utils/time';
 import { erc20BlockchainsConfigurationPropagation } from '@utils/web3';
 
 // export const BTC_DERIVATION_PATH = "m/44'/0'/0'/0"; // m/purpose'/coin_type'/account'/change/index
@@ -30,7 +31,8 @@ export const BASE_ADDRESS_INDEX = 0;
 const SEED_24_WORDS_STRENGTH = 256;
 const SEED_12_WORDS_STRENGTH = 128;
 
-const HW_BLUETOOTH_MAX_TIME = 15000;
+const HW_BLUETOOTH_MAX_TIME = 15;
+const HW_USB_MAX_TIME = 5;
 
 type BlockchainWalletConfig = {
   [blockchain in Blockchains]: {
@@ -176,23 +178,26 @@ const getBluetoothHw = async () => {
         }
       },
     });
-
-    const timeRef = setTimeout(() => {
+    delay(HW_BLUETOOTH_MAX_TIME).then(() => {
       if (procesingConnection) {
         timeExceeded = true;
-        clearTimeout(timeRef);
         return;
       }
 
       try {
         suscription.unsubscribe();
       } catch (error) { }
-      clearTimeout(timeRef);
       resolve(null);
-    }, HW_BLUETOOTH_MAX_TIME);
+    });
   });
 
   return [selectedHw];
+};
+
+const usbHwTimerErrorHandler = async (): Promise<TransportBLE | TransportHID> => {
+  await delay(HW_USB_MAX_TIME);
+
+  return new Promise((_, reject) => reject(HW_USB_MAX_TIME));
 };
 
 export const connectHw = async (bluetoothConnection: boolean = false): Promise<TransportBLE | TransportHID> => {
@@ -200,9 +205,11 @@ export const connectHw = async (bluetoothConnection: boolean = false): Promise<T
   const [firstHw] = await (bluetoothConnection ? getBluetoothHw() : transportToUse.list());
 
   if (!firstHw) throw new Error(NO_LEDGER_CONNECTED_ERROR);
-  let transport = null;
+  let transport: TransportBLE | TransportHID | null = null;
   try {
-    transport = await transportToUse.open(firstHw);
+    transport = await (bluetoothConnection
+      ? transportToUse.open(firstHw)
+      : Promise.race([transportToUse.open(firstHw), usbHwTimerErrorHandler()]));
   } catch (_) { // Retry connection one time
     try {
       transport = await transportToUse.open(firstHw);
@@ -231,7 +238,7 @@ export const getHwWalletAddress = async (
   const walletIndex = (index || BASE_ADDRESS_INDEX) > 0 ? index : 0;
   const derivationPath = `${walletConfig.derivationPath}/${walletIndex}`;
   const transport = await connectHw(bluetoothConnection);
-  
+
   try {
     const ledgerApp = new (walletConfig.ledgerApp)(transport);
     const { address } = await ledgerApp.getAddress(derivationPath, true);
