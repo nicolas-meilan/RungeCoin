@@ -12,7 +12,7 @@ Our features are designed focusing on the ease of management, security and priva
 We offer approximate cryptocurrency charts and prices (obtained from TradingView), so you can make the best decisions!
 
 - Available blockchains
-We work with Ethereum, Polygon, BSC and Tron blockchains.
+We work with Ethereum, Polygon, BSC, Arbitrum One and Tron blockchains.
 
 - Security
 We do not store your secret words, therefore they are not in any danger from us. To provide greater security we allow the connection with Ledger hardware wallets.
