@@ -29,25 +29,25 @@ const BlockchainSelector = ({
 
   const {
     blockchain,
-    blockchainsBaseTokenSymbols,
+    blockchainsBaseToken,
     setBlockchain,
   } = useBlockchainData();
 
   const blockchains = useMemo(() => (
-    Object.keys(blockchainsBaseTokenSymbols) as Blockchains[]
+    Object.keys(blockchainsBaseToken) as Blockchains[]
   ).map((blockchainKey) => ({
     value: blockchainKey,
     label: t(`blockchain.${blockchainKey}`),
     leftComponent: (
       <TokenIcon
         size={24}
-        tokenSymbol={BLOCKCHAINS_CONFIG[blockchainKey].blockchainSymbol || blockchainsBaseTokenSymbols[blockchainKey]}
+        iconName={BLOCKCHAINS_CONFIG[blockchainKey].blockchainSymbol || blockchainsBaseToken[blockchainKey].iconName}
       />),
     data: undefined,
     disabled: disableBlockchainsWithoutAddress
       ? !walletPublicValues?.[BLOCKCHAIN_PUBLIC_VALUES_CONFIG[blockchainKey].addressProp]
       : false,
-  })), [blockchainsBaseTokenSymbols]);
+  })), [blockchainsBaseToken]);
 
   return (
     <Select

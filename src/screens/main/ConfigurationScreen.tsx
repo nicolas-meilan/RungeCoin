@@ -135,7 +135,7 @@ const ConfigurationScreen = ({
   const consolidatedCurrenciesList = useMemo(() => Object.values(FiatCurrencies).map((item) => ({
     label: item,
     value: item,
-    leftComponent: <TokenIcon isFiat tokenSymbol={item} size={24} />,
+    leftComponent: <TokenIcon isFiat iconName={item} size={24} />,
     data: undefined,
   })), []);
 

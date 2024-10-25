@@ -76,6 +76,7 @@ const RightIcon = styled(Icon)<{ color?: string }>`
 `;
 
 const TokenItem = ({
+  iconName,
   symbol,
   decimals,
   balance,
@@ -149,7 +150,7 @@ const TokenItem = ({
       disabled={disabled || !onPress}
     >
       <StyledTokenIcon
-        tokenSymbol={symbol}
+        iconName={iconName}
         size={fullName ? 44 : 36}
         status={status}
       />
