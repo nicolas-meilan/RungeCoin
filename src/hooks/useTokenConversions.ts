@@ -14,7 +14,7 @@ type TokenConversion = TokenConversionsEndpointResponse['data'];
 type UseTokenConversionssReturn = {
   tokenConversions?: TokenConversion | null;
   tokenConversionsLoading: boolean;
-  convert: (balance: number | bigint, from: Omit<TokenType, 'name' | 'address'>) => number;
+  convert: (balance: number | bigint, from: Omit<TokenType, 'name' | 'address' | 'iconName'>) => number;
   refetchTokenConversions: () => Promise<void>;
 };
 

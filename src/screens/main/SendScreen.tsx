@@ -263,7 +263,7 @@ const SendScreen = ({ navigation, route }: SendScreenProps) => {
         value: token.symbol as string,
         data: token,
         label: token.name,
-        leftComponent: <TokenIcon tokenSymbol={token.symbol} size={24} />,
+        leftComponent: <TokenIcon iconName={token.iconName} size={24} />,
         disabled: !tokenBalances || isZero(tokenBalances?.[token.symbol]),
       };
     });

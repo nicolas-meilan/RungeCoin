@@ -233,7 +233,7 @@ const TokenScreen = ({ navigation, route }: TokenScreenProps) => {
         </ButtonsWrapper>
         <TokenBaseInfo>
           <ErrorWrapper requiredValuesToRender={[token]}>
-            {token && <TokenIcon tokenSymbol={token.symbol} size={44} />}
+            {token && <TokenIcon iconName={token.iconName} size={44} />}
             <BalanceWrapper>
               <BalanceSkeleton
                 isLoading={!tokenBalances}

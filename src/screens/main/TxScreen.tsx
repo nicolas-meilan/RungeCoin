@@ -157,7 +157,7 @@ const TxScreen = ({
       goBack={goBack}
     >
       <StyledTokenIcon
-        tokenSymbol={token.symbol}
+        iconName={token.iconName}
         size={TOKEN_ICON_SIZE}
         status={status}
       />

@@ -12,7 +12,6 @@ import getProvider, { tronProvider } from '@web3/providers';
 import getTokens, {
   BASE_TOKEN_ADDRESS,
   TokensStruct,
-  TokenSymbol,
   TokenType,
 } from '@web3/tokens';
 
@@ -25,8 +24,8 @@ type UseBlockchainDataReturn = {
   removeBlockchain: () => void;
   blockchainLoading: boolean;
   isBlockchainInitialLoading: boolean;
-  blockchainsBaseTokenSymbols: {
-    [blockchain in Blockchains]: TokenSymbol;
+  blockchainsBaseToken: {
+    [blockchain in Blockchains]: TokenType;
   };
   blockchain: Blockchains;
   blockchainProvider: Provider | typeof tronProvider;
@@ -91,17 +90,17 @@ const useBlockchainData = ({
   const findBlockchainBaseToken = (tokens: TokensStruct) => Object.values(tokens)
     .find(({ address }) => address === BASE_TOKEN_ADDRESS)!;
 
-  const blockchainsBaseTokenSymbols = useMemo(() => {
+  const blockchainsBaseToken = useMemo(() => {
     const blockchainsKeys = Object.keys(Blockchains) as Blockchains[];
 
     return {
       ...zipObject(
         blockchainsKeys,
         blockchainsKeys.map((blockchainKey) => (
-          findBlockchainBaseToken(getTokens(blockchainKey)).symbol
+          findBlockchainBaseToken(getTokens(blockchainKey))
         )),
       ),
-    } as UseBlockchainDataReturn['blockchainsBaseTokenSymbols'];
+    } as UseBlockchainDataReturn['blockchainsBaseToken'];
   }, []);
 
   const blockchain = useMemo(() => StoredBlockchain || DEFAULT_BLOCKCHAIN, [StoredBlockchain]);
@@ -118,7 +117,7 @@ const useBlockchainData = ({
     blockchainLoading: isLoading || isRefetching,
     isBlockchainInitialLoading,
     blockchain,
-    blockchainsBaseTokenSymbols,
+    blockchainsBaseToken,
     blockchainProvider,
     tokens,
     blockchainBaseToken,

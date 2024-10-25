@@ -227,7 +227,7 @@ const Calculator = ({
       <Content>
         {!!token && (
           <Token>
-            <TokenIcon tokenSymbol={token.symbol} />
+            <TokenIcon iconName={token.iconName} />
             <SkeletonWrapper isLoading={tokenBalancesLoading}>
               <Skeleton
                 isLoading={tokenBalancesLoading}
