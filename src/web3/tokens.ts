@@ -10,6 +10,7 @@ export enum TokenSymbol {
   POL = 'POL',
   BNB = 'BNB',
   USDT = 'USDT',
+  USDC = 'USDC',
   DAI = 'DAI',
   TRX = 'TRX',
   UNI = 'UNI',
@@ -60,6 +61,13 @@ const TOKENS_ETH_MAINNET: TokensStruct = {
     symbol: TokenSymbol.USDT,
     iconName: TokenSymbol.USDT,
     address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    decimals: 6,
+  },
+  [TokenSymbol.USDC]: {
+    name: 'USD Coin',
+    symbol: TokenSymbol.USDC,
+    iconName: TokenSymbol.USDC,
+    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
     decimals: 6,
   },
   [TokenSymbol.DAI]: {
@@ -138,6 +146,13 @@ export const TOKENS_POLYGON: TokensStruct = {
     address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
     decimals: 6,
   },
+  [TokenSymbol.USDC]: {
+    name: 'USD Coin',
+    symbol: TokenSymbol.USDC,
+    iconName: TokenSymbol.USDC,
+    address: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359',
+    decimals: 6,
+  },
   [TokenSymbol.DAI]: {
     name: 'Dai Stablecoin',
     symbol: TokenSymbol.DAI,
@@ -176,6 +191,13 @@ export const TOKENS_BSC: TokensStruct = {
     address: '0x55d398326f99059fF775485246999027B3197955',
     decimals: 18,
   },
+  [TokenSymbol.USDC]: {
+    name: 'USD Coin',
+    symbol: TokenSymbol.USDC,
+    iconName: TokenSymbol.USDC,
+    address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+    decimals: 18,
+  },
   [TokenSymbol.DAI]: {
     name: 'Dai Stablecoin',
     symbol: TokenSymbol.DAI,
@@ -198,6 +220,13 @@ export const TOKENS_ARBITRUM_MAINNET: TokensStruct = {
     symbol: TokenSymbol.USDT,
     iconName: TokenSymbol.USDT,
     address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+    decimals: 6,
+  },
+  [TokenSymbol.USDC]: {
+    name: 'USD Coin',
+    symbol: TokenSymbol.USDC,
+    iconName: TokenSymbol.USDC,
+    address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
     decimals: 6,
   },
   [TokenSymbol.DAI]: {
